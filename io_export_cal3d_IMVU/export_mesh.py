@@ -152,6 +152,10 @@ def create_cal3d_mesh(scene, mesh_obj,
 		cal3d_vertex2 = None
 		cal3d_vertex3 = None
 		cal3d_vertex4 = None
+		
+		#jgb 2012-11-4 try to add support for multiple submeshes based on material id
+		# Get the submesh that has same material id as the one in tessfaces...
+		cal3d_submesh = cal3d_mesh.get_submesh(face.material_index)
 
 		for vertex_index in face.vertices:
 			duplicate = False
