@@ -383,3 +383,13 @@ class Mesh:
 		
 		for sm in self.submeshes:
 			sm.to_cal3d_binary(file)
+
+	# jgb 2012-11-04 Get the submesh that has the requested material index assigned to it
+	def get_submesh(self, mat):
+		sm = None
+		for sm in self.submeshes:
+			if sm.material_id == mat:
+				break
+		return sm
+				
+	
