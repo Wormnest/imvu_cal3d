@@ -280,10 +280,14 @@ class Face:
 
 
 class SubMesh:
-	def __init__(self, mesh, index, material_id):
+	# jgb 2012-11-05 add mesh_material_id
+	# material_id is global blender/cal3d material id
+	# mesh_material_id is id relative to current mesh which we need to determine which material belongs to which face
+	def __init__(self, mesh, index, material_id, mesh_material_id):
 		self.mesh = mesh
 		self.index = index
 		self.material_id = material_id
+		self.mesh_material_id = mesh_material_id
 
 		self.vertices = []
 		self.faces = []
@@ -385,11 +389,10 @@ class Mesh:
 			sm.to_cal3d_binary(file)
 
 	# jgb 2012-11-04 Get the submesh that has the requested material index assigned to it
+	# jgb 2012-11-05 Need mesh_material_id to compare to mat which is id relative to mesh
 	def get_submesh(self, mat):
 		sm = None
 		for sm in self.submeshes:
-			if sm.material_id == mat:
+			if sm.mesh_material_id == mat:
 				break
 		return sm
-				
-	

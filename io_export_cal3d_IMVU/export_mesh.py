@@ -98,6 +98,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	total_translation = base_translation.copy()
 
 	cal3d_mesh = Mesh(mesh_obj.name, xml_version)
+	print("mesh name: " + mesh_obj.name)
 
 	#not compatible with Blender 2.6.3
 	#faces = mesh_data.faces
@@ -128,6 +129,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	# Take test for blender_material None out of loop, no need to be tested more than once!
 	# if can be replaced by test len(mesh_data.materials) > 0: (see above)
 	if blender_material != None:
+		bm = 0	# jgb not sure if there is another way in python to get the index of blender_material in materials
 		for blender_material in mesh_data.materials:
 			for cal3d_material in cal3d_materials:
 				# jgb 2012-11-03 debug
@@ -137,9 +139,11 @@ def create_cal3d_mesh(scene, mesh_obj,
 					# jgb debug
 					print("cal3d material index: " + str(cal3d_material_index))
 					# jgb 2012-11-03 As far as I can see these next 2 calls need to go inside the if, and not outside the for loop like they were!!
+					# jgb 2012-11-05 Add mesh_material id relative to mesh to SubMesh
 					cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
-						cal3d_material_index)
+						cal3d_material_index, bm)
 					cal3d_mesh.submeshes.append(cal3d_submesh)
+			bm += 1
 	# End of trial
 
 	duplicate_index = len(mesh_data.vertices)
@@ -147,6 +151,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 	#Not compatible with Blender 2.6.3
 	#for face in mesh_data.faces:
 	#For Blender 2.6.3 use tesselation :
+	print("tess faces: " + str(len(mesh_data.tessfaces)))
+	mind = -1
 	for face in mesh_data.tessfaces:
 		cal3d_vertex1 = None
 		cal3d_vertex2 = None
@@ -155,7 +161,11 @@ def create_cal3d_mesh(scene, mesh_obj,
 		
 		#jgb 2012-11-4 try to add support for multiple submeshes based on material id
 		# Get the submesh that has same material id as the one in tessfaces...
-		cal3d_submesh = cal3d_mesh.get_submesh(face.material_index)
+		if mind != face.material_index:
+			mind = face.material_index
+			print("tess material: " + str(face.material_index))
+			print("tess verts: " + str(len(face.vertices)))
+			cal3d_submesh = cal3d_mesh.get_submesh(face.material_index)
 
 		for vertex_index in face.vertices:
 			duplicate = False
