@@ -298,7 +298,7 @@ class SubMesh:
 
 
 	def to_cal3d_xml(self):
-		self.vertices = sorted(self.vertices, key=attrgetter('index'))
+		self.vertices = sorted(self.vertices, key=attrgetter('exportindex'))
 		texcoords_num = 0
 		if self.vertices and len(self.vertices) > 0:
 			texcoords_num = len(self.vertices[0].maps)
@@ -327,7 +327,7 @@ class SubMesh:
 
 		
 	def to_cal3d_binary(self, file):
-		self.vertices = sorted(self.vertices, key=attrgetter('index'))
+		self.vertices = sorted(self.vertices, key=attrgetter('exportindex'))
 		texcoords_num = 0
 		if self.vertices and len(self.vertices) > 0:
 			texcoords_num = len(self.vertices[0].maps)
