@@ -127,7 +127,9 @@ class Influence:
 class Vertex:
 	def __init__(self, submesh, index, loc, normal):
 		self.submesh = submesh
-		self.index = index
+		#self.index = index
+		# jgb 2012-11-06 vertex indexes should be indexed starting from 0 for every submesh apparently to work in imvu
+		self.index = len(submesh.vertices)
 
 		self.loc = loc.copy()
 		self.normal = normal.copy()

@@ -137,7 +137,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if (cal3d_material.name == blender_material.name):
 					cal3d_material_index = cal3d_material.index
 					# jgb debug
-					print("cal3d material index: " + str(cal3d_material_index))
+					print("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
 					# jgb 2012-11-03 As far as I can see these next 2 calls need to go inside the if, and not outside the for loop like they were!!
 					# jgb 2012-11-05 Add mesh_material id relative to mesh to SubMesh
 					cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
@@ -166,6 +166,10 @@ def create_cal3d_mesh(scene, mesh_obj,
 			print("tess material: " + str(face.material_index))
 			print("tess verts: " + str(len(face.vertices)))
 			cal3d_submesh = cal3d_mesh.get_submesh(face.material_index)
+			if cal3d_submesh != None:
+				print("submesh material: " + str(cal3d_submesh.mesh_material_id))
+			else:
+				print("WARNING! submesh with correct material id not found!")
 
 		for vertex_index in face.vertices:
 			duplicate = False
@@ -226,6 +230,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				coord.rotate(total_rotation)
 
 				if duplicate:
+					print("duplicate vertex: "+str(coord))
 					cal3d_vertex = Vertex(cal3d_submesh, duplicate_index,
 					                      coord, normal)
 					duplicate_index += 1
