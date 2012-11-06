@@ -127,9 +127,9 @@ class Influence:
 class Vertex:
 	def __init__(self, submesh, index, loc, normal):
 		self.submesh = submesh
-		#self.index = index
-		# jgb 2012-11-06 vertex indexes should be indexed starting from 0 for every submesh apparently to work in imvu
-		self.index = len(submesh.vertices)
+		self.index = index
+		# jgb 2012-11-06 vertex indexes should be exported  starting from 0 for every submesh apparently to work in imvu
+		self.exportindex = len(submesh.vertices)
 
 		self.loc = loc.copy()
 		self.normal = normal.copy()
@@ -152,7 +152,7 @@ class Vertex:
 			for influence in self.influences:
 				influence.weight /= total_weight
 		
-		s = "    <VERTEX ID=\"{0}\" NUMINFLUENCES=\"{1}\">\n".format(self.index,
+		s = "    <VERTEX ID=\"{0}\" NUMINFLUENCES=\"{1}\">\n".format(self.exportindex,
 		                                                             len(self.influences))
 		s += "      <POS>{0:0.6f} {1:0.6f} {2:0.6f}</POS>\n".format(self.loc[0],
 		                                             self.loc[1], 
