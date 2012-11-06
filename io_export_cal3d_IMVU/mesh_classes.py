@@ -250,32 +250,32 @@ class Face:
 
 	def to_cal3d_xml(self):
 		if self.vertex4:
-			s = "    <FACE VERTEXID=\"{0} {1} {2}\"/>\n".format(self.vertex1.index,
-			                                                    self.vertex2.index,
-			                                                    self.vertex3.index)
+			s = "    <FACE VERTEXID=\"{0} {1} {2}\"/>\n".format(self.vertex1.exportindex,
+			                                                    self.vertex2.exportindex,
+			                                                    self.vertex3.exportindex)
 
-			s += "    <FACE VERTEXID=\"{0} {1} {2}\"/>\n".format(self.vertex1.index,
-			                                                     self.vertex3.index,
-			                                                     self.vertex4.index)
+			s += "    <FACE VERTEXID=\"{0} {1} {2}\"/>\n".format(self.vertex1.exportindex,
+			                                                     self.vertex3.exportindex,
+			                                                     self.vertex4.exportindex)
 			return s
 		else:
-			return "    <FACE VERTEXID=\"{0} {1} {2}\"/>\n".format(self.vertex1.index,
-			                                                       self.vertex2.index,
-			                                                       self.vertex3.index)
+			return "    <FACE VERTEXID=\"{0} {1} {2}\"/>\n".format(self.vertex1.exportindex,
+			                                                       self.vertex2.exportindex,
+			                                                       self.vertex3.exportindex)
 
 		
 	def to_cal3d_binary(self, file):
 		if self.vertex4:
-			ar = array('I', [self.vertex1.index,
-							 self.vertex2.index,
-							 self.vertex3.index,
-							 self.vertex1.index,
-							 self.vertex3.index,
-							 self.vertex4.index])
+			ar = array('I', [self.vertex1.exportindex,
+							 self.vertex2.exportindex,
+							 self.vertex3.exportindex,
+							 self.vertex1.exportindex,
+							 self.vertex3.exportindex,
+							 self.vertex4.exportindex])
 		else:
-			ar = array('I', [self.vertex1.index,
-							 self.vertex2.index,
-							 self.vertex3.index])
+			ar = array('I', [self.vertex1.exportindex,
+							 self.vertex2.exportindex,
+							 self.vertex3.exportindex])
 		
 		ar.tofile(file)
 
