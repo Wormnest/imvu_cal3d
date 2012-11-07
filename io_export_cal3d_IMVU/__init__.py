@@ -15,7 +15,7 @@ bl_info = \
   "description": "Export mesh geometry, armature, "   \
                  "materials and animations to Cal3D "  \
                  "for IMVU",
-  "warning": "You must have Blender 2.6.3 and more to run this scripts",
+  "warning": "You must have Blender 2.6.3 or higher to run this script",
   "wiki_url": "",
   "tracker_url": "",
   "category": "Import-Export"
@@ -386,7 +386,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		return r
 
 def menu_func_export(self, context):
-	self.layout.operator(ExportCal3D.bl_idname, text="IMVU Cal3D TEST")
+	self.layout.operator(ExportCal3D.bl_idname, text="IMVU Cal3D export")
 
 
 def register():
