@@ -125,11 +125,14 @@ class Influence:
 
 
 class Vertex:
-	def __init__(self, submesh, index, loc, normal):
+	# jgb 2012-11-07 Add vertex color to mesh
+	def __init__(self, submesh, index, loc, normal, vertex_color):
 		self.submesh = submesh
 		self.index = index
 		# jgb 2012-11-06 vertex indexes should be exported  starting from 0 for every submesh apparently to work in imvu
 		self.exportindex = len(submesh.vertices)
+		# jgb 2012-11-07 Store vertex color of this vertex
+		self.vertex_color = vertex_color
 
 		self.loc = loc.copy()
 		self.normal = normal.copy()
@@ -161,6 +164,10 @@ class Vertex:
 		s += "      <NORM>{0:0.6f} {1:0.6f} {2:0.6f}</NORM>\n".format(self.normal[0],
 		                                               self.normal[1],
 		                                               self.normal[2])
+
+		s += "      <COLOR>{0:0.3f} {1:0.3f} {2:0.3f}</COLOR>\n".format(self.vertex_color[0],
+		                                               self.vertex_color[1],
+		                                               self.vertex_color[2])
 
 		s += "".join(map(Map.to_cal3d_xml, self.maps))
 		s += "".join(map(Influence.to_cal3d_xml, self.influences))
