@@ -10,6 +10,7 @@ bl_info = \
             "Peter Amstutz, "                \
             "Etory, "                \
             "Jacob Boerema",
+  "version": (1, 0, 0),
   "blender": (2, 6, 3),
   "location": "File > Export > IMVU Cal3D (.cfg)",
   "description": "Export mesh geometry, armature, "   \
