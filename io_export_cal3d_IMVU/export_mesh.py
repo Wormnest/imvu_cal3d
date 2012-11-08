@@ -39,6 +39,13 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version):
 			cal3d_material = Material(material_name, material_index, xml_version)
 			cal3d_material.maps_filenames = maps_filenames
 			cal3d_materials.append(cal3d_material)
+	# jgb 2012-11-08 get some info for testing in case there are no materials
+	if len(cal3d_materials) == 0:
+		print("Sorry but you need to add materials to you meshes and add the images there in order to be able to export your mesh!")
+		print("Currently these images are known:")
+		for img in bpy.data.images:
+			print(img.filepath)
+		
 	return cal3d_materials
 
 
@@ -144,6 +151,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 						cal3d_material_index, bm)
 					cal3d_mesh.submeshes.append(cal3d_submesh)
 			bm += 1
+	else:
+		print("WARNING: this mesh has no materials!")
 	# End of trial
 
 	duplicate_index = len(mesh_data.vertices)
