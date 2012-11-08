@@ -217,18 +217,22 @@ def create_cal3d_mesh(scene, mesh_obj,
 					break
 
 			# jgb 2012-11-07 try to figure out the vertex colors
-			col = mesh_data.tessface_vertex_colors.active.data[face.index]
-			#print("vertex colors for face" + str(face.index))
-			#print("colors: " + str(col.color1) + ", "+ str(col.color2) + ", "+ str(col.color3) + ", "+ str(col.color4))
-			if not cal3d_vertex1:
-				vertex_color = (col.color1.r,col.color1.g,col.color1.b)
-			elif not cal3d_vertex2:
-				vertex_color = (col.color2.r,col.color2.g,col.color2.b)
-			elif not cal3d_vertex3:
-				vertex_color = (col.color3.r,col.color3.g,col.color3.b)
-			elif not cal3d_vertex4:
-				vertex_color = (col.color4.r,col.color4.g,col.color4.b)
-			print(str(vertex_color))
+			# jgb 2012-11-08 but first test if there are any vertex colors
+			if mesh_data.tessface_vertex_colors:
+				col = mesh_data.tessface_vertex_colors.active.data[face.index]
+				#print("vertex colors for face" + str(face.index))
+				#print("colors: " + str(col.color1) + ", "+ str(col.color2) + ", "+ str(col.color3) + ", "+ str(col.color4))
+				if not cal3d_vertex1:
+					vertex_color = (col.color1.r,col.color1.g,col.color1.b)
+				elif not cal3d_vertex2:
+					vertex_color = (col.color2.r,col.color2.g,col.color2.b)
+				elif not cal3d_vertex3:
+					vertex_color = (col.color3.r,col.color3.g,col.color3.b)
+				elif not cal3d_vertex4:
+					vertex_color = (col.color4.r,col.color4.g,col.color4.b)
+				print(str(vertex_color))
+			else:
+				vertex_color = (1.0, 1.0, 1.0)
 
 			if not cal3d_vertex:
 				vertex = mesh_data.vertices[vertex_index]
