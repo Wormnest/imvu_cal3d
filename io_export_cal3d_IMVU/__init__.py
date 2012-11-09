@@ -167,7 +167,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		from .export_mesh import create_cal3d_mesh
 		from .export_action import create_cal3d_animation
 
-		if debug_ExportCal3D > 0:
+		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D.execute started.")
 		cal3d_dirname = os.path.dirname(self.filepath)
 
@@ -189,7 +189,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		visible_objects = context.selected_objects
 		
 		# Export armatures
-		if debug_ExportCal3D > 0:
+		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: export armatures.")
 		try:
 			for obj in visible_objects:
@@ -207,7 +207,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			return {"FINISHED"}
 
 		# Export meshes and materials
-		if debug_ExportCal3D > 0:
+		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: export meshes and materials.")
 		try:
 			cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, 900)
@@ -224,7 +224,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 															  base_scale, 900,
 															  self.use_groups, False, armature_obj))
 			else:
-				if debug_ExportCal3D > 0:
+				if self.debug_ExportCal3D > 0:
 					print("ExportCal3D: no cal3d materials found!")
 
 		except RuntimeError as e:
@@ -234,7 +234,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 
 		# Export animations
-		if debug_ExportCal3D > 0:
+		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: export animations.")
 		try:
 			if cal3d_skeleton:
@@ -250,7 +250,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			return {"FINISHED"}
 
 
-		if debug_ExportCal3D > 0:
+		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: write files.")
 
 		if cal3d_skeleton:
@@ -320,7 +320,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				filename = self.filepath
 			cal3d_cfg_file = open(filename, "wt")
 
-			if debug_ExportCal3D > 0:
+			if self.debug_ExportCal3D > 0:
 				print("ExportCal3D: write cfg.")
 
 			# lolwut?
