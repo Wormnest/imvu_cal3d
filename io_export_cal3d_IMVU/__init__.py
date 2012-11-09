@@ -189,6 +189,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		visible_objects = context.selected_objects
 		
 		# Export armatures
+		if debug_ExportCal3D > 0:
+			print("ExportCal3D: export armatures.")
 		try:
 			for obj in visible_objects:
 				if obj.type == "ARMATURE":
@@ -205,6 +207,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			return {"FINISHED"}
 
 		# Export meshes and materials
+		if debug_ExportCal3D > 0:
+			print("ExportCal3D: export meshes and materials.")
 		try:
 			cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, 900)
 
@@ -230,6 +234,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 
 		# Export animations
+		if debug_ExportCal3D > 0:
+			print("ExportCal3D: export animations.")
 		try:
 			if cal3d_skeleton:
 				for action in bpy.data.actions:
@@ -244,6 +250,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			return {"FINISHED"}
 
 
+		if debug_ExportCal3D > 0:
+			print("ExportCal3D: write files.")
 
 		if cal3d_skeleton:
 			if self.skeleton_binary_bool == 'binary':
@@ -274,7 +282,6 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			cal3d_material_file.close()
 			print("Wrote material '%s' with index %s" % (material_filename, i))
 			i += 1
-
 
 		for cal3d_mesh in cal3d_meshes:
 			if self.mesh_binary_bool == 'binary':
@@ -312,6 +319,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			else
 				filename = self.filepath
 			cal3d_cfg_file = open(filename, "wt")
+
+			if debug_ExportCal3D > 0:
+				print("ExportCal3D: write cfg.")
 
 			# lolwut?
 			#cal3d_cfg_file.write("path={0}\n".format("data\\models\\" + os.path.basename(self.filepath[:-4])+ "\\"))
