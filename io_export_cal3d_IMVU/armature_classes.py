@@ -83,7 +83,7 @@ class Bone:
 		self.matrix[0][3] += self.loc[0]
 		self.matrix[1][3] += self.loc[1]
 		self.matrix[2][3] += self.loc[2]
-		if self.debug_bone:
+		if self.debug_bone > 0:
 			print("calculated matrix for bone "+self.name)
 			print(self.matrix)
 
@@ -94,7 +94,7 @@ class Bone:
 		lmatrix = self.matrix.inverted()
 		self.lloc = lmatrix.to_translation()
 		self.lquat = lmatrix.to_quaternion()
-		if self.debug_bone:
+		if self.debug_bone > 0:
 			print("lloc, lquat:")
 			print(self.lloc)
 			print(self.lquat)
