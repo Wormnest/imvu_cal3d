@@ -293,7 +293,12 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 
 		if self.export_cfg:
-			cal3d_cfg_file = open(self.filepath, "wt")
+			# jgb 2012-11-09 We don't want to overwrite a .blend file by accident:
+			if not self.filepath.endswith('.cfg'):
+				filename = self.filepath + '.cfg'
+			else
+				filename = self.filepath
+			cal3d_cfg_file = open(filename, "wt")
 
 			# lolwut?
 			#cal3d_cfg_file.write("path={0}\n".format("data\\models\\" + os.path.basename(self.filepath[:-4])+ "\\"))
