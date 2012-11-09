@@ -169,8 +169,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 		# Always add empty line to make it easier to find start of our info
 		print("")
-		if self.debug_ExportCal3D > 0:
-			print("ExportCal3D started.")
+		print("ExportCal3D started.")
 		cal3d_dirname = os.path.dirname(self.filepath)
 
 		cal3d_skeleton = None
@@ -358,6 +357,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				cal3d_cfg_file.write("mesh={0}\n".format(mesh_filename))
 
 			cal3d_cfg_file.close()
+
+		print("Export finished.")
+		print("")
 
 		return {"FINISHED"}
 
