@@ -81,7 +81,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	'''Save Cal3d files for IMVU'''
 
 	# jgb To ease debugging use a class debugging var (0 means off)
-	debug_ExportCal3D = 1
+	debug_ExportCal3D = 0
 	
 	bl_idname = "cal3d_model.cfg"
 	bl_label = 'Export Cal3D for IMVU'
@@ -167,8 +167,10 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		from .export_mesh import create_cal3d_mesh
 		from .export_action import create_cal3d_animation
 
+		# Always add empty line to make it easier to find start of our info
+		print("")
 		if self.debug_ExportCal3D > 0:
-			print("ExportCal3D.execute started.")
+			print("ExportCal3D started.")
 		cal3d_dirname = os.path.dirname(self.filepath)
 
 		cal3d_skeleton = None

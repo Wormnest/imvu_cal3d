@@ -84,7 +84,7 @@ class Bone:
 		self.matrix[1][3] += self.loc[1]
 		self.matrix[2][3] += self.loc[2]
 		if self.debug_bone > 0:
-			print("calculated matrix for bone "+self.name)
+			print("Calculated matrix for bone "+self.name)
 			print(self.matrix)
 
 		if parent:
