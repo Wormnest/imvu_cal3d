@@ -80,6 +80,9 @@ import traceback
 class ExportCal3D(bpy.types.Operator, ExportHelper):
 	'''Save Cal3d files for IMVU'''
 
+	# jgb To ease debugging use a class debugging var (0 means off)
+	debug_ExportCal3D = 1
+	
 	bl_idname = "cal3d_model.cfg"
 	bl_label = 'Export Cal3D for IMVU'
 	bl_options = {'PRESET'}
@@ -112,10 +115,12 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 										subtype="EULER")
 
 	base_scale = FloatProperty(name="Base Scale",
-							   default=1.0)
-							   
+								default=1.0)
+
+	# jgb 2012-11-09 IMVU expects 30 fps (ref: http://www.imvu.com/catalog/modules.php?op=modload&name=phpbb2&file=viewtopic.php&t=307460&start=0)
+	# While I remember reading that blender default and the value that was here before = 25.
 	fps = FloatProperty(name="Frame Rate",
-					  default=25.0)
+						default=30.0)
 
 	#path_mode = bpy_extras.io_utils.path_reference_mode
 	
@@ -162,6 +167,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		from .export_mesh import create_cal3d_mesh
 		from .export_action import create_cal3d_animation
 
+		if debug_ExportCal3D > 0:
+			print("ExportCal3D.execute started.")
 		cal3d_dirname = os.path.dirname(self.filepath)
 
 		cal3d_skeleton = None
@@ -201,15 +208,21 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		try:
 			cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, 900)
 
-			for obj in visible_objects:
-				if obj.type == "MESH" and obj.is_visible(context.scene):
-					cal3d_meshes.append(create_cal3d_mesh(context.scene, obj, 
-														  cal3d_skeleton,
-														  cal3d_materials,
-														  base_rotation,
-														  base_translation,
-														  base_scale, 900,
-														  self.use_groups, False, armature_obj))
+			# jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
+			if len(cal3d_materials) > 0:
+				for obj in visible_objects:
+					if obj.type == "MESH" and obj.is_visible(context.scene):
+						cal3d_meshes.append(create_cal3d_mesh(context.scene, obj, 
+															  cal3d_skeleton,
+															  cal3d_materials,
+															  base_rotation,
+															  base_translation,
+															  base_scale, 900,
+															  self.use_groups, False, armature_obj))
+			else:
+				if debug_ExportCal3D > 0:
+					print("ExportCal3D: no cal3d materials found!")
+
 		except RuntimeError as e:
 			print("###### ERROR DURING MESH EXPORT ######")
 			print(e)
