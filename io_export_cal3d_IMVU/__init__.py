@@ -37,7 +37,8 @@ bl_info = \
   "description": "Export mesh geometry, armature, "   \
                  "materials and animations to Cal3D "  \
                  "for IMVU",
-  "warning": "You must have Blender 2.6.3 or higher to run this script",
+  "warning": "You must have Blender 2.6.3 or higher to run this script." \
+            "Assigning material(s) to your mesh is required for the exporter to work.",
   "wiki_url": "",
   "tracker_url": "",
   "category": "Import-Export"
