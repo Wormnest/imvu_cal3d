@@ -67,6 +67,9 @@ class Bone:
 		rot is the rotation from the parent coordinate frame to the tail of the bone
 		'''
 		
+		# jgb debug var (0=off)
+		self.debug_bone = 0
+		
 		self.parent = parent
 		self.name = name
 		self.children = []
@@ -80,8 +83,9 @@ class Bone:
 		self.matrix[0][3] += self.loc[0]
 		self.matrix[1][3] += self.loc[1]
 		self.matrix[2][3] += self.loc[2]
-		print("calculated matrix for bone "+self.name)
-		print(self.matrix)
+		if self.debug_bone:
+			print("calculated matrix for bone "+self.name)
+			print(self.matrix)
 
 		if parent:
 			self.matrix = parent.matrix * self.matrix
@@ -90,9 +94,10 @@ class Bone:
 		lmatrix = self.matrix.inverted()
 		self.lloc = lmatrix.to_translation()
 		self.lquat = lmatrix.to_quaternion()
-		print("lloc, lquat:")
-		print(self.lloc)
-		print(self.lquat)
+		if self.debug_bone:
+			print("lloc, lquat:")
+			print(self.lloc)
+			print(self.lquat)
 
 		self.skeleton = skeleton
 		self.index = skeleton.next_bone_id
