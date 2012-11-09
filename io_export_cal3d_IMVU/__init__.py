@@ -316,7 +316,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			# jgb 2012-11-09 We don't want to overwrite a .blend file by accident:
 			if not self.filepath.endswith('.cfg'):
 				filename = self.filepath + '.cfg'
-			else
+			else:
 				filename = self.filepath
 			cal3d_cfg_file = open(filename, "wt")
 
