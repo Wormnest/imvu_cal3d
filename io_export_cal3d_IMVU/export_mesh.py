@@ -27,6 +27,8 @@ from . import armature_classes
 from .mesh_classes import *
 from .armature_classes import *
 
+# for debugging (0=off)
+debug_export = 0
 
 def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version):
 	cal3d_materials = []
@@ -42,9 +44,10 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version):
 						filepath = os.path.abspath(bpy.path.abspath(texture_slot.texture.image.filepath))
 						texturePath = os.path.join(cal3d_dirname, imagepath_prefix + imagename)
 						# jgb 2012-11-03 debugging info
-						print ("----------")
-						print( "material: " + material_name + " index: " + str(material_index))
-						print("image: " + imagename + " filepath: " + filepath)
+						if debug_export > 0:
+							print ("----------")
+							print( "material: " + material_name + " index: " + str(material_index))
+							print("image: " + imagename + " filepath: " + filepath)
 						if not os.path.exists(os.path.dirname(texturePath)):
 							os.mkdir(os.path.dirname(texturePath))
 						if os.path.exists(filepath):
@@ -78,12 +81,12 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 	influences = []
 	
 	if use_groups:
-		print("use groups")
 		for group in vertex.groups:
 			group_index = group.group
 			group_name = mesh_obj.vertex_groups[group_index].name
 			# jgb debug
-			print( "group name " + group_name + ", group weight: " + str(group.weight))
+			if debug_export > 0:
+				print( "group name " + group_name + ", group weight: " + str(group.weight))
 			weight = group.weight
 			if weight > 0.0001:
 				for bone in cal3d_skeleton.bones:
@@ -130,7 +133,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	total_translation = base_translation.copy()
 
 	cal3d_mesh = Mesh(mesh_obj.name, xml_version)
-	print("mesh name: " + mesh_obj.name)
+	print("mesh: " + mesh_obj.name)
 
 	#not compatible with Blender 2.6.3
 	#faces = mesh_data.faces
@@ -165,11 +168,13 @@ def create_cal3d_mesh(scene, mesh_obj,
 		for blender_material in mesh_data.materials:
 			for cal3d_material in cal3d_materials:
 				# jgb 2012-11-03 debug
-				print("material: blender name: " + blender_material.name + " cal3d name: " + cal3d_material.name)
+				if debug_export > 0:
+					print("material: blender name: " + blender_material.name + " cal3d name: " + cal3d_material.name)
 				if (cal3d_material.name == blender_material.name):
 					cal3d_material_index = cal3d_material.index
 					# jgb debug
-					print("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
+					if debug_export > 0:
+						print("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
 					# jgb 2012-11-03 As far as I can see these next 2 calls need to go inside the if, and not outside the for loop like they were!!
 					# jgb 2012-11-05 Add mesh_material id relative to mesh to SubMesh
 					cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
@@ -185,7 +190,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 	#Not compatible with Blender 2.6.3
 	#for face in mesh_data.faces:
 	#For Blender 2.6.3 use tesselation :
-	print("tess faces: " + str(len(mesh_data.tessfaces)))
+	if debug_export > 0:
+		print("tess faces: " + str(len(mesh_data.tessfaces)))
 	mind = -1
 	for face in mesh_data.tessfaces:
 		cal3d_vertex1 = None
@@ -197,11 +203,13 @@ def create_cal3d_mesh(scene, mesh_obj,
 		# Get the submesh that has same material id as the one in tessfaces...
 		if mind != face.material_index:
 			mind = face.material_index
-			print("tess material: " + str(face.material_index))
-			print("tess verts: " + str(len(face.vertices)))
+			if debug_export > 0:
+				print("tess material: " + str(face.material_index))
+				print("tess verts: " + str(len(face.vertices)))
 			cal3d_submesh = cal3d_mesh.get_submesh(face.material_index)
 			if cal3d_submesh != None:
-				print("submesh material: " + str(cal3d_submesh.mesh_material_id))
+				if debug_export > 0:
+					print("submesh material: " + str(cal3d_submesh.mesh_material_id))
 			else:
 				print("WARNING! submesh with correct material id not found!")
 
@@ -254,8 +262,9 @@ def create_cal3d_mesh(scene, mesh_obj,
 			# jgb 2012-11-08 but first test if there are any vertex colors
 			if mesh_data.tessface_vertex_colors:
 				col = mesh_data.tessface_vertex_colors.active.data[face.index]
-				#print("vertex colors for face" + str(face.index))
-				#print("colors: " + str(col.color1) + ", "+ str(col.color2) + ", "+ str(col.color3) + ", "+ str(col.color4))
+				if debug_export > 0:
+					print("vertex colors for face" + str(face.index))
+					print("colors: " + str(col.color1) + ", "+ str(col.color2) + ", "+ str(col.color3) + ", "+ str(col.color4))
 				if not cal3d_vertex1:
 					vertex_color = (col.color1.r,col.color1.g,col.color1.b)
 				elif not cal3d_vertex2:
