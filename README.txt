@@ -10,6 +10,9 @@ bugs, inconsistensies etc so that I can hopefully fix it.
 In addition to what older exporters for blender 2.49 could do, this
 version also supports vertex colors.
 
+The latest version of this script can always be found here:
+https://bitbucket.org/jacobb/imvu_cal3d
+
 
 1. Install
 ----------
