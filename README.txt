@@ -52,7 +52,7 @@ http://svn.gna.org/viewcvs/cal3d/trunk/cal3d/plugins/cal3d_blender_exporter/
 Besides these the following cal3d scripts were also inspected:
 * http://code.google.com/p/blender2cal3d-exporter/
 * Erykgecko XMF/XSF exporters for blender 2.62 http://www.imvufreelancer.com/
-* the javadek 1.4 version for blender 2.49
+* The Blender to IMVU 1.4 Sapphire Edition version for blender 2.49
 * drtron version for blender 2.49 using vertex colors
 
 
