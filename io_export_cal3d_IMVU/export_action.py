@@ -66,7 +66,8 @@ def evaluate_quat(quat_x_fcu, quat_y_fcu, quat_z_fcu, quat_w_fcu, keyframe):
 	quat_x = 0.0
 	quat_y = 0.0
 	quat_z = 0.0
-	quat_w = 0.0
+	# jgb 2012-11-11 Blender has a w value of 1.0 when we haven't changed the rotation so try that instead of 0.0
+	quat_w = 1.0
 
 	if quat_x_fcu:
 		quat_x = quat_x_fcu.evaluate(keyframe)
