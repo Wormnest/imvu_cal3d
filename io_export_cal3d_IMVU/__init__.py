@@ -31,7 +31,7 @@ bl_info = \
             "Peter Amstutz, "                \
             "Etory, "                \
             "Jacob Boerema",
-  "version": (1, 0, 0),
+  "version": (1, 0, 1),
   "blender": (2, 6, 3),
   "location": "File > Export > IMVU Cal3D (.cfg)",
   "description": "Export mesh geometry, armature, "   \
@@ -39,7 +39,7 @@ bl_info = \
                  "for IMVU",
   "warning": "You must have Blender 2.6.3 or higher to run this script." \
             "Assigning material(s) to your mesh is required for the exporter to work.",
-  "wiki_url": "",
+  "wiki_url": "https://bitbucket.org/jacobb/imvu_cal3d",
   "tracker_url": "",
   "category": "Import-Export"
 }
