@@ -97,19 +97,19 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	# to the class instance from the operator settings before calling.
 
 	# context group
-	mesh_prefix = StringProperty(name="Mesh Prefix", 
+	mesh_prefix = StringProperty(name="Mesh", 
 									 default="model_")
 									 
-	skeleton_prefix = StringProperty(name="Skeleton Prefix", 
+	skeleton_prefix = StringProperty(name="Skeleton", 
 									 default="")
 									 
-	anim_prefix = StringProperty(name="Animation Prefix",
+	anim_prefix = StringProperty(name="Animation",
 									  default="")
 									  
-	material_prefix = StringProperty(name="Material Prefix",
+	material_prefix = StringProperty(name="Material",
 									  default="")
 	
-	imagepath_prefix = StringProperty(name="Image Path Prefix",
+	imagepath_prefix = StringProperty(name="Image Path",
 									  default="")
 									  
 	base_rotation = FloatVectorProperty(name="Base Rotation (XYZ)", 
@@ -389,6 +389,25 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		layout = self.layout
 		
 		row = layout.row(align=True)
+		row.label(text="Which files to export:")
+		row = layout.row(align=True)
+		row.prop(self, "export_xsf")
+		row = layout.row(align=True)
+		row.prop(self, "export_xmf")
+		row = layout.row(align=True)
+		row.prop(self, "export_xaf")
+		row = layout.row(align=True)
+		row.prop(self, "export_xrf")
+		row = layout.row(align=True)
+		row.prop(self, "export_cfg")
+		row = layout.row(align=True)
+		row.prop(self, "copy_img")
+
+
+		row = layout.row(align=True)
+		row.label(text="Filename prefixes for:")
+		
+		row = layout.row(align=True)
 		row.prop(self, "skeleton_prefix")
 		
 		row = layout.row(align=True)
@@ -435,20 +454,6 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		#row.label(text="Material")
 		#row.prop(self, "material_binary_bool", expand=True)
 		
-		row = layout.row(align=True)
-		row.label(text="Which files to export:")
-		row = layout.row(align=True)
-		row.prop(self, "export_xsf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xmf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xaf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xrf")
-		row = layout.row(align=True)
-		row.prop(self, "export_cfg")
-		row = layout.row(align=True)
-		row.prop(self, "copy_img")
 
 	def invoke(self, context, event):
 		
