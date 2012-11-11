@@ -20,6 +20,8 @@ To install this script you have to copy the entire folder called
 io_export_cal3d_IMVU to your blender version's addons folder.
 This folder can be found in the following location:
  AppData\Roaming\Blender Foundation\Blender\<your Blender version>\scripts\addons
+Note that the addons folder may not exist. If that is the case then
+create that folder first.
 Where AppData is located depends on your Windows version. If you don't
 know where to find it search on the internet, there are loads of tutorials
 available.
@@ -30,6 +32,7 @@ Start Blender, go to menu File, User Preferences.
 Choose Import-Export, then browse to IMVU Cal3d export and check it.
 Next click Save As Default.
 
+
 2. Export
 ---------
 To export select your bones and mesh, then go to menu File, Export, IMVU Cal3d export.
@@ -38,7 +41,8 @@ for the export to work.
 The default settings should generally be fine for IMVU.
 Choose a location where the files should be saved and press the button
 called Export Cal3d for IMVU.
-If anything went wrong look in the system console window.
+If anything went wrong look in the system console window. To see the system
+console go to menu Window, Toggle system console.
 
 
 3. Credits
