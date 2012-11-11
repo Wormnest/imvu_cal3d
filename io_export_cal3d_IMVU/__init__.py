@@ -50,9 +50,11 @@ if "bpy" in locals():
 	import imp
 
 	if "mesh_classes" in locals():
+		print("reload mesh_classes")
 		imp.reload(mesh_classes)
 
 	if "export_mesh" in locals():
+		print("reload export_mesh")
 		imp.reload(export_mesh)
 
 
