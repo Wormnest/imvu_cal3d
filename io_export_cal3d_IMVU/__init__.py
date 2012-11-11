@@ -170,6 +170,12 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		# Always add empty line to make it easier to find start of our info
 		print("")
 		print("ExportCal3D started.")
+		
+		# jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
+		# Which version might possibly be required for animation settings like  
+		# TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
+		Cal3d_xml_version = 919
+		
 		cal3d_dirname = os.path.dirname(self.filepath)
 
 		cal3d_skeleton = None
@@ -201,7 +207,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					cal3d_skeleton = create_cal3d_skeleton(obj, obj.data,
 					                                       base_rotation.copy(),
 					                                       base_translation.copy(),
-					                                       base_scale, 900)
+					                                       base_scale, Cal3d_xml_version)
 		except Exception as e:
 			print("###### ERROR DURING ARMATURE EXPORT ######")
 			traceback.print_exc()
@@ -211,7 +217,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: export meshes and materials.")
 		try:
-			cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, 900)
+			cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version)
 
 			# jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
 			if len(cal3d_materials) > 0:
@@ -222,7 +228,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 															  cal3d_materials,
 															  base_rotation,
 															  base_translation,
-															  base_scale, 900,
+															  base_scale, Cal3d_xml_version,
 															  self.use_groups, False, armature_obj))
 			else:
 				if self.debug_ExportCal3D > 0:
@@ -241,7 +247,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			if cal3d_skeleton:
 				for action in bpy.data.actions:
 					cal3d_animation = create_cal3d_animation(cal3d_skeleton,
-					                                         action, fps, 900)
+					                                         action, fps, Cal3d_xml_version)
 					if cal3d_animation:
 						cal3d_animations.append(cal3d_animation)
 						
