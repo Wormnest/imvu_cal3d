@@ -33,7 +33,7 @@ class KeyFrame:
 		self.quat = quat.copy()
  
 	def to_cal3d_xml(self):
-		s = "    <KEYFRAME TIME=\"{0}\">\n".format(self.time)
+		s = "    <KEYFRAME TIME=\"{0:0.5f}\">\n".format(self.time)
 		s += "      <TRANSLATION>{0:0.6f} {1:0.6f} {2:0.6f}</TRANSLATION>\n".format(self.loc[0], self.loc[1], self.loc[2])
 #		s += "      <ROTATION>{0} {1} {2} {3}</ROTATION>\n".format(self.quat.inverted().x, # Etory : maybe this function inverted rotation :
 #		                                                           self.quat.inverted().y, 
