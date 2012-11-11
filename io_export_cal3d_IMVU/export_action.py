@@ -113,13 +113,14 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 		loc_y_fcu = get_action_group_fcurve(action_group, "location", 1)
 		loc_z_fcu = get_action_group_fcurve(action_group, "location", 2)
 
-		quat_x_fcu = get_action_group_fcurve(action_group, 
-				                             "rotation_quaternion", 0)
-		quat_y_fcu = get_action_group_fcurve(action_group,
-				                             "rotation_quaternion", 1)
-		quat_z_fcu = get_action_group_fcurve(action_group,
-				                             "rotation_quaternion", 2)
+		# jgb NB: w first instead of last, thus has index 0, not 3!
 		quat_w_fcu = get_action_group_fcurve(action_group,
+				                             "rotation_quaternion", 0)
+		quat_x_fcu = get_action_group_fcurve(action_group, 
+				                             "rotation_quaternion", 1)
+		quat_y_fcu = get_action_group_fcurve(action_group,
+				                             "rotation_quaternion", 2)
+		quat_z_fcu = get_action_group_fcurve(action_group,
 				                             "rotation_quaternion", 3)
 
 		keyframes_list = []
