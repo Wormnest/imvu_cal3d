@@ -228,7 +228,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			if self.debug_ExportCal3D > 0:
 				print("ExportCal3D: export meshes and materials.")
 			try:
-				cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version)
+				cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version, self.copy_img)
 
 				# jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
 				if len(cal3d_materials) > 0:

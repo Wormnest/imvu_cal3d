@@ -30,7 +30,7 @@ from .armature_classes import *
 # for debugging (0=off)
 debug_export = 0
 
-def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version):
+def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_images):
 	cal3d_materials = []
 	for material in bpy.data.materials:
 		material_index = len(cal3d_materials)
@@ -41,22 +41,26 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version):
 				if texture_slot.texture:
 					if texture_slot.texture.type == "IMAGE":
 						imagename = bpy.path.basename(texture_slot.texture.image.filepath)
-						filepath = os.path.abspath(bpy.path.abspath(texture_slot.texture.image.filepath))
-						texturePath = os.path.join(cal3d_dirname, imagepath_prefix + imagename)
-						# jgb 2012-11-03 debugging info
-						if debug_export > 0:
-							print ("----------")
-							print( "material: " + material_name + " index: " + str(material_index))
-							print("image: " + imagename + " filepath: " + filepath)
-						if not os.path.exists(os.path.dirname(texturePath)):
-							os.mkdir(os.path.dirname(texturePath))
-						if os.path.exists(filepath):
-							import shutil
-							try:
-								shutil.copy(filepath, texturePath)
-								print("Copied texture to " + texturePath)
-							except Exception as e:
-								print("Error copying texture " + str(e))
+						
+						# jgb 2012-11-11 Only copy images if that's what we want
+						if copy_images:
+							filepath = os.path.abspath(bpy.path.abspath(texture_slot.texture.image.filepath))
+							texturePath = os.path.join(cal3d_dirname, imagepath_prefix + imagename)
+							# jgb 2012-11-03 debugging info
+							if debug_export > 0:
+								print ("----------")
+								print( "material: " + material_name + " index: " + str(material_index))
+								print("image: " + imagename + " filepath: " + filepath)
+							
+							if not os.path.exists(os.path.dirname(texturePath)):
+								os.mkdir(os.path.dirname(texturePath))
+							if os.path.exists(filepath):
+								import shutil
+								try:
+									shutil.copy(filepath, texturePath)
+									print("Copied texture to " + texturePath)
+								except Exception as e:
+									print("Error copying texture " + str(e))
 						maps_filenames.append(imagepath_prefix + imagename)
 						#maps_filenames.append(texture_slot.texture.image.filepath[2:]) #remove the double slash
 		if len(maps_filenames) > 0:
