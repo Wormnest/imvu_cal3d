@@ -435,6 +435,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		#row.prop(self, "material_binary_bool", expand=True)
 		
 		row = layout.row(align=True)
+		row.label(text="Which files to export:")
+		row = layout.row(align=True)
 		row.prop(self, "export_xsf")
 		row = layout.row(align=True)
 		row.prop(self, "export_xmf")
