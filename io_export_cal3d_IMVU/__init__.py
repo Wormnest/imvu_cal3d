@@ -203,6 +203,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		visible_objects = context.selected_objects
 		
 		# Export armatures
+		# Always read skeleton because both meshes and animations need it.
 		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: export armatures.")
 		try:
@@ -221,109 +222,116 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			return {"FINISHED"}
 
 		# Export meshes and materials
-		if self.debug_ExportCal3D > 0:
-			print("ExportCal3D: export meshes and materials.")
-		try:
-			cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version)
+		# Test for xmf first because that one is the most likely to be set.
+		if self.export_xmf or self.export_xrf:
+			if self.debug_ExportCal3D > 0:
+				print("ExportCal3D: export meshes and materials.")
+			try:
+				cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version)
 
-			# jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
-			if len(cal3d_materials) > 0:
-				for obj in visible_objects:
-					if obj.type == "MESH" and obj.is_visible(context.scene):
-						cal3d_meshes.append(create_cal3d_mesh(context.scene, obj, 
-															  cal3d_skeleton,
-															  cal3d_materials,
-															  base_rotation,
-															  base_translation,
-															  base_scale, Cal3d_xml_version,
-															  self.use_groups, False, armature_obj))
-			else:
-				if self.debug_ExportCal3D > 0:
-					print("ExportCal3D: no cal3d materials found!")
+				# jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
+				if len(cal3d_materials) > 0:
+					for obj in visible_objects:
+						if obj.type == "MESH" and obj.is_visible(context.scene):
+							cal3d_meshes.append(create_cal3d_mesh(context.scene, obj, 
+																  cal3d_skeleton,
+																  cal3d_materials,
+																  base_rotation,
+																  base_translation,
+																  base_scale, Cal3d_xml_version,
+																  self.use_groups, False, armature_obj))
+				else:
+					if self.debug_ExportCal3D > 0:
+						print("ExportCal3D: no cal3d materials found!")
 
-		except RuntimeError as e:
-			print("###### ERROR DURING MESH EXPORT ######")
-			print(e)
-			return {"FINISHED"}
+			except RuntimeError as e:
+				print("###### ERROR DURING MESH EXPORT ######")
+				print(e)
+				return {"FINISHED"}
 
 
-		# Export animations
-		if self.debug_ExportCal3D > 0:
-			print("ExportCal3D: export animations.")
-		try:
-			if cal3d_skeleton:
-				for action in bpy.data.actions:
-					cal3d_animation = create_cal3d_animation(cal3d_skeleton,
-					                                         action, fps, Cal3d_xml_version)
-					if cal3d_animation:
-						cal3d_animations.append(cal3d_animation)
-						
-		except RuntimeError as e:
-			print("###### ERROR DURING ACTION EXPORT ######")
-			print(e)
-			return {"FINISHED"}
+		if self.export_xaf:
+			# Export animations
+			if self.debug_ExportCal3D > 0:
+				print("ExportCal3D: export animations.")
+			try:
+				if cal3d_skeleton:
+					for action in bpy.data.actions:
+						cal3d_animation = create_cal3d_animation(cal3d_skeleton,
+																 action, fps, Cal3d_xml_version)
+						if cal3d_animation:
+							cal3d_animations.append(cal3d_animation)
+							
+			except RuntimeError as e:
+				print("###### ERROR DURING ACTION EXPORT ######")
+				print(e)
+				return {"FINISHED"}
 
 
 		if self.debug_ExportCal3D > 0:
 			print("ExportCal3D: write files.")
 
-		if cal3d_skeleton:
-			if self.skeleton_binary_bool == 'binary':
-				skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".csf"
-				skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
-				cal3d_skeleton_file = open(skeleton_filepath, "wb")
-				cal3d_skeleton.to_cal3d_binary(cal3d_skeleton_file)
-			else:
-				skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".xsf"
-				skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
-				cal3d_skeleton_file = open(skeleton_filepath, "wt")
-				cal3d_skeleton_file.write(cal3d_skeleton.to_cal3d_xml())
-			cal3d_skeleton_file.close()
-			print("Wrote skeleton '%s'" % (skeleton_filename))
+		if self.export_xsf:
+			if cal3d_skeleton:
+				if self.skeleton_binary_bool == 'binary':
+					skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".csf"
+					skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
+					cal3d_skeleton_file = open(skeleton_filepath, "wb")
+					cal3d_skeleton.to_cal3d_binary(cal3d_skeleton_file)
+				else:
+					skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".xsf"
+					skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
+					cal3d_skeleton_file = open(skeleton_filepath, "wt")
+					cal3d_skeleton_file.write(cal3d_skeleton.to_cal3d_xml())
+				cal3d_skeleton_file.close()
+				print("Wrote skeleton '%s'" % (skeleton_filename))
 
-		i = 0
-		for cal3d_material in cal3d_materials:
-			if self.material_binary_bool == 'binary':
-				material_filename = self.material_prefix + cal3d_material.name + ".crf"
-				material_filepath = os.path.join(cal3d_dirname, material_filename)
-				cal3d_material_file = open(material_filepath, "wb")
-				cal3d_material.to_cal3d_binary(cal3d_material_file)
-			else:
-				material_filename = self.material_prefix + cal3d_material.name + ".xrf"
-				material_filepath = os.path.join(cal3d_dirname, material_filename)
-				cal3d_material_file = open(material_filepath, "wt")
-				cal3d_material_file.write(cal3d_material.to_cal3d_xml())
-			cal3d_material_file.close()
-			print("Wrote material '%s' with index %s" % (material_filename, i))
-			i += 1
+		if self.export_xrf:
+			i = 0
+			for cal3d_material in cal3d_materials:
+				if self.material_binary_bool == 'binary':
+					material_filename = self.material_prefix + cal3d_material.name + ".crf"
+					material_filepath = os.path.join(cal3d_dirname, material_filename)
+					cal3d_material_file = open(material_filepath, "wb")
+					cal3d_material.to_cal3d_binary(cal3d_material_file)
+				else:
+					material_filename = self.material_prefix + cal3d_material.name + ".xrf"
+					material_filepath = os.path.join(cal3d_dirname, material_filename)
+					cal3d_material_file = open(material_filepath, "wt")
+					cal3d_material_file.write(cal3d_material.to_cal3d_xml())
+				cal3d_material_file.close()
+				print("Wrote material '%s' with index %s" % (material_filename, i))
+				i += 1
 
-		for cal3d_mesh in cal3d_meshes:
-			if self.mesh_binary_bool == 'binary':
-				mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
-				mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
-				cal3d_mesh_file = open(mesh_filepath, "wb")
-				cal3d_mesh.to_cal3d_binary(cal3d_mesh_file)
-			else:
-				mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
-				mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
-				cal3d_mesh_file = open(mesh_filepath, "wt")
-				cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
-			cal3d_mesh_file.close()
-			print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
+		if self.export_xmf:
+			for cal3d_mesh in cal3d_meshes:
+				if self.mesh_binary_bool == 'binary':
+					mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
+					mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
+					cal3d_mesh_file = open(mesh_filepath, "wb")
+					cal3d_mesh.to_cal3d_binary(cal3d_mesh_file)
+				else:
+					mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
+					mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
+					cal3d_mesh_file = open(mesh_filepath, "wt")
+					cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
+				cal3d_mesh_file.close()
+				print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
 			
-		for cal3d_animation in cal3d_animations:
-			if self.animation_binary_bool == 'binary':
-				animation_filename = self.anim_prefix + cal3d_animation.name + ".caf"
-				animation_filepath = os.path.join(cal3d_dirname, animation_filename)
-				cal3d_animation_file = open(animation_filepath, "wb")
-				cal3d_animation.to_cal3d_binary(cal3d_animation_file)
-			else:
-				animation_filename = self.anim_prefix + cal3d_animation.name + ".xaf"
-				animation_filepath = os.path.join(cal3d_dirname, animation_filename)
-				cal3d_animation_file = open(animation_filepath, "wt")
-				cal3d_animation_file.write(cal3d_animation.to_cal3d_xml())
-			cal3d_animation_file.close()
-			print("Wrote animation '%s'" % (animation_filename))
+		if self.export_xaf:
+			for cal3d_animation in cal3d_animations:
+				if self.animation_binary_bool == 'binary':
+					animation_filename = self.anim_prefix + cal3d_animation.name + ".caf"
+					animation_filepath = os.path.join(cal3d_dirname, animation_filename)
+					cal3d_animation_file = open(animation_filepath, "wb")
+					cal3d_animation.to_cal3d_binary(cal3d_animation_file)
+				else:
+					animation_filename = self.anim_prefix + cal3d_animation.name + ".xaf"
+					animation_filepath = os.path.join(cal3d_dirname, animation_filename)
+					cal3d_animation_file = open(animation_filepath, "wt")
+					cal3d_animation_file.write(cal3d_animation.to_cal3d_xml())
+				cal3d_animation_file.close()
+				print("Wrote animation '%s'" % (animation_filename))
 
 
 		if self.export_cfg:
