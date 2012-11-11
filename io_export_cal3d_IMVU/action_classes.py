@@ -39,10 +39,12 @@ class KeyFrame:
 #		                                                           self.quat.inverted().y, 
 #		                                                           self.quat.inverted().z, 
 #		                                                           self.quat.inverted().w)
+
+		# jgb 2012-11-11 Maybe we need for w: -self.quat.w to get the same negative value as for the mesh.
 		s += "      <ROTATION>{0} {1} {2} {3}</ROTATION>\n".format(self.quat.copy().x, 
 		                                                           self.quat.copy().y, 
 		                                                           self.quat.copy().z, 
-		                                                           self.quat.copy().w)
+		                                                           -self.quat.copy().w)
 		s += "    </KEYFRAME>\n"
 		return s
 
