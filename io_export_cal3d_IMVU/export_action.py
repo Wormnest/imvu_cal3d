@@ -81,8 +81,8 @@ def evaluate_quat(quat_x_fcu, quat_y_fcu, quat_z_fcu, quat_w_fcu, keyframe):
 	if quat_w_fcu:
 		quat_w = quat_w_fcu.evaluate(keyframe)
 
-
-	return mathutils.Quaternion([quat_x, quat_y, quat_z, quat_w])
+	# jgb 2012-11-11 I think with quaternions w needs to come first, not last.
+	return mathutils.Quaternion([quat_w, quat_x, quat_y, quat_z])
 
 
 def track_sort_key(track):
