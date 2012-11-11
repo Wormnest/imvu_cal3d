@@ -164,6 +164,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	# Since IMVU doesn't use XRF anymore and never used CFG we turn them off by default
 	export_xrf = BoolProperty(name="Export materials (.XRF)", description="Whether or not to export the materials.", default=False)
 	export_cfg = BoolProperty(name="Export config file (.CFG)", description="Whether or not to export the .CFG file.", default=False)
+	copy_img = BoolProperty(name="Copy images", description="Whether or not to copy used material images to export folder.", default=False)
 	
 	def execute(self, context):
 		from . import export_mesh
@@ -446,6 +447,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		row.prop(self, "export_xrf")
 		row = layout.row(align=True)
 		row.prop(self, "export_cfg")
+		row = layout.row(align=True)
+		row.prop(self, "copy_img")
 
 	def invoke(self, context, event):
 		
