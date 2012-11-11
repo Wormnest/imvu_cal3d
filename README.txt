@@ -20,8 +20,8 @@ To install this script you have to copy the entire folder called
 io_export_cal3d_IMVU to your blender version's addons folder.
 This folder can be found in the following location:
  AppData\Roaming\Blender Foundation\Blender\<your Blender version>\scripts\addons
-Note that the addons folder may not exist. If that is the case then
-create that folder first.
+Note that the scripts and/or addons folder may not exist. If that is the case
+then create the folder(s) first.
 Where AppData is located depends on your Windows version. If you don't
 know where to find it search on the internet, there are loads of tutorials
 available.
