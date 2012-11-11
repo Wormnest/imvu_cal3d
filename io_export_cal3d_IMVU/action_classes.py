@@ -99,7 +99,7 @@ class Animation:
 
 	def to_cal3d_xml(self):
 		s = "<HEADER MAGIC=\"XAF\" VERSION=\"{0}\"/>\n".format(self.xml_version)
-		s += "<ANIMATION DURATION=\"{0}\" NUMTRACKS=\"{1}\">\n".format(self.duration, len(self.tracks))
+		s += "<ANIMATION DURATION=\"{0:0.5f}\" NUMTRACKS=\"{1}\">\n".format(self.duration, len(self.tracks))
 		s += "".join(map(Track.to_cal3d_xml, self.tracks))
 		s += "</ANIMATION>\n"
 		return s
