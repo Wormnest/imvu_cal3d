@@ -70,10 +70,14 @@ class Track:
 	def __init__(self, bone_index):
 		self.bone_index = bone_index
 		self.keyframes = []
+		self.translationrequired = 1
+		self.translationisdynamic = 0
+		self.highrangerequired = 0
 
 
 	def to_cal3d_xml(self):
-		s = "  <TRACK BONEID=\"{0}\" NUMKEYFRAMES=\"{1}\">\n".format(self.bone_index, len(self.keyframes))
+		s = "  <TRACK BONEID=\"{0}\" TRANSLATIONREQUIRED=\"{1}\" TRANSLATIONISDYNAMIC=\"{2}\" ".format(self.bone_index, self.translationrequired, self.translationisdynamic)
+		s += "HIGHRANGEREQUIRED=\"{0}\" NUMKEYFRAMES=\"{1}\">\n".format(self.highrangerequired, len(self.keyframes))
 		s += "".join(map(KeyFrame.to_cal3d_xml, self.keyframes))
 		s += "  </TRACK>\n"
 		return s
