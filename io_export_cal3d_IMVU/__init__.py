@@ -46,16 +46,35 @@ bl_info = \
 
 # To support reload properly, try to access a package var, 
 # if it's there, reload everything
+print("")
+print("Initializing IMVU Cal3D export version " + str(bl_info['version'][0])+"."+str(bl_info['version'][1])+"."+str(bl_info['version'][2]))
 if "bpy" in locals():
 	import imp
+	print("reloading script classes")
 
 	if "mesh_classes" in locals():
-		print("reload mesh_classes")
+		#print("reload mesh_classes")
 		imp.reload(mesh_classes)
 
 	if "export_mesh" in locals():
-		print("reload export_mesh")
+		#print("reload export_mesh")
 		imp.reload(export_mesh)
+
+	if "armature_classes" in locals():
+		#print("reload armature_classes")
+		imp.reload(armature_classes)
+
+	if "export_armature" in locals():
+		#print("reload export_armature")
+		imp.reload(export_armature)
+
+	if "action_classes" in locals():
+		#print("reload action_classes")
+		imp.reload(action_classes)
+
+	if "export_action" in locals():
+		#print("reload export_action")
+		imp.reload(export_action)
 
 
 import bpy
