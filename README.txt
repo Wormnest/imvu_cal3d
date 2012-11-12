@@ -1,4 +1,4 @@
-Cal3d blender exporter for IMVU v 1.0
+Cal3d blender exporter for IMVU v 1.1
 =====================================
 
 This python script is intended for Blender version 2.63 or higher.
@@ -16,21 +16,17 @@ https://bitbucket.org/jacobb/imvu_cal3d
 
 1. Install
 ----------
-To install this script you have to copy the entire folder called
-io_export_cal3d_IMVU to your blender version's addons folder.
-This folder can be found in the following location:
- AppData\Roaming\Blender Foundation\Blender\<your Blender version>\scripts\addons
-Note that the scripts and/or addons folder may not exist. If that is the case
-then create the folder(s) first.
-Where AppData is located depends on your Windows version. If you don't
-know where to find it search on the internet, there are loads of tutorials
-available.
-Drop the entire io_export_cal3d_IMVU folder inside the addons folder.
+After you have downloaded the zip file with this script start Blender.
+Go to menu File, User Preferences, Addons tab.
+Click the Install Addons button located at the bottom.
+Browse to the location of the zip file and click the Install Addon button.
+Note: you don't have to unzip it first yourself.
+Next click the checkbox for the IMVU Cal3d Export addon to enable it.
+Finally click Save As Default.
 
-Then you need to install the script in Blender.
-Start Blender, go to menu File, User Preferences.
-Choose Import-Export, then browse to IMVU Cal3d export and check it.
-Next click Save As Default.
+If you want to manually install the files then read the Blender manual
+on where and how to do that:
+http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Add-Ons
 
 
 2. Export
@@ -38,6 +34,7 @@ Next click Save As Default.
 To export select your bones and mesh, then go to menu File, Export, IMVU Cal3d export.
 Note that currently it is required to have material(s) assigned to the mesh
 for the export to work.
+You can choose which files you want to export. IMVU only needs XMF, XSF and XAF files.
 The default settings should generally be fine for IMVU.
 Choose a location where the files should be saved and press the button
 called Export Cal3d for IMVU.
