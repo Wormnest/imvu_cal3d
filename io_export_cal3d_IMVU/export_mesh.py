@@ -280,7 +280,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if debug_export > 0:
 					print(str(vertex_color))
 			else:
-				# jgb todo: if vertex colors not used we should turn off writing vertex data with default values
+				# jgb cal3d v 919 always requires the color tag to be written even if we don't use vertex colors thus set default colors
 				vertex_color = (1.0, 1.0, 1.0)
 
 			if not cal3d_vertex:
