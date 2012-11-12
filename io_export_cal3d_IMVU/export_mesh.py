@@ -265,6 +265,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 			# jgb 2012-11-07 try to figure out the vertex colors
 			# jgb 2012-11-08 but first test if there are any vertex colors
 			if mesh_data.tessface_vertex_colors:
+				# Turn on use of vertex colors
+				use_vc = True
 				col = mesh_data.tessface_vertex_colors.active.data[face.index]
 				if debug_export > 0:
 					print("vertex colors for face" + str(face.index))
@@ -280,7 +282,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if debug_export > 0:
 					print(str(vertex_color))
 			else:
-				# jgb todo: if vertex colors not used we should turn off writing vertex data with default values
+				# jgb Turn off using vertex colors but set default values
+				use_vc = False
 				vertex_color = (1.0, 1.0, 1.0)
 
 			if not cal3d_vertex:
@@ -299,12 +302,12 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if duplicate:
 					#print("duplicate vertex: "+str(coord))
 					cal3d_vertex = Vertex(cal3d_submesh, duplicate_index,
-					                      coord, normal, vertex_color)
+					                      coord, normal, vertex_color, use_vc)
 					duplicate_index += 1
 
 				else:
 					cal3d_vertex = Vertex(cal3d_submesh, vertex_index,
-					                      coord, normal, vertex_color)
+					                      coord, normal, vertex_color, use_vc)
 
 										  
 				cal3d_vertex.influences = get_vertex_influences(vertex,
