@@ -36,13 +36,18 @@ class Skeleton:
 		self.xml_version = xml_version
 		self.bones = []
 		self.next_bone_id = 0
+		# define default scene ambient color as used on KatsBits website
+		self.scene_ambient_color = [0.525176, 0.555059, 0.545235]
 		#DEBUG :
 		#print("armature, matrice :", matrix)
 
 		
 	def to_cal3d_xml(self):
 		s = "<HEADER MAGIC=\"XSF\" VERSION=\"{0}\"/>\n".format(self.xml_version)
-		s += "<SKELETON NUMBONES=\"{0}\">\n".format(len(self.bones))
+		s += "<SKELETON NUMBONES=\"{0}\" SCENEAMBIENTCOLOR=\"{1:0.6f} {2:0.6f} {3:0.6f}\">\n".format(len(self.bones), 
+			self.scene_ambient_color[0],
+			self.scene_ambient_color[1],
+			self.scene_ambient_color[2])
 		s += "".join(map(Bone.to_cal3d_xml, self.bones))
 		s += "</SKELETON>\n"
 		return s

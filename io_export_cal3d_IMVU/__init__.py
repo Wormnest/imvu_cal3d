@@ -236,6 +236,10 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					                                       base_rotation.copy(),
 					                                       base_translation.copy(),
 					                                       base_scale, Cal3d_xml_version)
+					# Add the ambient color as set in blend world to the skeleton
+					# Note that color in Blender may look different than in IMVU due to Blender using color management!
+					if context.scene.world:
+						cal3d_skeleton.scene_ambient_color = context.scene.world.ambient_color
 		except Exception as e:
 			print("###### ERROR DURING ARMATURE EXPORT ######")
 			traceback.print_exc()
