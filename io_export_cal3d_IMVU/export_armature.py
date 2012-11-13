@@ -75,7 +75,8 @@ def create_cal3d_skeleton(arm_obj, arm_data,
 						  base_rotation,
 						  base_translation,
 						  base_scale,
-						  xml_version):
+						  xml_version,
+						  write_ambient_color):
 
 	#not used
 	base_matrix = Matrix.Scale(base_scale, 4)          * \
@@ -86,7 +87,7 @@ def create_cal3d_skeleton(arm_obj, arm_data,
 	#not used
 	(total_translation, total_rotation, total_scale) = arm_obj.matrix_world.decompose()
 
-	skeleton = Skeleton(arm_obj.name, arm_obj.matrix_world, total_scale, xml_version)
+	skeleton = Skeleton(arm_obj.name, arm_obj.matrix_world, total_scale, xml_version, write_ambient_color)
 
 	#not used
 	scalematrix = Matrix()

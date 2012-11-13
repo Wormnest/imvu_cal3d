@@ -184,6 +184,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	export_xrf = BoolProperty(name="Export materials (.XRF)", description="Whether or not to export the materials.", default=False)
 	export_cfg = BoolProperty(name="Export config file (.CFG)", description="Whether or not to export the .CFG file.", default=False)
 	copy_img = BoolProperty(name="Copy images", description="Whether or not to copy used material images to export folder.", default=False)
+
+	write_amb = BoolProperty(name="Write scene ambient color to XSF", 
+		description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).", default=False)
 	
 	def execute(self, context):
 		from . import export_mesh
@@ -235,7 +238,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					cal3d_skeleton = create_cal3d_skeleton(obj, obj.data,
 					                                       base_rotation.copy(),
 					                                       base_translation.copy(),
-					                                       base_scale, Cal3d_xml_version)
+					                                       base_scale, Cal3d_xml_version, self.write_amb)
 					# Add the ambient color as set in blend world to the skeleton
 					# Note that color in Blender may look different than in IMVU due to Blender using color management!
 					if context.scene.world:
@@ -425,6 +428,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		row.prop(self, "export_cfg")
 		row = layout.row(align=True)
 		row.prop(self, "copy_img")
+		row = layout.row(align=True)
+		row.prop(self, "write_amb")
 
 
 		row = layout.row(align=True)
