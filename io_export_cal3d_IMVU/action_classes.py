@@ -70,9 +70,16 @@ class Track:
 	def __init__(self, bone_index):
 		self.bone_index = bone_index
 		self.keyframes = []
+		# jgb 2012-11-14 If I'm reading the Cal3d source correctly (saver.cpp, CalSaver::saveXmlCoreAnimation)
+		# Then TRANSLATIONREQUIRED=1 means there will be a TRANSLATION record for the first keyframe
+		# The next keyframes don't require a TRANSLATION record, unless TRANSLATIONISDYNAMIC=1, then every keyframe needs it.
+		# Therefore we set translationisdynamic to 1 here.
+		# Seems highrangerequired also defaults to true (see xmlformat.cpp, CalCoreAnimationPtr CalLoader::loadXmlCoreAnimation)
+		# highrangerequired seems to be used to compress animation, when it's off it uses some bits for other purposes, we leave it on for now
+		# TODO: We should make this dependent on whether or not we actually need to use the translation record or not.
 		self.translationrequired = 1
-		self.translationisdynamic = 0
-		self.highrangerequired = 0
+		self.translationisdynamic = 1
+		self.highrangerequired = 1
 
 
 	def to_cal3d_xml(self):
