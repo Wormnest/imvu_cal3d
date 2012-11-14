@@ -221,6 +221,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 					print("submesh material: " + str(cal3d_submesh.mesh_material_id))
 			else:
 				print("WARNING! submesh with correct material id not found!")
+				return None
 
 		for vertex_index in face.vertices:
 			duplicate = False
