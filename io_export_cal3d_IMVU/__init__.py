@@ -289,6 +289,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 																 action, fps, Cal3d_xml_version)
 						if cal3d_animation:
 							cal3d_animations.append(cal3d_animation)
+				else:
+					print("WARNING: can't export animations: no skeleton selected!")
 							
 			except RuntimeError as e:
 				print("###### ERROR DURING ACTION EXPORT ######")
