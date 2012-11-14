@@ -189,7 +189,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 			bm += 1
 	else:
 		print("WARNING: this mesh has no materials!")
-	# End of trial
+		# Currently we can't continue without error unless there are materials
+		return None
 
 	duplicate_index = len(mesh_data.vertices)
 
