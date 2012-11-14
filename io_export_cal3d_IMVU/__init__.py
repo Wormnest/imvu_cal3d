@@ -331,19 +331,22 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				i += 1
 
 		if self.export_xmf:
-			for cal3d_mesh in cal3d_meshes:
-				if self.mesh_binary_bool == 'binary':
-					mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
-					mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
-					cal3d_mesh_file = open(mesh_filepath, "wb")
-					cal3d_mesh.to_cal3d_binary(cal3d_mesh_file)
-				else:
-					mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
-					mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
-					cal3d_mesh_file = open(mesh_filepath, "wt")
-					cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
-				cal3d_mesh_file.close()
-				print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
+			if cal3d_meshes != []:
+				for cal3d_mesh in cal3d_meshes:
+					if self.mesh_binary_bool == 'binary':
+						mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
+						mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
+						cal3d_mesh_file = open(mesh_filepath, "wb")
+						cal3d_mesh.to_cal3d_binary(cal3d_mesh_file)
+					else:
+						mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
+						mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
+						cal3d_mesh_file = open(mesh_filepath, "wt")
+						cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
+					cal3d_mesh_file.close()
+					print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
+			else:
+				print("WARNING: No mesh selected!")
 			
 		if self.export_xaf:
 			for cal3d_animation in cal3d_animations:
