@@ -105,6 +105,7 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 				break
 
 		if not cal3d_bone:
+			print("WARNING: no bone found corresponding to action group "+action_group.name)
 			continue
 
 		cal3d_track = Track(cal3d_bone.index)
