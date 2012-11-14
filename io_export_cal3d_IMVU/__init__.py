@@ -265,7 +265,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 							mesh_result = create_cal3d_mesh(context.scene, obj, 
 									cal3d_skeleton, cal3d_materials,
 									base_rotation, base_translation, base_scale, 
-									Cal3d_xml_version, self.use_groups, False, armature_obj))
+									Cal3d_xml_version, self.use_groups, False, armature_obj)
 							if mesh_result:
 								cal3d_meshes.append(mesh_result)
 				else:
