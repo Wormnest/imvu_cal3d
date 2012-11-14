@@ -311,6 +311,10 @@ def create_cal3d_mesh(scene, mesh_obj,
 						                                        mesh_obj,
 				                                                cal3d_skeleton,
 																use_groups, use_envelopes, armature_obj)
+				# jgb 2012-11-14 Add warning when vertex has no influences!
+				if cal3d_vertex.influences == []:
+					print("WARNING: vertex " + str(vertex) + " has no influences!")
+				
 				for uv in uvs:
 					cal3d_vertex.maps.append(Map(uv[0], uv[1]))
 
