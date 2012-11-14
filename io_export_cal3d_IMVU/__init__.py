@@ -140,7 +140,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 	# jgb 2012-11-09 IMVU expects 30 fps (ref: http://www.imvu.com/catalog/modules.php?op=modload&name=phpbb2&file=viewtopic.php&t=307460&start=0)
 	# While I remember reading that blender default and the value that was here before = 25.
-	fps = FloatProperty(name="Frame Rate",
+	fps = FloatProperty(name="Frame Rate", description="Set the desired frame rate (IMVU expects 30). You can set the value in Blender in Scene, Render settings.",
 						default=30.0)
 
 	#path_mode = bpy_extras.io_utils.path_reference_mode
