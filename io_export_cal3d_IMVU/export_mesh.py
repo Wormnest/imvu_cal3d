@@ -140,6 +140,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 		print("mesh: " + mesh_obj.name)
 	else:
 		print("WARNING: mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
+		# No use going on if we can't assing influences
+		return None
 
 	#not compatible with Blender 2.6.3
 	#faces = mesh_data.faces
