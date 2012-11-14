@@ -462,10 +462,11 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		#row = layout.row(align=True)
 		#row.prop(self, "path_mode")
 		
-		row = layout.row(align=True)
-		row.label(text="Export with:")
-		row = layout.row(align=True)
-		row.prop(self, "use_groups")
+		# jgb 2012-11-14 Remove user configurability of vertex groups setting because export to IMVU won't work when it is unchecked.
+		#row = layout.row(align=True)
+		#row.label(text="Export with:")
+		#row = layout.row(align=True)
+		#row.prop(self, "use_groups")
 		#row.prop(self, "use_envelopes")
 		
 		# jgb 2012-11-11 Binary not supported on IMVU afaik therefore no need to give a choice
