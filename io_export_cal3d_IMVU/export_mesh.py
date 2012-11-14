@@ -201,6 +201,12 @@ def create_cal3d_mesh(scene, mesh_obj,
 	#For Blender 2.6.3 use tesselation :
 	if debug_export > 0:
 		print("tess faces: " + str(len(mesh_data.tessfaces)))
+	
+	# Test for presence of any uv textures
+	if not mesh_data.tessface_uv_textures:
+		print("WARNING: There are no uv textures assigned!")
+		return None
+	
 	mind = -1
 	for face in mesh_data.tessfaces:
 		cal3d_vertex1 = None
@@ -246,6 +252,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 			for uv in uvs:
 				uv[1] = 1.0 - uv[1]
 
+			if not uvs:
+				print("WARNING: no uv texture assigned to face "+str(face.index) + " vertex "+str(vertex_index))
 			
 			for cal3d_vertex_iter in cal3d_submesh.vertices:
 				if cal3d_vertex_iter.index == vertex_index:
