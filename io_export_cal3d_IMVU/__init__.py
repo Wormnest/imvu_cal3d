@@ -349,7 +349,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					cal3d_mesh_file.close()
 					print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
 			else:
-				print("WARNING: No mesh selected!")
+				print("WARNING: No mesh selected or error exporting mesh!")
 			
 		if self.export_xaf:
 			for cal3d_animation in cal3d_animations:

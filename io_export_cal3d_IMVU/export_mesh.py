@@ -139,7 +139,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	if cal3d_skeleton:
 		print("mesh: " + mesh_obj.name)
 	else:
-		print("WARNING: mesh: " + mesh_obj.name + " is not attached to a skeleton!")
+		print("WARNING: mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
 
 	#not compatible with Blender 2.6.3
 	#faces = mesh_data.faces
