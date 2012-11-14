@@ -79,7 +79,6 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
 
 def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_envelopes, armature_obj):
 	if not cal3d_skeleton:
-		print("WARNING: no skeleton!")
 		return []
 
 	influences = []
@@ -137,7 +136,10 @@ def create_cal3d_mesh(scene, mesh_obj,
 	total_translation = base_translation.copy()
 
 	cal3d_mesh = Mesh(mesh_obj.name, xml_version)
-	print("mesh: " + mesh_obj.name)
+	if cal3d_skeleton:
+		print("mesh: " + mesh_obj.name)
+	else:
+		print("WARNING: mesh: " + mesh_obj.name + " is not attached to a skeleton!")
 
 	#not compatible with Blender 2.6.3
 	#faces = mesh_data.faces
