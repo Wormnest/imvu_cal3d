@@ -312,6 +312,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					cal3d_skeleton_file.write(cal3d_skeleton.to_cal3d_xml())
 				cal3d_skeleton_file.close()
 				print("Wrote skeleton '%s'" % (skeleton_filename))
+			else:
+				print("WARNING: No skeleton selected!")
 
 		if self.export_xrf:
 			i = 0
