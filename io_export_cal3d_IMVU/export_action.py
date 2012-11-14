@@ -141,6 +141,7 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 		keyframes_list.sort()
 		
 		if len(keyframes_list) == 0:
+			print("WARNING: no keyframes in action group "+action_group.name)
 			continue
 
 		if initialized_borders:
