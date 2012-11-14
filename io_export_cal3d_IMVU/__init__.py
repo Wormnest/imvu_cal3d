@@ -260,13 +260,14 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				if len(cal3d_materials) > 0:
 					for obj in visible_objects:
 						if obj.type == "MESH" and obj.is_visible(context.scene):
-							cal3d_meshes.append(create_cal3d_mesh(context.scene, obj, 
-																  cal3d_skeleton,
-																  cal3d_materials,
-																  base_rotation,
-																  base_translation,
-																  base_scale, Cal3d_xml_version,
-																  self.use_groups, False, armature_obj))
+							# jgb 2012-11-14 Creating mesh can fail for several reasons.
+							# Therefore append only after we have checked there really is a mesh
+							mesh_result = create_cal3d_mesh(context.scene, obj, 
+									cal3d_skeleton, cal3d_materials,
+									base_rotation, base_translation, base_scale, 
+									Cal3d_xml_version, self.use_groups, False, armature_obj))
+							if mesh_result:
+								cal3d_meshes.append(mesh_result)
 				else:
 					if self.debug_ExportCal3D > 0:
 						print("ExportCal3D: no cal3d materials found!")
