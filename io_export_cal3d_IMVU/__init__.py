@@ -116,6 +116,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	# to the class instance from the operator settings before calling.
 
 	# context group
+	file_prefix = StringProperty(name="File prefix", description="Prefix name for all exported files (default is the Blender filename)",
+									 default="")
+	# jgb 2012-11-15 these next prefixes will be used but not be visible in gui: we copy value from file_prefix
 	mesh_prefix = StringProperty(name="Mesh", 
 									 default="model_")
 									 
@@ -181,9 +184,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	export_xmf = BoolProperty(name="Export mesh (.XMF)", description="Whether or not to export the mesh.", default=True)
 	export_xaf = BoolProperty(name="Export animation (.XAF)", description="Whether or not to export the animation.", default=True)
 	# Since IMVU doesn't use XRF anymore and never used CFG we turn them off by default
-	export_xrf = BoolProperty(name="Export materials (.XRF)", description="Whether or not to export the materials.", default=False)
-	export_cfg = BoolProperty(name="Export config file (.CFG)", description="Whether or not to export the .CFG file.", default=False)
-	copy_img = BoolProperty(name="Copy images", description="Whether or not to copy used material images to export folder.", default=False)
+	export_xrf = BoolProperty(name="Export materials (.XRF)", description="Whether or not to export the materials (not needed for IMVU).", default=False)
+	export_cfg = BoolProperty(name="Export config file (.CFG)", description="Whether or not to export the .CFG file (not needed for IMVU).", default=False)
+	copy_img = BoolProperty(name="Copy images", description="Whether or not to copy used material images to export folder (not needed for IMVU).", default=False)
 
 	write_amb = BoolProperty(name="Write scene ambient color to XSF", 
 		description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).", default=False)
@@ -205,6 +208,11 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		# Which version might possibly be required for animation settings like  
 		# TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
 		Cal3d_xml_version = 919
+		# Set prefixes
+		self.mesh_prefix = self.file_prefix
+		self.skeleton_prefix = self.file_prefix
+		self.anim_prefix = self.file_prefix
+		self.material_prefix = self.file_prefix
 		
 		cal3d_dirname = os.path.dirname(self.filepath)
 
@@ -438,36 +446,42 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		row.prop(self, "export_cfg")
 		row = layout.row(align=True)
 		row.prop(self, "copy_img")
+
+		row = layout.row(align=True)
+		row.label(text="Export options:")
+
 		row = layout.row(align=True)
 		row.prop(self, "write_amb")
 
+		row = layout.row(align=True)
+		row.prop(self, "fps")
+		
+		#row = layout.row(align=True)
+		#row.label(text="Set Prefix for:")
+		
+		row = layout.row(align=True)
+		row.prop(self, "file_prefix")
 
-		row = layout.row(align=True)
-		row.label(text="Filename prefixes for:")
+		#row = layout.row(align=True)
+		#row.prop(self, "skeleton_prefix")
 		
-		row = layout.row(align=True)
-		row.prop(self, "skeleton_prefix")
+		#row = layout.row(align=True)
+		#row.prop(self, "mesh_prefix")
 		
-		row = layout.row(align=True)
-		row.prop(self, "mesh_prefix")
+		#row = layout.row(align=True)
+		#row.prop(self, "anim_prefix")
 		
-		row = layout.row(align=True)
-		row.prop(self, "anim_prefix")
+		#row = layout.row(align=True)
+		#row.prop(self, "material_prefix")
 		
-		row = layout.row(align=True)
-		row.prop(self, "material_prefix")
-		
-		row = layout.row(align=True)
-		row.prop(self, "imagepath_prefix")
+		#row = layout.row(align=True)
+		#row.prop(self, "imagepath_prefix")
 		
 		#row = layout.row(align=True)
 		#row.prop(self, "base_rotation")
 		
 		#row = layout.row(align=True)
 		#row.prop(self, "base_scale")
-		
-		row = layout.row(align=True)
-		row.prop(self, "fps")
 		
 		#row = layout.row(align=True)
 		#row.prop(self, "path_mode")
@@ -501,10 +515,11 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		if len(bpy.data.scenes) > 1:
 			sc = context.scene.name + "_"
 		pre = os.path.splitext(os.path.basename(bpy.data.filepath))[0] + "_" + sc
-		self.mesh_prefix = pre
-		self.skeleton_prefix = pre
-		self.anim_prefix = pre
-		self.material_prefix = pre
+		self.file_prefix = pre
+		#self.mesh_prefix = pre
+		#self.skeleton_prefix = pre
+		#self.anim_prefix = pre
+		#self.material_prefix = pre
 		r = super(ExportCal3D, self).invoke(context, event)
 		
 		#print(bpy.context.active_operator)
