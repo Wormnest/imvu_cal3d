@@ -122,7 +122,7 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
-                      cal3d_materials,
+                      cal3d_materials, cal3d_used_materials,
                       base_rotation_orig,
                       base_translation_orig,
                       base_scale,
@@ -191,12 +191,14 @@ def create_cal3d_mesh(scene, mesh_obj,
 					# jgb debug
 					if debug_export > 0:
 						print("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
-					# jgb 2012-11-03 As far as I can see these next 2 calls need to go inside the if, and not outside the for loop like they were!!
+					# jgb Set this material as being in use when needed:
+					if cal3d_material.in_use == False:
+						cal3d_material.in_use = True
+						cal3d_material.used_index = len(cal3d_used_materials)
+						cal3d_used_materials.append(cal3d_material)
 					# jgb 2012-11-05 Add mesh_material id relative to mesh to SubMesh
 					cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
-						cal3d_material_index, bm)
-					# jgb Set this material as being in use:
-					cal3d_material.in_use = True
+						cal3d_material.used_index, bm)
 					cal3d_mesh.submeshes.append(cal3d_submesh)
 			bm += 1
 	else:

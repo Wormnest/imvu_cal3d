@@ -212,6 +212,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		cal3d_materials = []
 		cal3d_meshes = []
 		cal3d_animations = []
+		cal3d_used_materials = []
 		armature_obj = None
 
 		# base_translation, base_rotation, and base_scale are user adjustments to the export
@@ -263,9 +264,10 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 							# jgb 2012-11-14 Creating mesh can fail for several reasons.
 							# Therefore append only after we have checked there really is a mesh
 							mesh_result = create_cal3d_mesh(context.scene, obj, 
-									cal3d_skeleton, cal3d_materials,
+									cal3d_skeleton, cal3d_materials, cal3d_used_materials,
 									base_rotation, base_translation, base_scale, 
 									Cal3d_xml_version, self.use_groups, False, armature_obj)
+							##print("used material index: "+str(cal3d_used_material_index))
 							if mesh_result:
 								cal3d_meshes.append(mesh_result)
 				else:
@@ -320,8 +322,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 		if self.export_xrf:
 			i = 0
-			for cal3d_material in cal3d_materials:
-				if cal3d_material.in_use == True:
+			for cal3d_material in cal3d_used_materials:
+				if cal3d_material.in_use == True:	# Should not be necessary now but cant hurt
 					if self.material_binary_bool == 'binary':
 						material_filename = self.material_prefix + cal3d_material.name + ".crf"
 						material_filepath = os.path.join(cal3d_dirname, material_filename)
