@@ -41,6 +41,8 @@ class Material:
     
 		self.name = name
 		self.index = index
+		# jgb 2012-11-15 Add flag in_use to track which materials are actually used in meshes
+		self.in_use = False
 		self.xml_version = xml_version
 
 
