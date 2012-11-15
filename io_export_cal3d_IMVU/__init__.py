@@ -267,7 +267,6 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 									cal3d_skeleton, cal3d_materials, cal3d_used_materials,
 									base_rotation, base_translation, base_scale, 
 									Cal3d_xml_version, self.use_groups, False, armature_obj)
-							##print("used material index: "+str(cal3d_used_material_index))
 							if mesh_result:
 								cal3d_meshes.append(mesh_result)
 				else:
