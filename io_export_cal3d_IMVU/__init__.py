@@ -321,18 +321,19 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		if self.export_xrf:
 			i = 0
 			for cal3d_material in cal3d_materials:
-				if self.material_binary_bool == 'binary':
-					material_filename = self.material_prefix + cal3d_material.name + ".crf"
-					material_filepath = os.path.join(cal3d_dirname, material_filename)
-					cal3d_material_file = open(material_filepath, "wb")
-					cal3d_material.to_cal3d_binary(cal3d_material_file)
-				else:
-					material_filename = self.material_prefix + cal3d_material.name + ".xrf"
-					material_filepath = os.path.join(cal3d_dirname, material_filename)
-					cal3d_material_file = open(material_filepath, "wt")
-					cal3d_material_file.write(cal3d_material.to_cal3d_xml())
-				cal3d_material_file.close()
-				print("Wrote material '%s' with index %s" % (material_filename, i))
+				if cal3d_material.in_use == True:
+					if self.material_binary_bool == 'binary':
+						material_filename = self.material_prefix + cal3d_material.name + ".crf"
+						material_filepath = os.path.join(cal3d_dirname, material_filename)
+						cal3d_material_file = open(material_filepath, "wb")
+						cal3d_material.to_cal3d_binary(cal3d_material_file)
+					else:
+						material_filename = self.material_prefix + cal3d_material.name + ".xrf"
+						material_filepath = os.path.join(cal3d_dirname, material_filename)
+						cal3d_material_file = open(material_filepath, "wt")
+						cal3d_material_file.write(cal3d_material.to_cal3d_xml())
+					cal3d_material_file.close()
+					print("Wrote material '%s' with index %s" % (material_filename, i))
 				i += 1
 
 		if self.export_xmf:
