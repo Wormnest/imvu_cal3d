@@ -195,6 +195,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 					# jgb 2012-11-05 Add mesh_material id relative to mesh to SubMesh
 					cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
 						cal3d_material_index, bm)
+					# jgb Set this material as being in use:
+					cal3d_material.in_use = True
 					cal3d_mesh.submeshes.append(cal3d_submesh)
 			bm += 1
 	else:
