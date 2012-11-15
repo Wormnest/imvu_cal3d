@@ -36,11 +36,18 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
 		material_index = len(cal3d_materials)
 		material_name = material.name
 		maps_filenames = []
+		tsi = 0
 		for texture_slot in material.texture_slots:
 			if texture_slot:
 				if texture_slot.texture:
 					if texture_slot.texture.type == "IMAGE":
-						imagename = bpy.path.basename(texture_slot.texture.image.filepath)
+						# Test if image is valid (can be None!)
+						if texture_slot.texture.image:
+							imagename = bpy.path.basename(texture_slot.texture.image.filepath)
+						else:
+							print("WARNING: no image data available in texture slot {0} for material {1}".format(tsi, material_name))
+							# Give it a dummy name, we don't need it for imvu anyway
+							imagename = "MATERIAL_{0}_TEXTURE_{1:03d}.JPG".format(material_name, tsi)
 						
 						# jgb 2012-11-11 Only copy images if that's what we want
 						if copy_images:
@@ -63,6 +70,7 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
 									print("Error copying texture " + str(e))
 						maps_filenames.append(imagepath_prefix + imagename)
 						#maps_filenames.append(texture_slot.texture.image.filepath[2:]) #remove the double slash
+			tsi += 1
 		if len(maps_filenames) > 0:
 			cal3d_material = Material(material_name, material_index, xml_version)
 			cal3d_material.maps_filenames = maps_filenames
