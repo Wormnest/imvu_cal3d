@@ -43,6 +43,8 @@ class Material:
 		self.index = index
 		# jgb 2012-11-15 Add flag in_use to track which materials are actually used in meshes
 		self.in_use = False
+		# used_index = Index into used materials (default -1 for not in use)
+		self.used_index = -1
 		self.xml_version = xml_version
 
 
