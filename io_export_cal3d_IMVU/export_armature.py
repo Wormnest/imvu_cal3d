@@ -29,7 +29,7 @@ from . import armature_classes
 from .armature_classes import *
 
 
-def treat_bone(b, scale, parent, skeleton):
+def treat_bone(b, scale, parent, skeleton, lights):
 	# skip bones that start with _
 	# also skips children of that bone so be careful
 	if len(b.name) == 0 or  b.name[0] == '_':
@@ -54,12 +54,12 @@ def treat_bone(b, scale, parent, skeleton):
 		#print("parent, matrice :", matrix2)
 		bone_trans = (b.matrix_local.to_translation()-b.parent.matrix_local.to_translation())*(b.parent.matrix_local.to_quaternion()).to_matrix()
 		bone_quat = bone_matrix.to_quaternion()
-		bone = Bone(skeleton, parent, name, bone_trans, bone_quat)
+		bone = Bone(skeleton, parent, name, bone_trans, bone_quat, lights)
 	else:
 		# Here, the translation is simply the head vector
 		bone = Bone(skeleton, parent, name,
 					(b.matrix_local * skeleton.matrix).to_translation(),
-					b.matrix.to_quaternion())
+					b.matrix.to_quaternion(), lights)
 		#Debug :
 		#trans = skeleton.matrix.to_translation()
 		#print("root bone :", trans)
@@ -67,7 +67,7 @@ def treat_bone(b, scale, parent, skeleton):
 		#print("local, matrice :", matrix2)
 
 	for child in b.children:
-		treat_bone(child, scale, bone, skeleton)
+		treat_bone(child, scale, bone, skeleton, lights)
 	
 
 
@@ -76,7 +76,8 @@ def create_cal3d_skeleton(arm_obj, arm_data,
 						  base_translation,
 						  base_scale,
 						  xml_version,
-						  write_ambient_color):
+						  write_ambient_color,
+						  lights):
 
 	#not used
 	base_matrix = Matrix.Scale(base_scale, 4)          * \
@@ -97,7 +98,7 @@ def create_cal3d_skeleton(arm_obj, arm_data,
 
 	for bone in arm_data.bones.values():
 		if not bone.parent and bone.name[0] != "_":
-			treat_bone(bone, scalematrix, None, skeleton)
+			treat_bone(bone, scalematrix, None, skeleton, lights)
 
 	return skeleton
 

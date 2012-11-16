@@ -70,7 +70,7 @@ class Skeleton:
 			bn.to_cal3d_binary(file)
 
 class Bone:
-	def __init__(self, skeleton, parent, name, loc, rot):
+	def __init__(self, skeleton, parent, name, loc, rot, lights):
 		'''
 		loc is the translation from the parent coordinate frame to the tail of the bone
 		rot is the rotation from the parent coordinate frame to the tail of the bone
@@ -83,6 +83,27 @@ class Bone:
 		self.name = name
 		self.children = []
 		self.xml_version = skeleton.xml_version
+		
+		# jgb Add light support
+		self.is_light = False
+		self.light_type = 0
+		#self.light_color = [0.9, 0.7, 0.7]	# testing value!
+		
+		# See if we can determine if Bone is meant to be a light (name should start with either omni or spot)
+		testname = self.name.lower()	# lowercase
+		if str(testname).startswith("omni"):
+			self.is_light = True
+			self.light_type = 1
+			print("omni light found")
+		elif str(testname).startswith("spot"):
+			self.is_light = True
+			self.light_type = 3
+			print("spot light found")
+		if self.is_light:
+			self.light_color = self.get_light_color(name, lights)
+			print (str(self.light_color))
+		else:
+			self.light_color = [0.0, 0.0, 0.0]
 
 		self.child_loc = loc.copy()
 
@@ -113,9 +134,30 @@ class Bone:
 		skeleton.next_bone_id += 1
 		skeleton.bones.append(self)
 
- 
+	# Get the light color for the current light.
+	# If a light with name "name" exists then take the color from that, else set default color
+	def get_light_color(self, name, lights):
+		if lights:
+			light = lights[name]
+			if light:
+				return light.color
+
+		# Set default color if no light with same name as light bone present
+		print ("WARNING: no light called "+name+" found, setting default light color")
+		return [0.5, 0.5, 0.5]
+
+
 	def to_cal3d_xml(self):
-		s = "  <BONE ID=\"{0}\" NAME=\"{1}\" NUMCHILDS=\"{2}\">\n".format(self.index,
+		if self.is_light == True:
+			s = "  <BONE ID=\"{0}\" NAME=\"{1}\" NUMCHILDS=\"{2}\"".format(self.index,
+		                                                                  self.name, 
+		                                                                  len(self.children))
+			s += " LIGHTTYPE=\"{0}\" LIGHTCOLOR=\"{1:0.6f} {2:0.6f} {3:0.6f}\">\n".format(self.light_type,
+				self.light_color[0],
+				self.light_color[1],
+				self.light_color[2])
+		else:
+			s = "  <BONE ID=\"{0}\" NAME=\"{1}\" NUMCHILDS=\"{2}\">\n".format(self.index,
 		                                                                  self.name, 
 		                                                                  len(self.children))
 
