@@ -19,11 +19,11 @@ bugs, inconsistensies etc so that I can hopefully fix it.
 
 In addition to what older exporters for blender 2.49 could do, this
 version also supports:
-+ Vertex colors.
-+ Setting the room SCENEAMBIENTCOLOR when you check the exporter option.
+* Vertex colors.
+* Setting the room SCENEAMBIENTCOLOR when you check the exporter option.
   The color is taken from Blender's world ambient color which is gamma 
   corrected and may look different than the color in IMVU.
-+ Setting LIGHTTYPE and LIGHTCOLOR for lights. Define your light bones
+* Setting LIGHTTYPE and LIGHTCOLOR for lights. Define your light bones
   as usual. Depending on the name starting with omni or spot it assigns
   type 1 or 3 to it. To set a custom light color add a light (lamp) to
   your scene with the scene name as your light bone.
@@ -51,10 +51,12 @@ http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Add-Ons
 
 2. Export
 ---------
-To export select your bones and mesh, then go to menu File, Export, IMVU Cal3d export.
-Note that currently it is required to have material(s) assigned to the mesh
-for the export to work.
-You can choose which files you want to export. IMVU only needs XMF, XSF and XAF files.
+To export select your bones and mesh, then go to menu File, Export, 
+IMVU Cal3d export.
+Note that currently it is required to have material(s) assigned to 
+the mesh for the export to work.
+You can choose which files you want to export. IMVU only needs
+XMF, XSF and XAF files.
 The default settings should generally be fine for IMVU.
 Choose a location where the files should be saved and press the button
 called Export Cal3d for IMVU.
