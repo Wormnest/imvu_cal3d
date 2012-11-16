@@ -147,7 +147,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	if cal3d_skeleton:
 		print("mesh: " + mesh_obj.name)
 	else:
-		print("WARNING: mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
+		print("ERROR: mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
 		# No use going on if we can't assing influences
 		return None
 
@@ -202,7 +202,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 					cal3d_mesh.submeshes.append(cal3d_submesh)
 			bm += 1
 	else:
-		print("WARNING: this mesh has no materials!")
+		print("ERROR: this mesh has no materials!")
 		# Currently we can't continue without error unless there are materials
 		return None
 
@@ -216,7 +216,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	
 	# Test for presence of any uv textures
 	if not mesh_data.tessface_uv_textures:
-		print("WARNING: There are no uv textures assigned!")
+		print("ERROR: There are no uv textures assigned!")
 		return None
 	
 	mind = -1
@@ -238,7 +238,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if debug_export > 0:
 					print("submesh material: " + str(cal3d_submesh.mesh_material_id))
 			else:
-				print("WARNING! submesh with correct material id not found!")
+				print("ERROR: submesh with correct material id not found!")
 				return None
 
 		for vertex_index in face.vertices:

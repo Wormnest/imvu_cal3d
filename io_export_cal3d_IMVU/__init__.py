@@ -300,7 +300,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 						if cal3d_animation:
 							cal3d_animations.append(cal3d_animation)
 				else:
-					print("WARNING: can't export animations: no skeleton selected!")
+					print("ERROR: can't export animations: no skeleton selected!")
 							
 			except RuntimeError as e:
 				print("###### ERROR DURING ACTION EXPORT ######")
@@ -326,7 +326,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				cal3d_skeleton_file.close()
 				print("Wrote skeleton '%s'" % (skeleton_filename))
 			else:
-				print("WARNING: No skeleton selected!")
+				print("ERROR: No skeleton selected!")
 
 		if self.export_xrf:
 			i = 0
@@ -362,7 +362,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					cal3d_mesh_file.close()
 					print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
 			else:
-				print("WARNING: No mesh selected or error exporting mesh!")
+				print("ERROR: No mesh selected or error exporting mesh!")
 			
 		if self.export_xaf:
 			for cal3d_animation in cal3d_animations:
