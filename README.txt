@@ -1,4 +1,4 @@
-Cal3d blender exporter for IMVU version 1.1
+Cal3d blender exporter for IMVU version 1.2
 ===========================================
 
 This python script is intended for Blender version 2.63 or higher.
