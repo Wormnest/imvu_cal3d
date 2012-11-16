@@ -1,6 +1,16 @@
 Cal3d blender exporter for IMVU version 1.2
 ===========================================
 
+Contents
+--------
+0. Introduction
+1. Install
+2. Export
+3. Credits
+
+
+0. Introduction
+---------------
 This python script is intended for Blender version 2.63 or higher.
 It's purpose is to export blender objects to Cal3d, and specifically
 targeted at IMVU compatibility.
@@ -8,7 +18,17 @@ This version has not been extensively tested yet. Please report all
 bugs, inconsistensies etc so that I can hopefully fix it.
 
 In addition to what older exporters for blender 2.49 could do, this
-version also supports vertex colors.
+version also supports:
++ Vertex colors.
++ Setting the room SCENEAMBIENTCOLOR when you check the exporter option.
+  The color is taken from Blender's world ambient color which is gamma 
+  corrected and may look different than the color in IMVU.
++ Setting LIGHTTYPE and LIGHTCOLOR for lights. Define your light bones
+  as usual. Depending on the name starting with omni or spot it assigns
+  type 1 or 3 to it. To set a custom light color add a light (lamp) to
+  your scene with the scene name as your light bone.
+  e.g. if you have a light bone Omni01 then add a light with name Omni01
+  and then set that lights color as you wish.
 
 The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
@@ -39,7 +59,8 @@ The default settings should generally be fine for IMVU.
 Choose a location where the files should be saved and press the button
 called Export Cal3d for IMVU.
 If anything went wrong look in the system console window. To see the system
-console go to menu Window, Toggle system console.
+console go to Blender's main menu: Window, Toggle system console. A separate
+Blender window should open which will show information about what happened.
 
 
 3. Credits
