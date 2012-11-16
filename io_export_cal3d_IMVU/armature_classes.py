@@ -94,11 +94,11 @@ class Bone:
 		if str(testname).startswith("omni"):
 			self.is_light = True
 			self.light_type = 1
-			print("omni light found")
+			print("omni light found: " + self.name)
 		elif str(testname).startswith("spot"):
 			self.is_light = True
 			self.light_type = 3
-			print("spot light found")
+			print("spot light found: " + self.name)
 		if self.is_light:
 			self.light_color = self.get_light_color(name, lights)
 			print (str(self.light_color))
@@ -138,8 +138,11 @@ class Bone:
 	# If a light with name "name" exists then take the color from that, else set default color
 	def get_light_color(self, name, lights):
 		if lights:
-			light = lights[name]
-			if light:
+			#light = lights[name]
+			light_index = lights.find(name)
+			if light_index > -1:
+			#if light:
+				light = lights[light_index]
 				return light.color
 
 		# Set default color if no light with same name as light bone present
