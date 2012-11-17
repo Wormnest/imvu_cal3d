@@ -312,6 +312,53 @@ class Face:
 		ar.tofile(file)
 
 
+class BlendVertex:
+	# jgb 2012-11-07 Add vertex color to mesh
+	def __init__(self, morph, index, loc, normal):
+		self.morph = morph
+		self.index = index
+		self.exportindex = len(morph.blend_vertices)
+		self.loc = loc.copy()
+		self.normal = normal.copy()
+		self.maps = []
+
+
+	def to_cal3d_xml(self):
+		s = "    <BLENDVERTEX ID=\"{0}\">\n".format(self.exportindex)
+		s += "      <POSITION>{0:0.6f} {1:0.6f} {2:0.6f}</POSITION>\n".format(self.loc[0],
+		                                             self.loc[1], 
+		                                             self.loc[2])
+
+		s += "      <NORMAL>{0:0.6f} {1:0.6f} {2:0.6f}</NORMAL>\n".format(self.normal[0],
+		                                               self.normal[1],
+		                                               self.normal[2])
+
+		s += "".join(map(Map.to_cal3d_xml, self.maps))	# = TEXCOORD
+		s += "    </BLENDVERTEX>\n"
+			
+		return s
+
+
+class Morph:
+	def __init__(self, name, morph_id, xml_version):
+		self.name = name
+		self.xml_version = xml_version
+		self.blend_vertices = []
+		self.morph_id = morph_id
+		# TODO: find out if morph_id index is 0 base local to submesh or if it is a global id number for all morphs in this mesh
+		# probably local as otherwise the morph name will be used to identify it
+
+	def to_cal3d_xml(self):
+		#  Morph has 2  xml formats: 1 without blendvertex data ends with />, the other 2 has a separate end morph tag
+		s = "<MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(len(self.name), len(self.blend_vertices), self.morph_id)
+		if len(self.blend_vertices) > 0:
+			s += ">\n"
+			s += "".join(map(BlendVertex.to_cal3d_xml, self.blend_vertices))
+			s += "</MORPH>\n"
+		else:
+			s += " />\n"
+		return s
+
 
 class SubMesh:
 	# jgb 2012-11-05 add mesh_material_id
@@ -327,6 +374,8 @@ class SubMesh:
 		self.faces = []
 		self.nb_lodsteps = 0
 		self.springs = []
+		#jgb  morphs present in this submesh
+		self.morphs = []
 
 
 	def to_cal3d_xml(self):
@@ -343,12 +392,13 @@ class SubMesh:
 				faces_num += 1
 
 		s = "  <SUBMESH NUMVERTICES=\"{0}\" NUMFACES=\"{1}\" MATERIAL=\"{2}\" ".format(len(self.vertices),
-		                                                                               faces_num,
-		                                                                               self.material_id)
+		                                                                        faces_num,
+		                                                                        self.material_id)
 
-		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMTEXCOORDS=\"{2}\">\n".format(self.nb_lodsteps,
-		                                                                             len(self.springs),
-		                                                                             texcoords_num)
+		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMTEXCOORDS=\"{2}\" NUMMORPHS=\"{3}\">\n".format(self.nb_lodsteps,
+			len(self.springs),
+			texcoords_num,
+			len(self.morphs))
 
 		s += "".join(map(Vertex.to_cal3d_xml, self.vertices))
 		if self.springs and len(self.springs) > 0:
@@ -388,7 +438,6 @@ class SubMesh:
 		
 		for fc in self.faces:
 			fc.to_cal3d_binary(file)
-
 
 
 class Mesh:
