@@ -403,8 +403,9 @@ class SubMesh:
 		s += "".join(map(Vertex.to_cal3d_xml, self.vertices))
 		if self.springs and len(self.springs) > 0:
 			s += "".join(map(Spring.to_cal3d_xml, self.springs))
+		if self.morphs and len(self.morphs) > 0:
+			s += "".join(map(Morph.to_cal3d_xml, self.morphs))
 		s += "".join(map(Face.to_cal3d_xml, self.faces))
-		s += "".join(map(Morph.to_cal3d_xml, self.morphs))
 		s += "  </SUBMESH>\n"
 		return s
 
