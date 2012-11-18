@@ -341,6 +341,21 @@ def create_cal3d_mesh(scene, mesh_obj,
 				coord *= base_scale
 				coord.rotate(total_rotation)
 
+				# If we have shape keys (morph targets) then also compute their vertex info
+				if do_shape_keys:
+					for kb in mesh_data.shape_keys.key_blocks[1:]:
+						blend_vertex = kb.data[vertex_index].co
+						sk_normal = blend_vertex.normal.copy()
+						sk_normal *= base_scale
+						sk_normal.rotate(total_rotation)
+						sk_normal.normalize()
+						sk_coord = blend_vertex.co.copy
+						sk_coord = sk_coord + total_translation
+						sk_coord *= base_scale
+						sk_coord.rotate(total_rotation)
+						# Add Blend Vertex
+						#cal3d_blend_vertex = BlendVertex( todo )
+
 				if duplicate:
 					#print("duplicate vertex: "+str(coord))
 					cal3d_vertex = Vertex(cal3d_submesh, duplicate_index,
