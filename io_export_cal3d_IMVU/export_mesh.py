@@ -218,8 +218,24 @@ def create_cal3d_mesh(scene, mesh_obj,
 	if not mesh_data.tessface_uv_textures:
 		print("ERROR: There are no uv textures assigned!")
 		return None
-	
-	mind = -1
+
+	# Test existence of shape keys for morphing
+	# Need more than 1 shape_key because first is the Basis which is the same as our mesh
+	if mesh_data.shape_keys and len(mesh_data.shape_keys.key_blocks) > 1:
+		print("Shape key(s) found in mesh")
+		do_shape_keys = True
+		# Requires same number of vertices in mesh and in each of the shape keys
+		vert_count = len(mesh_data.vertices)
+		for kb in mesh_data.shape_keys.key_blocks[1:]:
+			if len(kb.data) != vert_count:
+				do_shape_keys = False
+				print("WARNING: shape key "+kb.name+" has a different vertex count as the base mesh."+
+					" Morph targets will be ignored and not exported!")
+				break
+	else
+		do_shape_keys = False
+
+		mind = -1
 	for face in mesh_data.tessfaces:
 		cal3d_vertex1 = None
 		cal3d_vertex2 = None
@@ -309,6 +325,9 @@ def create_cal3d_mesh(scene, mesh_obj,
 				# jgb cal3d v 919 always requires the color tag to be written even if we don't use vertex colors thus set default colors
 				vertex_color = (1.0, 1.0, 1.0)
 
+			if debug_export > 0:
+				print("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
+
 			if not cal3d_vertex:
 				vertex = mesh_data.vertices[vertex_index]
 
@@ -331,8 +350,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				else:
 					cal3d_vertex = Vertex(cal3d_submesh, vertex_index,
 					                      coord, normal, vertex_color)
-				print("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
-										  
+
 				cal3d_vertex.influences = get_vertex_influences(vertex,
 						                                        mesh_obj,
 				                                                cal3d_skeleton,
