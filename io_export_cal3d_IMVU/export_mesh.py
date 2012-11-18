@@ -331,7 +331,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				else:
 					cal3d_vertex = Vertex(cal3d_submesh, vertex_index,
 					                      coord, normal, vertex_color)
-
+				print("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
 										  
 				cal3d_vertex.influences = get_vertex_influences(vertex,
 						                                        mesh_obj,
