@@ -355,7 +355,7 @@ class Morph:
 				self.name.endswith(".Averaged") or self.name.endswith(".Clamped")):
 			print("WARNING: morph name doesn't end in one of the IMVU specified suffixes!")
 		#  Morph has 2  xml formats: 1 without blendvertex data ends with />, the other 2 has a separate end morph tag
-		s = "<MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(len(self.name), len(self.blend_vertices), self.morph_id)
+		s = "<MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(self.name, len(self.blend_vertices), self.morph_id)
 		if len(self.blend_vertices) > 0:
 			s += ">\n"
 			s += "".join(map(BlendVertex.to_cal3d_xml, self.blend_vertices))
