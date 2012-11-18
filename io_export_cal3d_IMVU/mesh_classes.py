@@ -404,6 +404,7 @@ class SubMesh:
 		if self.springs and len(self.springs) > 0:
 			s += "".join(map(Spring.to_cal3d_xml, self.springs))
 		s += "".join(map(Face.to_cal3d_xml, self.faces))
+		s += "".join(map(Morph.to_cal3d_xml, self.morphs))
 		s += "  </SUBMESH>\n"
 		return s
 
