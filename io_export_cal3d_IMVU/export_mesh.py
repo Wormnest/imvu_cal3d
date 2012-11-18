@@ -232,7 +232,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 				print("WARNING: shape key "+kb.name+" has a different vertex count as the base mesh."+
 					" Morph targets will be ignored and not exported!")
 				break
-	else
+	else:
 		do_shape_keys = False
 
 		mind = -1
