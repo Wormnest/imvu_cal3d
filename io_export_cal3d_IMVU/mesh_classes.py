@@ -352,7 +352,7 @@ class Morph:
 		# IMVU requires morph names (not counting Head morphs which are TODO here) to end in 1 of 4 names:
 		# .Clamped, . Averaged, .Exclusive, or .Additive (see IMVU documentation on what they do)
 		# We will give a warning here if the morph name doesn't conform to that
-		if ! (self.name.endswith(".Exclusive") or self.name.endswith(".Additive") or
+		if not (self.name.endswith(".Exclusive") or self.name.endswith(".Additive") or
 				self.name.endswith(".Averaged") or self.name.endswith(".Clamped")):
 			print("WARNING: morph name doesn't end in one of the IMVU specified suffixes!")
 		#  Morph has 2  xml formats: 1 without blendvertex data ends with />, the other 2 has a separate end morph tag
