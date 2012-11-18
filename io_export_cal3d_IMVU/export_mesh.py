@@ -235,7 +235,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 	else:
 		do_shape_keys = False
 
-		mind = -1
+	mind = -1
 	for face in mesh_data.tessfaces:
 		cal3d_vertex1 = None
 		cal3d_vertex2 = None
