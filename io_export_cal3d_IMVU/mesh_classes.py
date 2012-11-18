@@ -324,17 +324,17 @@ class BlendVertex:
 
 
 	def to_cal3d_xml(self):
-		s = "    <BLENDVERTEX ID=\"{0}\">\n".format(self.exportindex)
-		s += "      <POSITION>{0:0.6f} {1:0.6f} {2:0.6f}</POSITION>\n".format(self.loc[0],
+		s = "      <BLENDVERTEX ID=\"{0}\">\n".format(self.exportindex)
+		s += "        <POSITION>{0:0.6f} {1:0.6f} {2:0.6f}</POSITION>\n".format(self.loc[0],
 		                                             self.loc[1], 
 		                                             self.loc[2])
 
-		s += "      <NORMAL>{0:0.6f} {1:0.6f} {2:0.6f}</NORMAL>\n".format(self.normal[0],
+		s += "        <NORMAL>{0:0.6f} {1:0.6f} {2:0.6f}</NORMAL>\n".format(self.normal[0],
 		                                               self.normal[1],
 		                                               self.normal[2])
 
 		s += "".join(map(Map.to_cal3d_xml, self.maps))	# = TEXCOORD
-		s += "    </BLENDVERTEX>\n"
+		s += "      </BLENDVERTEX>\n"
 			
 		return s
 
@@ -355,11 +355,11 @@ class Morph:
 				self.name.endswith(".Averaged") or self.name.endswith(".Clamped")):
 			print("WARNING: morph name doesn't end in one of the IMVU specified suffixes!")
 		#  Morph has 2  xml formats: 1 without blendvertex data ends with />, the other 2 has a separate end morph tag
-		s = "<MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(self.name, len(self.blend_vertices), self.morph_id)
+		s = "    <MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(self.name, len(self.blend_vertices), self.morph_id)
 		if len(self.blend_vertices) > 0:
 			s += ">\n"
 			s += "".join(map(BlendVertex.to_cal3d_xml, self.blend_vertices))
-			s += "</MORPH>\n"
+			s += "    </MORPH>\n"
 		else:
 			s += " />\n"
 		return s
