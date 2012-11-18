@@ -232,6 +232,13 @@ def create_cal3d_mesh(scene, mesh_obj,
 				print("WARNING: shape key "+kb.name+" has a different vertex count as the base mesh."+
 					" Morph targets will be ignored and not exported!")
 				break
+			# Add a morph with this name to all submeshes
+			sk_id = 0
+			for sm in cal3d_mesh.submeshes:
+				cal3d_morph = Morph(kb.name,sk_id)
+				if cal3d_morph:
+					sm.morphs.append(cal3d_morph)
+				sk_id += 1
 	else:
 		do_shape_keys = False
 

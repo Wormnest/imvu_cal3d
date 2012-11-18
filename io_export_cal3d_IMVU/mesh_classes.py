@@ -340,9 +340,8 @@ class BlendVertex:
 
 
 class Morph:
-	def __init__(self, name, morph_id, xml_version):
+	def __init__(self, name, morph_id):
 		self.name = name
-		self.xml_version = xml_version
 		self.blend_vertices = []
 		self.morph_id = morph_id
 		# TODO: find out if morph_id index is 0 base local to submesh or if it is a global id number for all morphs in this mesh
