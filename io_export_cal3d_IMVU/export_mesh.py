@@ -119,16 +119,6 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 
 	return influences
 
-# Copied some vector math functions from the old exporter.
-# We need our own vector math because Blender 2.64 at the moment does not give access to
-# the normals for a ShapeKey's vector
-def vector_length(v):
-  return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
-
-def vector_normalize(v):
-  l = math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
-  return v[0] / l, v[1] / l, v[2] / l
-
 
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
