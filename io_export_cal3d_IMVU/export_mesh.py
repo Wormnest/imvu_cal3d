@@ -438,31 +438,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 		                  cal3d_vertex4)
 		cal3d_submesh.faces.append(cal3d_face)
 
-	# TESTING: try to get shape key data  #
-	# For now try putting all morph blendvertexes in the last submesh
-	if mesh_data.shape_keys:
-		for kb in mesh_data.shape_keys.key_blocks[1:]:
-			basis_verts = mesh_data.shape_keys.key_blocks[0].data	# Data from Basis shapekey
-			range_verts = []
-			delta_verts = []
-			print("shape key name: " + kb.name + ", vertex count: "+str(len(kb.data)))
-
-			i = -1
-			for j, kv in enumerate(kb.data):
-				delta = kv.co - basis_verts[j].co
-				if delta.length > 0.000001:
-					if i == -1:
-						print('%d' % j)
-					else:
-						if i == 7:
-							#print('\n\t\t\t')
-							i = 0
-						print(',%d' % j)
-					delta_verts.append(delta[:])
-					print("delta vertex: "+str(delta[:]))
-					i += 1
-
-	# END TESTING SHAPE KEYS #
 
 	bpy.data.meshes.remove(mesh_data)
 
