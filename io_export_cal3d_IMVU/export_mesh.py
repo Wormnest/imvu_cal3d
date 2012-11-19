@@ -383,12 +383,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 							# Add Blend Vertex
 							cal3d_blend_vertex = BlendVertex( bv_index,
 								sk_coord, sk_normal, posdiff)
-							# if duplicate:
-								# cal3d_blend_vertex = BlendVertex( duplicate_index,
-									# sk_coord, sk_normal, posdiff)
-							# else:
-								# cal3d_blend_vertex = BlendVertex( vertex_index,
-									# sk_coord, sk_normal, posdiff)
 							# For now we always use the same texture coordinates for vertex and blend vertex
 							# According to Boris the engineer using different values may not work anyway
 							for uv in uvs:
