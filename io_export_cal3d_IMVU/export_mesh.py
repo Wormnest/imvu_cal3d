@@ -119,6 +119,16 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 
 	return influences
 
+# Copied some vector math functions from the old exporter.
+# We need our own vector math because Blender 2.64 at the moment does not give access to
+# the normals for a ShapeKey's vector
+def vector_length(v):
+  return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+
+def vector_normalize(v):
+  l = math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+  return v[0] / l, v[1] / l, v[2] / l
+
 
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
@@ -367,7 +377,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 						sk_coord *= base_scale
 						sk_coord.rotate(total_rotation)
 						# Calculate posdiff between vertex and blend vertex
-						posiff = 0.0	# TODO!
+						posdiff = 0.0	# TODO!
 						# Get corresponding morph in submesh
 						sk_morph = cal3d_submesh.morphs[sk_id]
 						# Add Blend Vertex
@@ -378,6 +388,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 							cal3d_blend_vertex = BlendVertex( sk_morph, vertex_index,
 								sk_coord, sk_normal, posdiff)
 						sk_id += 1
+						# For now we always use the same texture coordinates for vertex and blend vertex
+						# According to Boris the engineer using different values may not work anyway
 						for uv in uvs:
 							cal3d_blend_vertex.maps.append(Map(uv[0], uv[1]))
 						sk_morph.blend_vertices.append(cal3d_blend_vertex)
