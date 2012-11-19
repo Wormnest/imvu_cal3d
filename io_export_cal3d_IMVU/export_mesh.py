@@ -366,15 +366,17 @@ def create_cal3d_mesh(scene, mesh_obj,
 						sk_coord = sk_coord + total_translation
 						sk_coord *= base_scale
 						sk_coord.rotate(total_rotation)
+						# Calculate posdiff between vertex and blend vertex
+						posiff = 0.0	# TODO!
 						# Get corresponding morph in submesh
 						sk_morph = cal3d_submesh.morphs[sk_id]
 						# Add Blend Vertex
 						if duplicate:
 							cal3d_blend_vertex = BlendVertex( sk_morph, duplicate_index,
-								sk_coord, sk_normal)
+								sk_coord, sk_normal, posdiff)
 						else:
 							cal3d_blend_vertex = BlendVertex( sk_morph, vertex_index,
-								sk_coord, sk_normal)
+								sk_coord, sk_normal, posdiff)
 						sk_id += 1
 						for uv in uvs:
 							cal3d_blend_vertex.maps.append(Map(uv[0], uv[1]))

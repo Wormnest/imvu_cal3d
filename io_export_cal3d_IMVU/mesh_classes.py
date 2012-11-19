@@ -314,15 +314,15 @@ class Face:
 
 class BlendVertex:
 	# jgb 2012-11-07 Add vertex color to mesh
-	def __init__(self, morph, index, loc, normal):
+	def __init__(self, morph, index, loc, normal, posdiff):
 		self.morph = morph
 		self.index = index
 		self.exportindex = len(morph.blend_vertices)
 		self.loc = loc.copy()
 		self.normal = normal.copy()
 		self.maps = []
-		# posdiff: some position difference value, need to find out how to compute it.
-		self.posdiff = 0.0
+		# posdiff:  position difference value, see Cal3d sourcecode saver.cpp
+		self.posdiff = posdiff
 
 
 	def to_cal3d_xml(self):
