@@ -362,15 +362,16 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if do_shape_keys:
 					sk_id = 0
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
-						blend_vertex = kb.data[vertex_index].co.copy()
-						#test_normal = kb.data[vertex_index].normal.copy()
-						#sk_normal = blend_vertex.normal.copy()
-						#sk_normal *= base_scale
-						#sk_normal.rotate(total_rotation)
-						#sk_normal.normalize()
+						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
+						#print("blend vertex: "+str(blend_vertex))
+						sk_normal = blend_vertex.copy().normalized()
+						#print("sk_normal "+str(sk_normal))
+						sk_normal *= base_scale
+						sk_normal.rotate(total_rotation)
+						sk_normal.normalize()
 						# shape key doesn't have normals have to figure it out later 
 						# saw a suggestion of doing it using a .to_mesh() call and then reading normals?
-						sk_normal = normal.copy()	# TEMPORARY!
+						#sk_normal = normal.copy()	# TEMPORARY!
 						
 						sk_coord = blend_vertex.copy()
 						sk_coord = sk_coord + total_translation
