@@ -337,11 +337,16 @@ def create_cal3d_mesh(scene, mesh_obj,
 
 			if not cal3d_vertex:
 				vertex = mesh_data.vertices[vertex_index]
+				print("vertex "+str(vertex.co))
 
 				normal = vertex.normal.copy()
+				print("normal "+str(normal))
 				normal *= base_scale
+				print("normal * base "+str(normal))
 				normal.rotate(total_rotation)
+				print("normal rotate "+str(normal))
 				normal.normalize()
+				print("normal normalize"+str(normal))
 
 				coord = vertex.co.copy()
 				coord = coord + total_translation
@@ -355,10 +360,19 @@ def create_cal3d_mesh(scene, mesh_obj,
 						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
 						#print("blend vertex: "+str(blend_vertex))
 						sk_normal = blend_vertex.copy().normalized()
-						#print("sk_normal "+str(sk_normal))
+						print("sk_normal "+str(sk_normal))
 						sk_normal *= base_scale
+						print("sk_normal * base_scale "+str(sk_normal))
 						sk_normal.rotate(total_rotation)
+						print("sk_normal rotated "+str(sk_normal))
+						#sk_normal.rotate(mesh_rotation)
+						#print("sk_normal meshrotated "+str(sk_normal))
 						sk_normal.normalize()
+						# I have no idea why but apparently we need to negate the normal to get the same values
+						# as when we do the normals of the normal vertices
+						# TODO: needs testing to see if this is always the case!
+						sk_normal.negate()
+						print("sk_normal normalize+negate"+str(sk_normal))
 						
 						sk_coord = blend_vertex.copy()
 						sk_coord = sk_coord + total_translation
@@ -373,7 +387,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# Note that the Cal3d saver uses different values for the binary saver and the xml saver
 						# binary uses 0.01 and xml uses 1.0, We go in the middle with 0.1
 						differenceTolerance = 0.1;
-						posdiff = vec_posdiff.length
+						posdiff = abs(vec_posdiff.length)
 						print("posdiff: "+str(posdiff)+" vec_posdiff: "+str(vec_posdiff))
 						
 						# Only add this Blend Vertex if there is enough difference with the original Vertex
