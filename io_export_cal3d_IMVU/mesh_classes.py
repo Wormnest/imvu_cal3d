@@ -321,10 +321,13 @@ class BlendVertex:
 		self.loc = loc.copy()
 		self.normal = normal.copy()
 		self.maps = []
+		# posdiff: some position difference value, need to find out how to compute it.
+		self.posdiff = 0.0
 
 
 	def to_cal3d_xml(self):
-		s = "      <BLENDVERTEX ID=\"{0}\">\n".format(self.exportindex)
+		s = "      <BLENDVERTEX ID=\"{0}\"  POSDIFF=\"{1}\">\n".format(self.exportindex,
+			self.posdiff)
 		s += "        <POSITION>{0:0.6f} {1:0.6f} {2:0.6f}</POSITION>\n".format(self.loc[0],
 		                                             self.loc[1], 
 		                                             self.loc[2])
@@ -333,7 +336,7 @@ class BlendVertex:
 		                                               self.normal[1],
 		                                               self.normal[2])
 
-		s += "".join(map(Map.to_cal3d_xml, self.maps))	# = TEXCOORD
+		s += "  ".join(map(Map.to_cal3d_xml, self.maps))	# = TEXCOORD
 		s += "      </BLENDVERTEX>\n"
 			
 		return s
@@ -400,10 +403,10 @@ class SubMesh:
 		                                                                        faces_num,
 		                                                                        self.material_id)
 
-		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMTEXCOORDS=\"{2}\" NUMMORPHS=\"{3}\">\n".format(self.nb_lodsteps,
+		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMMORPHS=\"{2}\" NUMTEXCOORDS=\"{2}\">\n".format(self.nb_lodsteps,
 			len(self.springs),
-			texcoords_num,
-			len(self.morphs))
+			len(self.morphs),
+			texcoords_num,)
 
 		s += "".join(map(Vertex.to_cal3d_xml, self.vertices))
 		if self.springs and len(self.springs) > 0:

@@ -376,9 +376,9 @@ def create_cal3d_mesh(scene, mesh_obj,
 							cal3d_blend_vertex = BlendVertex( sk_morph, vertex_index,
 								sk_coord, sk_normal)
 						sk_id += 1
-						sk_morph.blend_vertices.append(cal3d_blend_vertex)
 						for uv in uvs:
 							cal3d_blend_vertex.maps.append(Map(uv[0], uv[1]))
+						sk_morph.blend_vertices.append(cal3d_blend_vertex)
 
 				if duplicate:
 					#print("duplicate vertex: "+str(coord))
