@@ -326,7 +326,7 @@ class BlendVertex:
 
 
 	def to_cal3d_xml(self):
-		s = "      <BLENDVERTEX ID=\"{0}\"  POSDIFF=\"{1}\">\n".format(self.exportindex,
+		s = "      <BLENDVERTEX VERTEXID=\"{0}\"  POSDIFF=\"{1}\">\n".format(self.exportindex,
 			self.posdiff)
 		s += "        <POSITION>{0:0.6f} {1:0.6f} {2:0.6f}</POSITION>\n".format(self.loc[0],
 		                                             self.loc[1], 
