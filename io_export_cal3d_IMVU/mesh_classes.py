@@ -314,10 +314,10 @@ class Face:
 
 class BlendVertex:
 	# jgb 2012-11-07 Add vertex color to mesh
-	def __init__(self, morph, index, loc, normal, posdiff):
+	def __init__(self, index, loc, normal, posdiff):
 		self.morph = morph
+		# Index should be the same as the exported vertex index!
 		self.index = index
-		self.exportindex = len(morph.blend_vertices)
 		self.loc = loc.copy()
 		self.normal = normal.copy()
 		self.maps = []
@@ -326,7 +326,7 @@ class BlendVertex:
 
 
 	def to_cal3d_xml(self):
-		s = "      <BLENDVERTEX VERTEXID=\"{0}\"  POSDIFF=\"{1}\">\n".format(self.exportindex,
+		s = "      <BLENDVERTEX VERTEXID=\"{0}\"  POSDIFF=\"{1}\">\n".format(self.index,
 			self.posdiff)
 		s += "        <POSITION>{0:0.6f} {1:0.6f} {2:0.6f}</POSITION>\n".format(self.loc[0],
 		                                             self.loc[1], 
