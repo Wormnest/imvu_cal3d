@@ -378,19 +378,24 @@ def create_cal3d_mesh(scene, mesh_obj,
 						
 						# Only add this Blend Vertex if there is enough difference with the original Vertex
 						if posdiff >= differenceTolerance:
-							# Get corresponding morph in submesh
-							sk_morph = cal3d_submesh.morphs[sk_id]
+							# BlendVertex index should be same as exportindex for normal Vertex:
+							bv_index = len(cal3d_submesh.vertices)
 							# Add Blend Vertex
-							if duplicate:
-								cal3d_blend_vertex = BlendVertex( sk_morph, duplicate_index,
-									sk_coord, sk_normal, posdiff)
-							else:
-								cal3d_blend_vertex = BlendVertex( sk_morph, vertex_index,
-									sk_coord, sk_normal, posdiff)
+							cal3d_blend_vertex = BlendVertex( bv_index,
+								sk_coord, sk_normal, posdiff)
+							# if duplicate:
+								# cal3d_blend_vertex = BlendVertex( duplicate_index,
+									# sk_coord, sk_normal, posdiff)
+							# else:
+								# cal3d_blend_vertex = BlendVertex( vertex_index,
+									# sk_coord, sk_normal, posdiff)
 							# For now we always use the same texture coordinates for vertex and blend vertex
 							# According to Boris the engineer using different values may not work anyway
 							for uv in uvs:
 								cal3d_blend_vertex.maps.append(Map(uv[0], uv[1]))
+							# Get corresponding morph in submesh
+							sk_morph = cal3d_submesh.morphs[sk_id]
+							# Add the blend vertex to morph
 							sk_morph.blend_vertices.append(cal3d_blend_vertex)
 
 						# Increment the current ShapeKey index
