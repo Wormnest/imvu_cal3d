@@ -359,31 +359,42 @@ def create_cal3d_mesh(scene, mesh_obj,
 						sk_normal *= base_scale
 						sk_normal.rotate(total_rotation)
 						sk_normal.normalize()
-						# shape key doesn't have normals have to figure it out later 
-						# saw a suggestion of doing it using a .to_mesh() call and then reading normals?
-						#sk_normal = normal.copy()	# TEMPORARY!
 						
 						sk_coord = blend_vertex.copy()
 						sk_coord = sk_coord + total_translation
 						sk_coord *= base_scale
 						sk_coord.rotate(total_rotation)
 						# Calculate posdiff between vertex and blend vertex
-						posdiff = 0.0	# TODO!
-						# Get corresponding morph in submesh
-						sk_morph = cal3d_submesh.morphs[sk_id]
-						# Add Blend Vertex
-						if duplicate:
-							cal3d_blend_vertex = BlendVertex( sk_morph, duplicate_index,
-								sk_coord, sk_normal, posdiff)
-						else:
-							cal3d_blend_vertex = BlendVertex( sk_morph, vertex_index,
-								sk_coord, sk_normal, posdiff)
+						# posdiff according to cal3d source in saver.cpp is computed as the absolute length of 
+						# the difference between the vertex and blend vertex
+						vec_posdiff = sk_coord - coord
+
+						# Ignore this Blend Vector when difference is below Tolerance value
+						# Note that the Cal3d saver uses different values for the binary saver and the xml saver
+						# binary uses 0.01 and xml uses 1.0, We go in the middle with 0.1
+						differenceTolerance = 0.1;
+						posdiff = vec_posdiff.length
+						print("posdiff: "+str(posdiff)+" vec_posdiff: "+str(vec_posdiff))
+						
+						# Only add this Blend Vertex if there is enough difference with the original Vertex
+						if posdiff >= differenceTolerance:
+							# Get corresponding morph in submesh
+							sk_morph = cal3d_submesh.morphs[sk_id]
+							# Add Blend Vertex
+							if duplicate:
+								cal3d_blend_vertex = BlendVertex( sk_morph, duplicate_index,
+									sk_coord, sk_normal, posdiff)
+							else:
+								cal3d_blend_vertex = BlendVertex( sk_morph, vertex_index,
+									sk_coord, sk_normal, posdiff)
+							# For now we always use the same texture coordinates for vertex and blend vertex
+							# According to Boris the engineer using different values may not work anyway
+							for uv in uvs:
+								cal3d_blend_vertex.maps.append(Map(uv[0], uv[1]))
+							sk_morph.blend_vertices.append(cal3d_blend_vertex)
+
+						# Increment the current ShapeKey index
 						sk_id += 1
-						# For now we always use the same texture coordinates for vertex and blend vertex
-						# According to Boris the engineer using different values may not work anyway
-						for uv in uvs:
-							cal3d_blend_vertex.maps.append(Map(uv[0], uv[1]))
-						sk_morph.blend_vertices.append(cal3d_blend_vertex)
 
 				if duplicate:
 					#print("duplicate vertex: "+str(coord))
