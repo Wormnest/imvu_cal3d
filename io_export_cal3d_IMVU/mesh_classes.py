@@ -315,7 +315,6 @@ class Face:
 class BlendVertex:
 	# jgb 2012-11-07 Add vertex color to mesh
 	def __init__(self, index, loc, normal, posdiff):
-		self.morph = morph
 		# Index should be the same as the exported vertex index!
 		self.index = index
 		self.loc = loc.copy()
