@@ -204,86 +204,90 @@ def create_cal3d_morph_animation(action, fps, xml_version):
 		#if not cal3d_bone:
 		#	print("WARNING: no bone found corresponding to action group "+action_group.name)
 		#	continue
-
-		cal3d_track = Track(cal3d_bone.index)
-
-		loc_x_fcu = get_action_group_fcurve(action_group, "location", 0)
-		loc_y_fcu = get_action_group_fcurve(action_group, "location", 1)
-		loc_z_fcu = get_action_group_fcurve(action_group, "location", 2)
-
-		# jgb NB: w first instead of last, thus has index 0, not 3!
-		quat_w_fcu = get_action_group_fcurve(action_group,
-				                             "rotation_quaternion", 0)
-		quat_x_fcu = get_action_group_fcurve(action_group, 
-				                             "rotation_quaternion", 1)
-		quat_y_fcu = get_action_group_fcurve(action_group,
-				                             "rotation_quaternion", 2)
-		quat_z_fcu = get_action_group_fcurve(action_group,
-				                             "rotation_quaternion", 3)
-
-		keyframes_list = []
-
-		keyframes_list.extend(get_keyframes_list(loc_x_fcu))
-		keyframes_list.extend(get_keyframes_list(loc_y_fcu))
-		keyframes_list.extend(get_keyframes_list(loc_z_fcu))
-
-		keyframes_list.extend(get_keyframes_list(quat_x_fcu))
-		keyframes_list.extend(get_keyframes_list(quat_y_fcu))
-		keyframes_list.extend(get_keyframes_list(quat_z_fcu))
-		keyframes_list.extend(get_keyframes_list(quat_w_fcu))
-
-		# remove duplicates
-		keyframes_set = set(keyframes_list)
-		keyframes_list = list(keyframes_set)
-		keyframes_list.sort()
 		
-		if len(keyframes_list) == 0:
-			print("WARNING: no keyframes in action group "+action_group.name)
-			continue
+		print("action group: "+action_group.name)
+		cal3d_morph_track = MorphTrack("MORPH.NAME")
 
-		if initialized_borders:
-			first_keyframe = min(keyframes_list[0], first_keyframe)
-			last_keyframe = max(keyframes_list[len(keyframes_list) - 1], 
-			                    last_keyframe)
-		else:
-			first_keyframe = keyframes_list[0]
-			last_keyframe = keyframes_list[len(keyframes_list) - 1]
-			initialized_borders = True
+		weight_fcu = get_action_group_fcurve(action_group, "value", 0)
+		print("weight: "+str(weight_fcu))
 
-		cal3d_track.keyframes = []
+		# loc_x_fcu = get_action_group_fcurve(action_group, "location", 0)
+		# loc_y_fcu = get_action_group_fcurve(action_group, "location", 1)
+		# loc_z_fcu = get_action_group_fcurve(action_group, "location", 2)
 
-		for keyframe in keyframes_list:
-			dloc = evaluate_loc(loc_x_fcu, loc_y_fcu, loc_z_fcu, keyframe)
-			dquat = evaluate_quat(quat_x_fcu, quat_y_fcu, 
-			                      quat_z_fcu, quat_w_fcu, keyframe)
+		# # jgb NB: w first instead of last, thus has index 0, not 3!
+		# quat_w_fcu = get_action_group_fcurve(action_group,
+				                             # "rotation_quaternion", 0)
+		# quat_x_fcu = get_action_group_fcurve(action_group, 
+				                             # "rotation_quaternion", 1)
+		# quat_y_fcu = get_action_group_fcurve(action_group,
+				                             # "rotation_quaternion", 2)
+		# quat_z_fcu = get_action_group_fcurve(action_group,
+				                             # "rotation_quaternion", 3)
 
-			quat = dquat.copy()
-			quat.rotate(cal3d_bone.quat)
-			quat.normalize()
+		# keyframes_list = []
 
-			dloc.x *= cal3d_skeleton.anim_scale.x
-			dloc.y *= cal3d_skeleton.anim_scale.y
-			dloc.z *= cal3d_skeleton.anim_scale.z
+		# keyframes_list.extend(get_keyframes_list(loc_x_fcu))
+		# keyframes_list.extend(get_keyframes_list(loc_y_fcu))
+		# keyframes_list.extend(get_keyframes_list(loc_z_fcu))
 
-			dloc.rotate(cal3d_bone.quat)
-			loc = cal3d_bone.loc + dloc
+		# keyframes_list.extend(get_keyframes_list(quat_x_fcu))
+		# keyframes_list.extend(get_keyframes_list(quat_y_fcu))
+		# keyframes_list.extend(get_keyframes_list(quat_z_fcu))
+		# keyframes_list.extend(get_keyframes_list(quat_w_fcu))
 
-			cal3d_keyframe = KeyFrame(keyframe, loc, quat)
-			cal3d_track.keyframes.append(cal3d_keyframe)
+		# # remove duplicates
+		# keyframes_set = set(keyframes_list)
+		# keyframes_list = list(keyframes_set)
+		# keyframes_list.sort()
+		
+		# if len(keyframes_list) == 0:
+			# print("WARNING: no keyframes in action group "+action_group.name)
+			# continue
 
-		if len(cal3d_track.keyframes) > 0:
-			cal3d_animation.tracks.append(cal3d_track)
+		# if initialized_borders:
+			# first_keyframe = min(keyframes_list[0], first_keyframe)
+			# last_keyframe = max(keyframes_list[len(keyframes_list) - 1], 
+			                    # last_keyframe)
+		# else:
+			# first_keyframe = keyframes_list[0]
+			# last_keyframe = keyframes_list[len(keyframes_list) - 1]
+			# initialized_borders = True
 
-	cal3d_animation.duration = ((last_keyframe - first_keyframe) / fps)
-	cal3d_animation.tracks.sort(key=track_sort_key)
+		# cal3d_track.keyframes = []
 
-	for track in cal3d_animation.tracks:
-		for keyframe in track.keyframes:
-			keyframe.time = (keyframe.time - first_keyframe) / fps
+		# for keyframe in keyframes_list:
+			# dloc = evaluate_loc(loc_x_fcu, loc_y_fcu, loc_z_fcu, keyframe)
+			# dquat = evaluate_quat(quat_x_fcu, quat_y_fcu, 
+			                      # quat_z_fcu, quat_w_fcu, keyframe)
+
+			# quat = dquat.copy()
+			# quat.rotate(cal3d_bone.quat)
+			# quat.normalize()
+
+			# dloc.x *= cal3d_skeleton.anim_scale.x
+			# dloc.y *= cal3d_skeleton.anim_scale.y
+			# dloc.z *= cal3d_skeleton.anim_scale.z
+
+			# dloc.rotate(cal3d_bone.quat)
+			# loc = cal3d_bone.loc + dloc
+
+			# cal3d_keyframe = KeyFrame(keyframe, loc, quat)
+			# cal3d_track.keyframes.append(cal3d_keyframe)
+
+		# if len(cal3d_track.keyframes) > 0:
+			# cal3d_animation.tracks.append(cal3d_track)
+
+	# cal3d_animation.duration = ((last_keyframe - first_keyframe) / fps)
+	# cal3d_animation.tracks.sort(key=track_sort_key)
+
+	# for track in cal3d_animation.tracks:
+		# for keyframe in track.keyframes:
+			# keyframe.time = (keyframe.time - first_keyframe) / fps
 
 
-	if len(cal3d_animation.tracks) > 0:
-		return cal3d_animation
+	# if len(cal3d_animation.tracks) > 0:
+		# return cal3d_animation
 
 	return None
 
