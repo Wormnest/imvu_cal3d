@@ -190,6 +190,19 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 
 	return None
 
+def MorphFromDataPath(dataPath):
+	if dataPath.startswith("key_blocks["):
+		words = dataPath.split('"')
+		if len(words) == 3:
+			return words[1]
+		else:
+			print("UNEXPECTED datapath type!")
+			#  e.g. location
+			return None
+	else:
+		print("UNEXPECTED datapath type!")
+		return None
+
 # jgb: Morph animation export handler based on the normal animation handler
 def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	cal3d_morph_animation = MorphAnimation(action.name, xml_version)
@@ -199,20 +212,23 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	last_keyframe = 0
 	first_keyframe = 0
 
-	for sk in shape_keys.key_blocks[1:]:
-		morph_name = sk.name
-		print("morph name: "+morph_name)
-		for fcu in action.fcurves:
-			for key in fcu.keyframe_points:
-				frame, value = key.co
-				print("frame, weight: "+ str(frame)+", "+str(value))
-			print("fcu datapath: "+ fcu.data_path)
-			cal3d_morph_track = MorphTrack(action.name)
-			# get data for weight
-			if fcu.data_path.find(sk.name) == "value":
-				print("fcu arrayindex: "+str(fcu.array_index))
-				weight_fcu = fcu[0]
-				print("weight: "+str(weight_fcu))
+#	for sk in shape_keys:
+#		for kb in sk.key_blocks[1:]:
+#			morph_name = kb.name
+#			print("morph name: "+morph_name)
+	for fcu in action.fcurves:
+		#print("fcu datapath: "+ fcu.data_path)
+		morph_name = MorphFromDataPath(fcu.data_path)
+		if morph_name:
+			print("morph name:"+morph_name)
+			if len(fcu.keyframe_points) > 0:
+				for key in fcu.keyframe_points:
+					# value = weight in this context
+					frame, value = key.co
+					print("frame, weight: "+ str(frame)+", "+str(value))
+				cal3d_morph_track = MorphTrack(action.name)
+			else:
+				print("WARNING: no keyframe points for morph "+morph_name)
 
 	for action_group in action.groups:
 
