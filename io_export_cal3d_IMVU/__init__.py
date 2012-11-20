@@ -318,7 +318,6 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			try:
 				for action in bpy.data.actions:
 					if action.id_root == "KEY":
-						print("MORPH animation found!")
 						if bpy.data.shape_keys:
 							cal3d_morph_animation = create_cal3d_morph_animation(
 								bpy.data.shape_keys, action, fps, Cal3d_xml_version)
@@ -414,7 +413,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 					cal3d_morph_animation_file = open(animation_filepath, "wt")
 					cal3d_morph_animation_file.write(cal3d_morph_animation.to_cal3d_xml())
 				cal3d_morph_animation_file.close()
-				print("Wrote animation '%s'" % (animation_filename))
+				print("Wrote morph animation '%s'" % (animation_filename))
 
 
 		if self.export_cfg:
