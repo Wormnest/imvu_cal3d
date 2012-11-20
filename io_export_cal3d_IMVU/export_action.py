@@ -236,6 +236,10 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 				else:
 					print("WARNING: no keyframe points for morph "+morph_name)
 
+# TODO: change Frame to seconds!!!!!!!!!!!!!!!!!
+
+	return cal3d_morph_animation
+
 	for action_group in action.groups:
 
 		# TODO: test if Action name same as ShapeKey name ???? is this useful and necessary?
