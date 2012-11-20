@@ -417,7 +417,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				print("Wrote animation '%s'" % (animation_filename))
 
 
-				if self.export_cfg:
+		if self.export_cfg:
 			# jgb 2012-11-09 We don't want to overwrite a .blend file by accident:
 			if not self.filepath.endswith('.cfg'):
 				filename = self.filepath + '.cfg'
