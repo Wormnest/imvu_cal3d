@@ -188,7 +188,7 @@ class MorphAnimation:
 
 	def to_cal3d_xml(self):
 		s = "<HEADER MAGIC=\"XPF\" VERSION=\"{0}\"/>\n".format(self.xml_version)
-		s += "<ANIMATION NUMTRACKS=\"{1}\" DURATION=\"{0:0.5f}\">\n".format(len(self.morph_tracks), self.duration)
+		s += "<ANIMATION NUMTRACKS=\"{0}\" DURATION=\"{1:0.5f}\">\n".format(len(self.morph_tracks), self.duration)
 		s += "".join(map(MorphTrack.to_cal3d_xml, self.morph_tracks))
 		s += "</ANIMATION>\n"
 		return s
