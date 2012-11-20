@@ -191,7 +191,7 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 	return None
 
 # jgb: Morph animation export handler based on the normal animation handler
-def create_cal3d_morph_animation(action, fps, xml_version):
+def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	cal3d_morph_animation = MorphAnimation(action.name, xml_version)
 	print("Morph animation: "+action.name)
 
