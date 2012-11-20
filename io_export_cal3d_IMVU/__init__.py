@@ -200,6 +200,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		from .export_mesh import create_cal3d_materials
 		from .export_mesh import create_cal3d_mesh
 		from .export_action import create_cal3d_animation
+		from .export_action import create_cal3d_morph_animation
 
 		# Always add empty line to make it easier to find start of our info
 		print("")
