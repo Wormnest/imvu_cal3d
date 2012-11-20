@@ -238,7 +238,7 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 						# Compute KeyFrame time from frame and framerate
 						frame_time = frame / fps
 						# Add KeyFrame for morph
-						cal3d_morph_key_frame = MorphKeyFrame(frame,frame_time)
+						cal3d_morph_key_frame = MorphKeyFrame(frame_time,value)
 						if cal3d_morph_key_frame:
 							#print("frame, weight: "+ str(frame)+", "+str(value))
 							cal3d_morph_track.keyframes.append(cal3d_morph_key_frame)
