@@ -403,7 +403,21 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 				print("Wrote animation '%s'" % (animation_filename))
 
 
-		if self.export_cfg:
+		if self.export_xpf:
+			for cal3d_morph_animation in cal3d_morph_animations:
+				if self.animation_binary_bool == 'binary':
+					print("ERROR: binary not supported here!")
+				else:
+					# using animation settings also for morph animation
+					animation_filename = self.anim_prefix + cal3d_morph_animation.name + ".xpf"
+					animation_filepath = os.path.join(cal3d_dirname, animation_filename)
+					cal3d_morph_animation_file = open(animation_filepath, "wt")
+					cal3d_morph_animation_file.write(cal3d_morph_animation.to_cal3d_xml())
+				cal3d_morph_animation_file.close()
+				print("Wrote animation '%s'" % (animation_filename))
+
+
+				if self.export_cfg:
 			# jgb 2012-11-09 We don't want to overwrite a .blend file by accident:
 			if not self.filepath.endswith('.cfg'):
 				filename = self.filepath + '.cfg'
