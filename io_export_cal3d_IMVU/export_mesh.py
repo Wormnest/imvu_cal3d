@@ -386,7 +386,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 								((vertex.co.z >= 0.000000) and (normal.z < 0.000000))):
 								print("WARNING: inconsistent values for vertex normal found. This may cause the blendvertex normal to be wrong!")
 
-								if debug_export > 0:
+						if debug_export > 0:
 							print("ShapeKey normal: "+str(sk_normal))
 
 						# Compute ShapeKey position
