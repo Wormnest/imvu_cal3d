@@ -199,13 +199,17 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	last_keyframe = 0
 	first_keyframe = 0
 
-	for fcu in action.fcurves:
-		print("fcu datapath: "+ fcu.data_path)
-		cal3d_morph_track = MorphTrack(action.name)
-		# get data for weight
-		if fcu.data_path == "value":
-			weight_fcu = fcu[fcu.array_index]
-			print("weight: "+str(weight_fcu))
+	for sk in shape_keys.key_blocks[1:]:
+		morph_name = sk.name
+		print("morph name: "+morph_name)
+		for fcu in action.fcurves:
+			print("fcu datapath: "+ fcu.data_path)
+			cal3d_morph_track = MorphTrack(action.name)
+			# get data for weight
+			if fcu.data_path.find("value") == "value":
+				print("fcu arrayindex: "+str(fcu.array_index))
+				weight_fcu = fcu[0]
+				print("weight: "+str(weight_fcu))
 
 	for action_group in action.groups:
 
