@@ -144,4 +144,52 @@ class Animation:
 		else: # compressed tracks
 			for tr in self.tracks: # not sure what to do here yet
 				tr.to_cal3d_binary(file)
-			
+
+
+# ====================================
+# ========== Morph animations ==========
+# ====================================
+
+# Class MorphKeyFrame store a keyframe of a morph animation and allows export to XML only.
+class MorphKeyFrame:
+	def __init__(self, time, weight):
+		self.time = time
+		self.weight = weight
+ 
+	def to_cal3d_xml(self):
+		s = "    <KEYFRAME TIME=\"{0:0.5f}\">\n".format(self.time)
+		s += "      <WEIGHT>{0:0.6f}</WEIGHT>\n".format(self.weight)
+		s += "    </KEYFRAME>\n"
+		return s
+
+
+# Class MorphTrack stores Morph Animation tracks and allows XML export only.
+class MorphTrack:
+	def __init__(self, morph_name):
+		self.morph_name = morph_name
+		self.keyframes = []
+
+
+	def to_cal3d_xml(self):
+		s = "  <TRACK NUMKEYFRAMES=\"{0}\" MORPHNAME=\"{1}\">\n".format(len(self.keyframes), self.morph_name)
+		s += "".join(map(MorphKeyFrame.to_cal3d_xml, self.keyframes))
+		s += "  </TRACK>\n"
+		return s
+
+
+# Class MorphAnimation stores morph animation data and allows XML export only.
+class MorphAnimation:
+	def __init__(self, name, xml_version):
+		self.name = name
+		self.xml_version = xml_version
+		self.duration = 0.0
+		self.morph_tracks = []
+
+
+	def to_cal3d_xml(self):
+		s = "<HEADER MAGIC=\"XPF\" VERSION=\"{0}\"/>\n".format(self.xml_version)
+		s += "<ANIMATION NUMTRACKS=\"{1}\" DURATION=\"{0:0.5f}\">\n".format(len(self.tracks), self.duration)
+		s += "".join(map(MorphTrack.to_cal3d_xml, self.morph_tracks))
+		s += "</ANIMATION>\n"
+		return s
+
