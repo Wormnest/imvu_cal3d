@@ -319,8 +319,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 						print("MORPH animation found!")
 						cal3d_morph_animation = create_cal3d_morph_animation(
 							action, fps, Cal3d_xml_version)
-					if cal3d_morph_animation:
-						cal3d_morph_animations.append(cal3d_morph_animation)
+						if cal3d_morph_animation:
+							cal3d_morph_animations.append(cal3d_morph_animation)
 							
 			except RuntimeError as e:
 				print("###### ERROR DURING ACTION EXPORT ######")
