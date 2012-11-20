@@ -204,34 +204,42 @@ def MorphFromDataPath(dataPath):
 		return None
 
 # jgb: Morph animation export handler based on the normal animation handler
+# Note: the shape_keys parameter is currently not used but as I'm not sure whether I won't need it
+# in the future here I'm leaving it in
 def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	cal3d_morph_animation = MorphAnimation(action.name, xml_version)
 	print("Morph animation: "+action.name)
 
-	initialized_borders = False
-	last_keyframe = 0
-	first_keyframe = 0
+
+#	last_keyframe = 0
+#	first_keyframe = 0
 
 #	for sk in shape_keys:
 #		for kb in sk.key_blocks[1:]:
-#			morph_name = kb.name
-#			print("morph name: "+morph_name)
+
+	# loop over  all curves in this action
 	for fcu in action.fcurves:
-		#print("fcu datapath: "+ fcu.data_path)
+		cal3d_animation.duration = ((fcu.frame_range.y - fcu.frame_range.y) / fps)
+		# Decipher morph name  from datapath
 		morph_name = MorphFromDataPath(fcu.data_path)
 		if morph_name:
 			# Add a track with this morphname
 			cal3d_morph_track = MorphTrack(morph_name)
 			if cal3d_morph_track:
+				# Add track to morph animation
 				cal3d_morph_animation.morph_tracks.append(cal3d_morph_track)
-				print("Track for morph name:"+morph_name)
+				#print("Track for morph name:"+morph_name)
 				if len(fcu.keyframe_points) > 0:
+					# Keyframes present
 					for key in fcu.keyframe_points:
 						# value = weight in this context
 						frame, value = key.co
-						cal3d_morph_key_frame = MorphKeyFrame(frame,value)
+						# Compute KeyFrame time from frame and framerate
+						frame_time = frame / fps
+						# Add KeyFrame for morph
+						cal3d_morph_key_frame = MorphKeyFrame(frame,frame_time)
 						if cal3d_morph_key_frame:
-							print("frame, weight: "+ str(frame)+", "+str(value))
+							#print("frame, weight: "+ str(frame)+", "+str(value))
 							cal3d_morph_track.keyframes.append(cal3d_morph_key_frame)
 				else:
 					print("WARNING: no keyframe points for morph "+morph_name)
