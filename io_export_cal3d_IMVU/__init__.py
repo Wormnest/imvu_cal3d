@@ -221,6 +221,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		cal3d_materials = []
 		cal3d_meshes = []
 		cal3d_animations = []
+		cal3d_morph_animations = []
 		cal3d_used_materials = []
 		armature_obj = None
 
