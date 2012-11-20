@@ -193,10 +193,19 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 # jgb: Morph animation export handler based on the normal animation handler
 def create_cal3d_morph_animation(action, fps, xml_version):
 	cal3d_morph_animation = MorphAnimation(action.name, xml_version)
+	print("Morph animation: "+action.name)
 
 	initialized_borders = False
 	last_keyframe = 0
 	first_keyframe = 0
+
+	for fcu in action.fcurves:
+		print("fcu datapath: "+ fcu.data_path)
+		cal3d_morph_track = MorphTrack(action.name)
+		# get data for weight
+		if fcu.data_path == "value":
+			weight_fcu = fcu[fcu.array_index]
+			print("weight: "+str(weight_fcu))
 
 	for action_group in action.groups:
 
@@ -206,7 +215,6 @@ def create_cal3d_morph_animation(action, fps, xml_version):
 		#	continue
 		
 		print("action group: "+action_group.name)
-		cal3d_morph_track = MorphTrack("MORPH.NAME")
 
 		weight_fcu = get_action_group_fcurve(action_group, "value", 0)
 		print("weight: "+str(weight_fcu))
