@@ -296,12 +296,31 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 			try:
 				if cal3d_skeleton:
 					for action in bpy.data.actions:
+						# TODO: check action.id_root first for correct type (see morph animation)
 						cal3d_animation = create_cal3d_animation(cal3d_skeleton,
 																 action, fps, Cal3d_xml_version)
 						if cal3d_animation:
 							cal3d_animations.append(cal3d_animation)
 				else:
 					print("ERROR: can't export animations: no skeleton selected!")
+							
+			except RuntimeError as e:
+				print("###### ERROR DURING ACTION EXPORT ######")
+				print(e)
+				return {"FINISHED"}
+
+		if self.export_xpf:
+			# Export morph animations
+			if self.debug_ExportCal3D > 0:
+				print("ExportCal3D: export morph animations.")
+			try:
+				for action in bpy.data.actions:
+					if action.id_root = "KEY":
+						print("MORPH animation found!")
+						cal3d_morph_animation = create_cal3d_morph_animation(
+							action, fps, Cal3d_xml_version)
+					if cal3d_morph_animation:
+						cal3d_morph_animations.append(cal3d_morph_animation)
 							
 			except RuntimeError as e:
 				print("###### ERROR DURING ACTION EXPORT ######")
