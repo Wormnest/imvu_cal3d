@@ -182,7 +182,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	
 	export_xsf = BoolProperty(name="Export skeleton (.XSF)", description="Whether or not to export the skeleton.", default=True)
 	export_xmf = BoolProperty(name="Export mesh (.XMF)", description="Whether or not to export the mesh.", default=True)
-	export_xaf = BoolProperty(name="Export animation (.XAF)", description="Whether or not to export the animation.", default=True)
+	export_xaf = BoolProperty(name="Export animations (.XAF)", description="Whether or not to export the animations.", default=True)
+	export_xpf = BoolProperty(name="Export morph animations (.XPF)", description="Whether or not to export the morph animations.", default=True)
 	# Since IMVU doesn't use XRF anymore and never used CFG we turn them off by default
 	export_xrf = BoolProperty(name="Export materials (.XRF)", description="Whether or not to export the materials (not needed for IMVU).", default=False)
 	export_cfg = BoolProperty(name="Export config file (.CFG)", description="Whether or not to export the .CFG file (not needed for IMVU).", default=False)
@@ -441,6 +442,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		row.prop(self, "export_xmf")
 		row = layout.row(align=True)
 		row.prop(self, "export_xaf")
+		row = layout.row(align=True)
+		row.prop(self, "export_xpf")
 		row = layout.row(align=True)
 		row.prop(self, "export_xrf")
 		row = layout.row(align=True)
