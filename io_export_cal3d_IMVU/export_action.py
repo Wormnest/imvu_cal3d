@@ -209,6 +209,8 @@ def MorphFromDataPath(dataPath):
 def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	cal3d_morph_animation = MorphAnimation(action.name, xml_version)
 	print("Morph animation: "+action.name)
+	# determine animation duration
+	cal3d_animation.duration = ((action.frame_range.y - action.frame_range.x) / fps)
 
 
 #	last_keyframe = 0
@@ -219,7 +221,6 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 
 	# loop over  all curves in this action
 	for fcu in action.fcurves:
-		cal3d_animation.duration = ((fcu.frame_range.y - fcu.frame_range.y) / fps)
 		# Decipher morph name  from datapath
 		morph_name = MorphFromDataPath(fcu.data_path)
 		if morph_name:
