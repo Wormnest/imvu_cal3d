@@ -220,15 +220,21 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 		#print("fcu datapath: "+ fcu.data_path)
 		morph_name = MorphFromDataPath(fcu.data_path)
 		if morph_name:
-			print("morph name:"+morph_name)
-			if len(fcu.keyframe_points) > 0:
-				for key in fcu.keyframe_points:
-					# value = weight in this context
-					frame, value = key.co
-					print("frame, weight: "+ str(frame)+", "+str(value))
-				cal3d_morph_track = MorphTrack(action.name)
-			else:
-				print("WARNING: no keyframe points for morph "+morph_name)
+			# Add a track with this morphname
+			cal3d_morph_track = MorphTrack(morph_name)
+			if cal3d_morph_track:
+				cal3d_morph_animation.morph_tracks.append(cal3d_morph_track)
+				print("Track for morph name:"+morph_name)
+				if len(fcu.keyframe_points) > 0:
+					for key in fcu.keyframe_points:
+						# value = weight in this context
+						frame, value = key.co
+						cal3d_morph_key_frame = MorphKeyFrame(frame,value)
+						if cal3d_morph_key_frame:
+							print("frame, weight: "+ str(frame)+", "+str(value))
+							cal3d_morph_track.keyframes.append(cal3d_morph_key_frame)
+				else:
+					print("WARNING: no keyframe points for morph "+morph_name)
 
 	for action_group in action.groups:
 
