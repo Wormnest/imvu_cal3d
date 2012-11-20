@@ -210,7 +210,7 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 	cal3d_morph_animation = MorphAnimation(action.name, xml_version)
 	print("Morph animation: "+action.name)
 	# determine animation duration
-	cal3d_animation.duration = ((action.frame_range.y - action.frame_range.x) / fps)
+	cal3d_morph_animation.duration = ((action.frame_range.y - action.frame_range.x) / fps)
 
 
 #	last_keyframe = 0
