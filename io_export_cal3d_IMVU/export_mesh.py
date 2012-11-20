@@ -337,16 +337,15 @@ def create_cal3d_mesh(scene, mesh_obj,
 
 			if not cal3d_vertex:
 				vertex = mesh_data.vertices[vertex_index]
-				print("vertex "+str(vertex.co))
+				if debug_export > 0:
+					print("vertex "+str(vertex.co))
 
 				normal = vertex.normal.copy()
-				print("normal "+str(normal))
 				normal *= base_scale
-				print("normal * base "+str(normal))
 				normal.rotate(total_rotation)
-				print("normal rotate "+str(normal))
 				normal.normalize()
-				print("normal normalize"+str(normal))
+				if debug_export > 0:
+					print("vertex normal: "+str(normal))
 
 				coord = vertex.co.copy()
 				coord = coord + total_translation
@@ -356,28 +355,46 @@ def create_cal3d_mesh(scene, mesh_obj,
 				# If we have shape keys (morph targets) then also compute their vertex info
 				if do_shape_keys:
 					sk_id = 0
+					# loop over all ShapeKeys
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
+						# Turn ShapeKey data into a Vector.
 						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
-						#print("blend vertex: "+str(blend_vertex))
+						if debug_export > 0:
+							print("blend vertex: "+str(blend_vertex))
+
+						# Compute the normal for the ShapeKey vector.
 						sk_normal = blend_vertex.copy().normalized()
-						print("sk_normal "+str(sk_normal))
 						sk_normal *= base_scale
-						print("sk_normal * base_scale "+str(sk_normal))
 						sk_normal.rotate(total_rotation)
-						print("sk_normal rotated "+str(sk_normal))
-						#sk_normal.rotate(mesh_rotation)
-						#print("sk_normal meshrotated "+str(sk_normal))
 						sk_normal.normalize()
-						# I have no idea why but apparently we need to negate the normal to get the same values
-						# as when we do the normals of the normal vertices
-						# TODO: needs testing to see if this is always the case!
-						sk_normal.negate()
-						print("sk_normal normalize+negate"+str(sk_normal))
-						
+						# We need to find a way to know if the normals are pointing inwards or outwards.
+						# Best would be if we could read the mesh in the state of the ShapeKey but until we find out how to do that:
+						# We look if the sign(+/-) for the vertex is the same as its normal. If not then negate the normal.
+						# If there are inconsistensies output a warning.
+						if (((vertex.co.x >= 0.000000) and (normal.x >= 0.000000)) or
+							((vertex.co.x < 0.000000) and (normal.x < 0.000000))):
+							# No need to negate.
+							if (((vertex.co.y >= 0.000000) and (normal.y < 0.000000)) or
+								((vertex.co.z >= 0.000000) and (normal.z < 0.000000))):
+								print("WARNING: inconsistent values for vertex normal found. This may cause the blendvertex normal to be wrong!")
+						else:
+							# Probably need to negate..
+							sk_normal.negate()
+							if debug_export > 0:
+								print("Negated ShapeKey normal")
+							if (((vertex.co.y >= 0.000000) and (normal.y < 0.000000)) or
+								((vertex.co.z >= 0.000000) and (normal.z < 0.000000))):
+								print("WARNING: inconsistent values for vertex normal found. This may cause the blendvertex normal to be wrong!")
+
+								if debug_export > 0:
+							print("ShapeKey normal: "+str(sk_normal))
+
+						# Compute ShapeKey position
 						sk_coord = blend_vertex.copy()
 						sk_coord = sk_coord + total_translation
 						sk_coord *= base_scale
 						sk_coord.rotate(total_rotation)
+
 						# Calculate posdiff between vertex and blend vertex
 						# posdiff according to cal3d source in saver.cpp is computed as the absolute length of 
 						# the difference between the vertex and blend vertex
@@ -388,7 +405,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# binary uses 0.01 and xml uses 1.0, We go in the middle with 0.1
 						differenceTolerance = 0.1;
 						posdiff = abs(vec_posdiff.length)
-						print("posdiff: "+str(posdiff)+" vec_posdiff: "+str(vec_posdiff))
+						if debug_export > 0:
+							print("posdiff: "+str(posdiff)+" vec_posdiff: "+str(vec_posdiff))
 						
 						# Only add this Blend Vertex if there is enough difference with the original Vertex
 						if posdiff >= differenceTolerance:
