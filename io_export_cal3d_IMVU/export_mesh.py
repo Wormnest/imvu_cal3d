@@ -395,6 +395,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 						sk_normal.normalize()
 						# We need to find a way to know if the normals are pointing inwards or outwards.
 						# Best would be if we could read the mesh in the state of the ShapeKey but until we find out how to do that:
+						# possibly something like this?
+						# mesh_obj.activekey = the key we want, set activepreview to true then mesh.to_object and read the vertex normals there?
 						# We look if the sign(+/-) for the vertex is the same as its normal. If not then negate the normal.
 						sk_normal = correct_normal(sk_normal, normal, vertex.co)
 						# if (((vertex.co.x >= 0.000000) and (normal.x >= 0.000000)) or
