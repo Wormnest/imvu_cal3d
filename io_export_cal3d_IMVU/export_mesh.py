@@ -125,20 +125,20 @@ def correct_sign(value, reference1, reference2):
 	if (((reference1 >= 0.000000) and (reference2 >= 0.000000)) or
 		((reference1 <= -0.000000) and (reference2 <= -0.000000))):
 		# No need to negate
-		return value
+		return value, False
 	elif (((reference1 > -0.000000) and (reference1 < 0.000000)) or
 		((reference2 > -0.000000) and (reference2 < 0.000000))):
 		#  Near 0 value unknown if positive or negative: we don't change the value
 		# Note: does it really make sense to test for this?
-		return value
+		return value, False
 	else:
-		return -value
+		return -value, True
 
 # Correct signs of normal  based on the reference_normal compared to reference_vertex sign
 def correct_normal(normal, reference_normal, reference_vertex):
-	normal.x, x_change = correct_sign(normal.x, reference_normal.x, reference_vertex.co.x)
-	normal.y, y_change = correct_sign(normal.y, reference_normal.y, reference_vertex.co.y)
-	normal.z, z_change = correct_sign(normal.z, reference_normal.z, reference_vertex.co.z)
+	normal.x, x_change = correct_sign(normal.x, reference_normal.x, reference_vertex.x)
+	normal.y, y_change = correct_sign(normal.y, reference_normal.y, reference_vertex.y)
+	normal.z, z_change = correct_sign(normal.z, reference_normal.z, reference_vertex.z)
 	# Check if all changes were the same, warn if not either all true or all false
 	if not (((x_change == True) and (y_change == True) and (z_change == True)) or
 		((x_change == False) and (y_change == False) and (z_change == False))):
@@ -396,7 +396,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# We need to find a way to know if the normals are pointing inwards or outwards.
 						# Best would be if we could read the mesh in the state of the ShapeKey but until we find out how to do that:
 						# We look if the sign(+/-) for the vertex is the same as its normal. If not then negate the normal.
-						sk_normal = correct_normal(sk_normal, normal, vertex)
+						sk_normal = correct_normal(sk_normal, normal, vertex.co)
 						# if (((vertex.co.x >= 0.000000) and (normal.x >= 0.000000)) or
 							# ((vertex.co.x < 0.000000) and (normal.x < 0.000000))):
 							# # No need to negate.
