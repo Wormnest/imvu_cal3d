@@ -402,7 +402,7 @@ class SubMesh:
 		                                                                        faces_num,
 		                                                                        self.material_id)
 
-		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMMORPHS=\"{2}\" NUMTEXCOORDS=\"{2}\">\n".format(self.nb_lodsteps,
+		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMMORPHS=\"{2}\" NUMTEXCOORDS=\"{3}\">\n".format(self.nb_lodsteps,
 			len(self.springs),
 			len(self.morphs),
 			texcoords_num,)
