@@ -219,6 +219,8 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
 #	for sk in shape_keys:
 #		for kb in sk.key_blocks[1:]:
 
+	# TODO: THIS IS PROBABLY NOT GONNA WORK RIGHT WHEN THERE IS MORE THAN 1 CURVE
+	# NEED TO SORT BASED ON FRAME
 	# loop over  all curves in this action
 	for fcu in action.fcurves:
 		# Decipher morph name  from datapath
