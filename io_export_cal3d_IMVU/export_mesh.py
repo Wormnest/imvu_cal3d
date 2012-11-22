@@ -145,6 +145,33 @@ def correct_normal(normal, reference_normal, reference_vertex):
 		print("WARNING: morph vertex normals may not be correct!")
 	return normal
 
+def test_mesh_keystate(mesh_obj, scene, mesh_matrix, vertex_index):
+	print("Current frame: "+str(scene.frame_current))
+	# Save original values and set to our wanted values
+	save_frame = scene.frame_current
+	scene.frame_set(scene.frame_start)	# Make sure we are at the first frame of animation
+	save_show = mesh_obj.show_only_shape_key
+	mesh_obj.show_only_shape_key = True	# We want to be in the keyshape visibe state
+	save_val = mesh_obj.active_shape_key.value
+	# Note: for now we always assume a MAX value of 1.0. Should we allow for other max (and min)?
+	mesh_obj.active_shape_key.value = 1.0	# Set KeyShape to its full setting
+	#scene.update()	# Data still correct without this line
+
+	# Get mesh in our wanted state
+	keymesh_data = mesh_obj.to_mesh(scene, True, "PREVIEW")	# True = apply modifiers
+	keymesh_data.transform(mesh_matrix)
+	#keymesh_data.update(calc_edges=True)	# setting True as test only! Tested without this line still gives correct data
+	print("Active ShapeKey: " + str(mesh_obj.active_shape_key.name))
+	for vx in range(len(keymesh_data.vertices)):
+		print("key vertex "+str(keymesh_data.vertices[vx].co))
+		print("key normal "+str(keymesh_data.vertices[vx].normal))
+
+	# reset to original values and remove keymesh_data after use
+	scene.frame_set(save_frame)
+	mesh_obj.active_shape_key.value = save_val
+	mesh_obj.show_only_shape_key = save_show
+	bpy.data.meshes.remove(keymesh_data)
+
 
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
@@ -154,6 +181,8 @@ def create_cal3d_mesh(scene, mesh_obj,
                       base_scale,
                       xml_version,
                       use_groups, use_envelopes, armature_obj):
+
+	XXX_TEST = 0 # TES DEBUG loop
 
 	mesh_matrix = mesh_obj.matrix_world.copy()
 
@@ -383,6 +412,23 @@ def create_cal3d_mesh(scene, mesh_obj,
 					sk_id = 0
 					# loop over all ShapeKeys
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
+						# testing****
+						
+						if XXX_TEST == 0:
+							XXX_TEST = 1
+							print("kb: "+kb.name)
+							old_active = mesh_obj.active_shape_key_index
+							print("active key: "+ str(mesh_obj.active_shape_key_index))
+							mesh_obj.active_shape_key_index = 2
+							test_mesh_keystate(mesh_obj, scene, mesh_matrix, 6)
+							print("active key: "+ str(mesh_obj.active_shape_key_index)+", "+mesh_obj.active_shape_key.name)
+							for vx in range(len(mesh_data.shape_keys.key_blocks[2].data)):
+								print("shapekey coordinates "+str(mesh_data.shape_keys.key_blocks[2].data[vx].co))
+							# need to update mesh?
+							# after then re update to normal state
+							mesh_obj.active_shape_key_index = old_active
+							
+						# **********
 						# Turn ShapeKey data into a Vector.
 						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
 						if debug_export > 0:
