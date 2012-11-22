@@ -173,6 +173,49 @@ def test_mesh_keystate(mesh_obj, scene, mesh_matrix, vertex_index):
 	bpy.data.meshes.remove(keymesh_data)
 
 
+# Collect all normals for all ShapeKeys so we can use them when we need them and don't
+# have to iterate over it every time
+def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
+	# Save original values and set to our wanted values
+	save_frame = scene.frame_current
+	save_show = mesh_obj.show_only_shape_key
+	save_val = mesh_obj.active_shape_key.value
+	save_active = mesh_obj.active_shape_key_index
+
+	# Init our data where we gonna store all the ShapeKey normals.
+	sk_normals = []
+
+	# Now change to the values we need
+	scene.frame_set(scene.frame_start)	# Make sure we are at the first frame of animation
+	mesh_obj.show_only_shape_key = True	# We want to be in the keyshape visibe state
+
+	# Go over all ShapeKeys except the first Basis one
+	for si in range(1,shape_keys):
+		#Update to the correct ShapeKey
+		mesh_obj.active_shape_key_index = si
+		# Note: for now we always assume a MAX value of 1.0. Should we allow for other max (and min)?
+		# Do we need to set this within the loop?
+		mesh_obj.active_shape_key.value = 1.0	# Set KeyShape to its full setting
+		#scene.update()	# Data still correct without this line
+
+		# Get mesh in our wanted ShapeKey state
+		keymesh_data = mesh_obj.to_mesh(scene, True, "PREVIEW")	# True = apply modifiers
+		keymesh_data.transform(mesh_matrix)
+
+		# Store all the normals for this ShapeKey
+		for vx in range(len(keymesh_data.vertices)):
+			sk_normals[si][vx] = keymesh_data.vertices[vx].normal.copy()
+
+		# Finished with this ShapeKey now remove the temp mesh for this ShapeKey state
+		bpy.data.meshes.remove(keymesh_data)
+
+	# Reset to original values and remove keymesh_data after use
+	scene.frame_set(save_frame)
+	mesh_obj.active_shape_key.value = save_val
+	mesh_obj.show_only_shape_key = save_show
+	bpy.data.meshes.remove(keymesh_data)
+
+
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
                       cal3d_materials, cal3d_used_materials,
