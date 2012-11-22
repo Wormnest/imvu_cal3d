@@ -203,8 +203,12 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 		keymesh_data.transform(mesh_matrix)
 
 		# Store all the normals for this ShapeKey
+		sk_normals.append([])	# Add empty slot for ShapeKey
 		for vx in range(len(keymesh_data.vertices)):
-			sk_normals[si][vx] = keymesh_data.vertices[vx].normal.copy()
+			# Get the normal for this vertex and store it in our list at list index sk_normals[si-1][vx]
+			#print("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1,vx,keymesh_data.vertices[vx].normal,keymesh_data.vertices[vx].co))
+			sk_normal = keymesh_data.vertices[vx].normal.copy()
+			sk_normals[si-1].append(sk_normal)
 
 		# Finished with this ShapeKey now remove the temp mesh for this ShapeKey state
 		bpy.data.meshes.remove(keymesh_data)
@@ -213,7 +217,7 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	scene.frame_set(save_frame)
 	mesh_obj.active_shape_key.value = save_val
 	mesh_obj.show_only_shape_key = save_show
-	bpy.data.meshes.remove(keymesh_data)
+	#bpy.data.meshes.remove(keymesh_data)
 
 	# Return the collected ShapeKey normals
 	return sk_normals
@@ -227,8 +231,6 @@ def create_cal3d_mesh(scene, mesh_obj,
                       base_scale,
                       xml_version,
                       use_groups, use_envelopes, armature_obj):
-
-	XXX_TEST = 0 # TES DEBUG loop
 
 	mesh_matrix = mesh_obj.matrix_world.copy()
 
@@ -323,7 +325,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 	# Test existence of shape keys for morphing
 	# Need more than 1 shape_key because first is the Basis which is the same as our mesh
 	if mesh_data.shape_keys and len(mesh_data.shape_keys.key_blocks) > 1:
-		print("Shape key(s) found in mesh")
+		if debug_export > 0:
+			print("Shape key(s) found in mesh")
 		do_shape_keys = True
 		# Requires same number of vertices in mesh and in each of the shape keys
 		vert_count = len(mesh_data.vertices)
@@ -342,6 +345,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 				sk_id += 1
 		if do_shape_keys:
 			# Get the normals of the ShapeKeys
+			if debug_export > 0:
+				print("Collecting ShapeKey normals")
 			sk_normals = collect_shapekey_normals(mesh_obj, scene, mesh_matrix, mesh_data.shape_keys)
 	else:
 		do_shape_keys = False
@@ -463,19 +468,19 @@ def create_cal3d_mesh(scene, mesh_obj,
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
 						# testing****
 						
-						if XXX_TEST == 0:
-							XXX_TEST = 1
-							print("kb: "+kb.name)
-							old_active = mesh_obj.active_shape_key_index
-							print("active key: "+ str(mesh_obj.active_shape_key_index))
-							mesh_obj.active_shape_key_index = 2
-							test_mesh_keystate(mesh_obj, scene, mesh_matrix, 6)
-							print("active key: "+ str(mesh_obj.active_shape_key_index)+", "+mesh_obj.active_shape_key.name)
-							for vx in range(len(mesh_data.shape_keys.key_blocks[2].data)):
-								print("shapekey coordinates "+str(mesh_data.shape_keys.key_blocks[2].data[vx].co))
-							# need to update mesh?
-							# after then re update to normal state
-							mesh_obj.active_shape_key_index = old_active
+						# if XXX_TEST == 0:
+							# XXX_TEST = 1
+							# print("kb: "+kb.name)
+							# old_active = mesh_obj.active_shape_key_index
+							# print("active key: "+ str(mesh_obj.active_shape_key_index))
+							# mesh_obj.active_shape_key_index = 2
+							# test_mesh_keystate(mesh_obj, scene, mesh_matrix, 6)
+							# print("active key: "+ str(mesh_obj.active_shape_key_index)+", "+mesh_obj.active_shape_key.name)
+							# for vx in range(len(mesh_data.shape_keys.key_blocks[2].data)):
+								# print("shapekey coordinates "+str(mesh_data.shape_keys.key_blocks[2].data[vx].co))
+							# # need to update mesh?
+							# # after then re update to normal state
+							# mesh_obj.active_shape_key_index = old_active
 							
 						# **********
 						# Turn ShapeKey data into a Vector.
@@ -483,10 +488,12 @@ def create_cal3d_mesh(scene, mesh_obj,
 						if debug_export > 0:
 							print("blend vertex: "+str(blend_vertex))
 
-						# Compute the normal for the ShapeKey vector.
 						# Get the previously collected normal for this ShapeKey and vertex index
-						#sk_normal = sk_normal[][]
-						sk_normal = blend_vertex.copy().normalized()
+						#print("shapekey normal indexes sk, vertex "+str(sk_id)+", "+str(vertex_index))
+						# sk_normals index starts at 0 for First non Basis ShapeKey!
+						sk_normal = sk_normals[sk_id][vertex_index].copy()
+						#print("shapekey normal "+str(sk_normal)+", vert: "+str(blend_vertex))
+						#sk_normal = blend_vertex.copy().normalized()
 						sk_normal *= base_scale
 						sk_normal.rotate(total_rotation)
 						sk_normal.normalize()
@@ -495,7 +502,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# possibly something like this?
 						# mesh_obj.activekey = the key we want, set activepreview to true then mesh.to_object and read the vertex normals there?
 						# We look if the sign(+/-) for the vertex is the same as its normal. If not then negate the normal.
-						sk_normal = correct_normal(sk_normal, normal, vertex.co)
+						#sk_normal = correct_normal(sk_normal, normal, vertex.co)
 
 						if debug_export > 0:
 							print("ShapeKey normal: "+str(sk_normal))
