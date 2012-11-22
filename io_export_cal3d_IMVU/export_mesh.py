@@ -215,6 +215,9 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	mesh_obj.show_only_shape_key = save_show
 	bpy.data.meshes.remove(keymesh_data)
 
+	# Return the collected ShapeKey normals
+	return sk_normals
+
 
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
@@ -337,6 +340,9 @@ def create_cal3d_mesh(scene, mesh_obj,
 				if cal3d_morph:
 					sm.morphs.append(cal3d_morph)
 				sk_id += 1
+		if do_shape_keys:
+			# Get the normals of the ShapeKeys
+			sk_normals = collect_shapekey_normals(mesh_obj, scene, mesh_matrix, mesh_data.shape_keys)
 	else:
 		do_shape_keys = False
 
