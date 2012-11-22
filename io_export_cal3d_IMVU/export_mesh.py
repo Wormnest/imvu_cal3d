@@ -190,7 +190,7 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	mesh_obj.show_only_shape_key = True	# We want to be in the keyshape visibe state
 
 	# Go over all ShapeKeys except the first Basis one
-	for si in range(1,shape_keys):
+	for si in range(1,len(shape_keys.key_blocks)):
 		#Update to the correct ShapeKey
 		mesh_obj.active_shape_key_index = si
 		# Note: for now we always assume a MAX value of 1.0. Should we allow for other max (and min)?
@@ -484,6 +484,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 							print("blend vertex: "+str(blend_vertex))
 
 						# Compute the normal for the ShapeKey vector.
+						# Get the previously collected normal for this ShapeKey and vertex index
+						#sk_normal = sk_normal[][]
 						sk_normal = blend_vertex.copy().normalized()
 						sk_normal *= base_scale
 						sk_normal.rotate(total_rotation)
