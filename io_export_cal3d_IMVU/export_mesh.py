@@ -488,20 +488,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# mesh_obj.activekey = the key we want, set activepreview to true then mesh.to_object and read the vertex normals there?
 						# We look if the sign(+/-) for the vertex is the same as its normal. If not then negate the normal.
 						sk_normal = correct_normal(sk_normal, normal, vertex.co)
-						# if (((vertex.co.x >= 0.000000) and (normal.x >= 0.000000)) or
-							# ((vertex.co.x < 0.000000) and (normal.x < 0.000000))):
-							# # No need to negate.
-							# if (((vertex.co.y >= 0.000000) and (normal.y < 0.000000)) or
-								# ((vertex.co.z >= 0.000000) and (normal.z < 0.000000))):
-								# print("WARNING: inconsistent values for vertex normal found. This may cause the blendvertex normal to be wrong!")
-						# else:
-							# # Probably need to negate..
-							# sk_normal.negate()
-							# if debug_export > 0:
-								# print("Negated ShapeKey normal")
-							# if (((vertex.co.y >= 0.000000) and (normal.y < 0.000000)) or
-								# ((vertex.co.z >= 0.000000) and (normal.z < 0.000000))):
-								# print("WARNING: inconsistent values for vertex normal found. This may cause the blendvertex normal to be wrong!")
 
 						if debug_export > 0:
 							print("ShapeKey normal: "+str(sk_normal))
