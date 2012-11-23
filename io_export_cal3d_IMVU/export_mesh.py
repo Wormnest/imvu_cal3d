@@ -466,23 +466,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 					sk_id = 0
 					# loop over all ShapeKeys
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
-						# testing****
-						
-						# if XXX_TEST == 0:
-							# XXX_TEST = 1
-							# print("kb: "+kb.name)
-							# old_active = mesh_obj.active_shape_key_index
-							# print("active key: "+ str(mesh_obj.active_shape_key_index))
-							# mesh_obj.active_shape_key_index = 2
-							# test_mesh_keystate(mesh_obj, scene, mesh_matrix, 6)
-							# print("active key: "+ str(mesh_obj.active_shape_key_index)+", "+mesh_obj.active_shape_key.name)
-							# for vx in range(len(mesh_data.shape_keys.key_blocks[2].data)):
-								# print("shapekey coordinates "+str(mesh_data.shape_keys.key_blocks[2].data[vx].co))
-							# # need to update mesh?
-							# # after then re update to normal state
-							# mesh_obj.active_shape_key_index = old_active
-							
-						# **********
 						# Turn ShapeKey data into a Vector.
 						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
 						if debug_export > 0:
@@ -493,7 +476,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# sk_normals index starts at 0 for First non Basis ShapeKey!
 						sk_normal = sk_normals[sk_id][vertex_index].copy()
 						#print("shapekey normal "+str(sk_normal)+", vert: "+str(blend_vertex))
-						#sk_normal = blend_vertex.copy().normalized()
 						sk_normal *= base_scale
 						sk_normal.rotate(total_rotation)
 						sk_normal.normalize()
