@@ -119,21 +119,6 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 
 	return influences
 
-# Correct sign of value to the same as reference_value
-# Returns the corrected value and True if sign was changed, False if no change
-def correct_sign(value, reference1, reference2):
-	if (((reference1 >= 0.000000) and (reference2 >= 0.000000)) or
-		((reference1 <= -0.000000) and (reference2 <= -0.000000))):
-		# No need to negate
-		return value, False
-	elif (((reference1 > -0.000000) and (reference1 < 0.000000)) or
-		((reference2 > -0.000000) and (reference2 < 0.000000))):
-		#  Near 0 value unknown if positive or negative: we don't change the value
-		# Note: does it really make sense to test for this?
-		return value, False
-	else:
-		return -value, True
-
 def test_mesh_keystate(mesh_obj, scene, mesh_matrix, vertex_index):
 	print("Current frame: "+str(scene.frame_current))
 	# Save original values and set to our wanted values
