@@ -134,17 +134,6 @@ def correct_sign(value, reference1, reference2):
 	else:
 		return -value, True
 
-# Correct signs of normal  based on the reference_normal compared to reference_vertex sign
-def correct_normal(normal, reference_normal, reference_vertex):
-	normal.x, x_change = correct_sign(normal.x, reference_normal.x, reference_vertex.x)
-	normal.y, y_change = correct_sign(normal.y, reference_normal.y, reference_vertex.y)
-	normal.z, z_change = correct_sign(normal.z, reference_normal.z, reference_vertex.z)
-	# Check if all changes were the same, warn if not either all true or all false
-	if not (((x_change == True) and (y_change == True) and (z_change == True)) or
-		((x_change == False) and (y_change == False) and (z_change == False))):
-		print("WARNING: morph vertex normals may not be correct!")
-	return normal
-
 def test_mesh_keystate(mesh_obj, scene, mesh_matrix, vertex_index):
 	print("Current frame: "+str(scene.frame_current))
 	# Save original values and set to our wanted values
@@ -479,12 +468,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 						sk_normal *= base_scale
 						sk_normal.rotate(total_rotation)
 						sk_normal.normalize()
-						# We need to find a way to know if the normals are pointing inwards or outwards.
-						# Best would be if we could read the mesh in the state of the ShapeKey but until we find out how to do that:
-						# possibly something like this?
-						# mesh_obj.activekey = the key we want, set activepreview to true then mesh.to_object and read the vertex normals there?
-						# We look if the sign(+/-) for the vertex is the same as its normal. If not then negate the normal.
-						#sk_normal = correct_normal(sk_normal, normal, vertex.co)
 
 						if debug_export > 0:
 							print("ShapeKey normal: "+str(sk_normal))
