@@ -119,34 +119,6 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 
 	return influences
 
-def test_mesh_keystate(mesh_obj, scene, mesh_matrix, vertex_index):
-	print("Current frame: "+str(scene.frame_current))
-	# Save original values and set to our wanted values
-	save_frame = scene.frame_current
-	scene.frame_set(scene.frame_start)	# Make sure we are at the first frame of animation
-	save_show = mesh_obj.show_only_shape_key
-	mesh_obj.show_only_shape_key = True	# We want to be in the keyshape visibe state
-	save_val = mesh_obj.active_shape_key.value
-	# Note: for now we always assume a MAX value of 1.0. Should we allow for other max (and min)?
-	mesh_obj.active_shape_key.value = 1.0	# Set KeyShape to its full setting
-	#scene.update()	# Data still correct without this line
-
-	# Get mesh in our wanted state
-	keymesh_data = mesh_obj.to_mesh(scene, True, "PREVIEW")	# True = apply modifiers
-	keymesh_data.transform(mesh_matrix)
-	#keymesh_data.update(calc_edges=True)	# setting True as test only! Tested without this line still gives correct data
-	print("Active ShapeKey: " + str(mesh_obj.active_shape_key.name))
-	for vx in range(len(keymesh_data.vertices)):
-		print("key vertex "+str(keymesh_data.vertices[vx].co))
-		print("key normal "+str(keymesh_data.vertices[vx].normal))
-
-	# reset to original values and remove keymesh_data after use
-	scene.frame_set(save_frame)
-	mesh_obj.active_shape_key.value = save_val
-	mesh_obj.show_only_shape_key = save_show
-	bpy.data.meshes.remove(keymesh_data)
-
-
 # Collect all normals for all ShapeKeys so we can use them when we need them and don't
 # have to iterate over it every time
 def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
