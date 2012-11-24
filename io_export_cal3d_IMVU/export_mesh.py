@@ -157,8 +157,9 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 		sk_vertices.append([])	# Add empty slot for ShapeKey vertices
 		for vx in range(len(keymesh_data.vertices)):
 			# Get the normal for this vertex and store it in our list at list index sk_normals[si-1][vx]
-			if vx == 0:
-				print("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1,vx,keymesh_data.vertices[vx].normal,keymesh_data.vertices[vx].co))
+			if vx == 0 and debug_export > 0:
+				print("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1, vx,
+					keymesh_data.vertices[vx].normal, keymesh_data.vertices[vx].co))
 			sk_normal = keymesh_data.vertices[vx].normal.copy()
 			sk_normals[si-1].append(sk_normal)
 			sk_vert = keymesh_data.vertices[vx].co.copy()
