@@ -121,6 +121,9 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 
 # Collect all normals for all ShapeKeys so we can use them when we need them and don't
 # have to iterate over it every time
+# jgb 2012-11-24 When matrix world scale <> 1.0 we are restoring scale to 1.0 in create mesh. However for
+# some reason the ShapeKey vertex data there is off and for now I can't figure out how to compute the right values
+# Therefore we take the easy route and store and return the ShapeKey vertices from here too
 def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	# Save original values and set to our wanted values
 	save_frame = scene.frame_current
@@ -130,6 +133,7 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 
 	# Init our data where we gonna store all the ShapeKey normals.
 	sk_normals = []
+	sk_vertices = []
 
 	# Now change to the values we need
 	scene.frame_set(scene.frame_start)	# Make sure we are at the first frame of animation
@@ -149,12 +153,16 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 		keymesh_data.transform(mesh_matrix)
 
 		# Store all the normals for this ShapeKey
-		sk_normals.append([])	# Add empty slot for ShapeKey
+		sk_normals.append([])	# Add empty slot for ShapeKey normals
+		sk_vertices.append([])	# Add empty slot for ShapeKey vertices
 		for vx in range(len(keymesh_data.vertices)):
 			# Get the normal for this vertex and store it in our list at list index sk_normals[si-1][vx]
-			#print("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1,vx,keymesh_data.vertices[vx].normal,keymesh_data.vertices[vx].co))
+			if vx == 0:
+				print("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1,vx,keymesh_data.vertices[vx].normal,keymesh_data.vertices[vx].co))
 			sk_normal = keymesh_data.vertices[vx].normal.copy()
 			sk_normals[si-1].append(sk_normal)
+			sk_vert = keymesh_data.vertices[vx].co.copy()
+			sk_vertices[si-1].append(sk_vert)
 
 		# Finished with this ShapeKey now remove the temp mesh for this ShapeKey state
 		bpy.data.meshes.remove(keymesh_data)
@@ -166,7 +174,7 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	#bpy.data.meshes.remove(keymesh_data)
 
 	# Return the collected ShapeKey normals
-	return sk_normals
+	return sk_normals, sk_vertices
 
 
 def create_cal3d_mesh(scene, mesh_obj,
@@ -180,19 +188,37 @@ def create_cal3d_mesh(scene, mesh_obj,
 
 	mesh_matrix = mesh_obj.matrix_world.copy()
 
-	mesh_data = mesh_obj.to_mesh(scene, False, "PREVIEW")
-	mesh_data.transform(mesh_matrix)
-	print("mesh matrix: "+str(mesh_matrix))
-
-	base_translation = base_translation_orig.copy()
-	base_rotation = base_rotation_orig.copy()
-
 	(mesh_translation, mesh_quat, mesh_scale) = mesh_matrix.decompose()
 	mesh_rotation = mesh_quat.to_matrix()
-	print("mesh matrix: "+str(mesh_matrix))
+	# Check to see if the mesh is scaled, if so give a warning and try to correct it
+	if((mesh_scale.x != 1.0) or (mesh_scale.y != 1.0) or (mesh_scale.z != 1.0)):
+		print("WARNING: at least one of the matrix world (armature) scale components is not 1.0!\nMesh scale: "+str(mesh_scale))
+		print("matrix world: "+str(mesh_matrix))
+		print("Trying to correct scale to 1.0")
+		# jgb Not sure if this computation will be always correct, see also in armature_export.py for a possible other way to do it
+		# 1.  Scale down the translation by the used scale
+		mesh_translation.x = mesh_translation.x / mesh_scale.x
+		mesh_translation.y = mesh_translation.y / mesh_scale.y
+		mesh_translation.z = mesh_translation.z / mesh_scale.z
+		# 2. Add scale 1.0 matrix and matrix of the rescaled translation
+		mat_scale = mathutils.Matrix.Scale(1.0, 4, (1.0, 1.0, 1.0))
+		mat_trans = mathutils.Matrix.Translation(mesh_translation)
+		# 3.  Recompute matrix based on new scale, new translation and the old rotation
+		mesh_matrix = mat_scale * mat_trans * mesh_quat.to_matrix().to_4x4()
+		# 4.  Get the corrected data back
+		(mesh_translation, mesh_quat, mesh_scale) = mesh_matrix.decompose()
+		mesh_rotation = mesh_quat.to_matrix()
+		# For info and checking print out the corrected matrix
+		print("Corrected scaled matrix:\n"+str(mesh_matrix))
 	print("mesh translation: "+str(mesh_translation))
 	print("mesh quat: "+str(mesh_quat))
 	print("mesh scale: "+str(mesh_scale))
+
+	mesh_data = mesh_obj.to_mesh(scene, False, "PREVIEW")
+	mesh_data.transform(mesh_matrix)
+
+	base_translation = base_translation_orig.copy()
+	base_rotation = base_rotation_orig.copy()
 
 	total_rotation = base_rotation.copy()
 	total_translation = base_translation.copy()
@@ -297,8 +323,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 		if do_shape_keys:
 			# Get the normals of the ShapeKeys
 			if debug_export > 0:
-				print("Collecting ShapeKey normals")
-			sk_normals = collect_shapekey_normals(mesh_obj, scene, mesh_matrix, mesh_data.shape_keys)
+				print("Collecting ShapeKey normals and vertices")
+			sk_normals, sk_vertices = collect_shapekey_normals(mesh_obj, scene, mesh_matrix, mesh_data.shape_keys)
 	else:
 		do_shape_keys = False
 
@@ -437,16 +463,12 @@ def create_cal3d_mesh(scene, mesh_obj,
 							print("ShapeKey normal: "+str(sk_normal))
 
 						# Compute ShapeKey position
-						sk_coord = blend_vertex.copy()
+						# jgb 2012-11-24 Now use the stored ShapeKey vertex instead of the data from the ShapeKey array
+						sk_coord = sk_vertices[sk_id][vertex_index].copy()
+						#sk_coord = blend_vertex.copy()
 						sk_coord = sk_coord + total_translation
 						sk_coord *= base_scale
 						sk_coord.rotate(total_rotation)
-						if vertex_index == 0:
-							print("Corrected vertex 0: {0}\nblend vertex 0: {1}".format(str(coord),str(sk_coord)))
-							sk_coord = sk_coord.cross(mesh_scale)
-							sk_coord.rotate(mesh_rotation)
-							print("Corrected sk coord 0: {0}".format(str(sk_coord)))
-							print("mesh rotation:\n{0}\nmesh scale: {1}".format(str(mesh_rotation), str(mesh_scale)))
 
 						# Calculate posdiff between vertex and blend vertex
 						# posdiff according to cal3d source in saver.cpp is computed as the absolute length of 
