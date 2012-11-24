@@ -193,8 +193,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 	mesh_rotation = mesh_quat.to_matrix()
 	# Check to see if the mesh is scaled, if so give a warning and try to correct it
 	if((mesh_scale.x != 1.0) or (mesh_scale.y != 1.0) or (mesh_scale.z != 1.0)):
-		print("WARNING: at least one of the matrix world (armature) scale components is not 1.0!\nMesh scale: "+str(mesh_scale))
-		print("matrix world: "+str(mesh_matrix))
+		print("WARNING: at least one of the matrix world scale components is not 1.0!\nMesh scale: "+str(mesh_scale))
+		print("matrix world:\n"+str(mesh_matrix))
 		print("Trying to correct scale to 1.0")
 		# jgb Not sure if this computation will be always correct, see also in armature_export.py for a possible other way to do it
 		# 1.  Scale down the translation by the used scale
