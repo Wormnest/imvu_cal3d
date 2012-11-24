@@ -211,9 +211,12 @@ def create_cal3d_mesh(scene, mesh_obj,
 		mesh_rotation = mesh_quat.to_matrix()
 		# For info and checking print out the corrected matrix
 		print("Corrected scaled matrix:\n"+str(mesh_matrix))
-	print("mesh translation: "+str(mesh_translation))
-	print("mesh quat: "+str(mesh_quat))
-	print("mesh scale: "+str(mesh_scale))
+
+	if debug_export > 0:
+		print("matrix world: "+str(mesh_matrix))
+		print("mesh translation: "+str(mesh_translation))
+		print("mesh quat: "+str(mesh_quat))
+		print("mesh scale: "+str(mesh_scale))
 
 	mesh_data = mesh_obj.to_mesh(scene, False, "PREVIEW")
 	mesh_data.transform(mesh_matrix)
@@ -450,10 +453,9 @@ def create_cal3d_mesh(scene, mesh_obj,
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
 						# Turn ShapeKey data into a Vector.
 						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
-						if vertex_index == 0:
-							print("vertex 0: {0}\nblend vertex 0: {1}".format(str(vertex.co),str(blend_vertex)))
 						if debug_export > 0:
-							print("blend vertex: "+str(blend_vertex))
+							if vertex_index == 0:
+								print("vertex 0: {0}\nblend vertex 0: {1}".format(str(vertex.co),str(blend_vertex)))
 
 						# Get the previously collected normal for this ShapeKey and vertex index
 						#print("shapekey normal indexes sk, vertex "+str(sk_id)+", "+str(vertex_index))
