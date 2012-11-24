@@ -182,12 +182,17 @@ def create_cal3d_mesh(scene, mesh_obj,
 
 	mesh_data = mesh_obj.to_mesh(scene, False, "PREVIEW")
 	mesh_data.transform(mesh_matrix)
+	print("mesh matrix: "+str(mesh_matrix))
 
 	base_translation = base_translation_orig.copy()
 	base_rotation = base_rotation_orig.copy()
 
 	(mesh_translation, mesh_quat, mesh_scale) = mesh_matrix.decompose()
 	mesh_rotation = mesh_quat.to_matrix()
+	print("mesh matrix: "+str(mesh_matrix))
+	print("mesh translation: "+str(mesh_translation))
+	print("mesh quat: "+str(mesh_quat))
+	print("mesh scale: "+str(mesh_scale))
 
 	total_rotation = base_rotation.copy()
 	total_translation = base_translation.copy()
@@ -414,6 +419,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 					for kb in mesh_data.shape_keys.key_blocks[1:]:
 						# Turn ShapeKey data into a Vector.
 						blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
+						if vertex_index == 0:
+							print("vertex 0: {0}\nblend vertex 0: {1}".format(str(vertex.co),str(blend_vertex)))
 						if debug_export > 0:
 							print("blend vertex: "+str(blend_vertex))
 
@@ -434,6 +441,12 @@ def create_cal3d_mesh(scene, mesh_obj,
 						sk_coord = sk_coord + total_translation
 						sk_coord *= base_scale
 						sk_coord.rotate(total_rotation)
+						if vertex_index == 0:
+							print("Corrected vertex 0: {0}\nblend vertex 0: {1}".format(str(coord),str(sk_coord)))
+							sk_coord = sk_coord.cross(mesh_scale)
+							sk_coord.rotate(mesh_rotation)
+							print("Corrected sk coord 0: {0}".format(str(sk_coord)))
+							print("mesh rotation:\n{0}\nmesh scale: {1}".format(str(mesh_rotation), str(mesh_scale)))
 
 						# Calculate posdiff between vertex and blend vertex
 						# posdiff according to cal3d source in saver.cpp is computed as the absolute length of 
