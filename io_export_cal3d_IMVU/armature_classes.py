@@ -87,7 +87,6 @@ class Bone:
 		# jgb Add light support
 		self.is_light = False
 		self.light_type = 0
-		#self.light_color = [0.9, 0.7, 0.7]	# testing value!
 		
 		# See if we can determine if Bone is meant to be a light (name should start with either omni or spot)
 		testname = self.name.lower()	# lowercase
