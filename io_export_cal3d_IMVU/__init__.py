@@ -211,7 +211,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 	write_amb = BoolProperty(name="Write scene ambient color to XSF", 
 		description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).",
-		default=False)
+		default=True)
 	
 	def execute(self, context):
 		from . import export_mesh
