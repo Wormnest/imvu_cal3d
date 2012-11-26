@@ -1,4 +1,4 @@
-Cal3d blender exporter for IMVU version 1.2
+Cal3d blender exporter for IMVU version 1.3
 ===========================================
 
 Contents
@@ -29,6 +29,11 @@ version also supports:
   your scene with the scene name as your light bone.
   e.g. if you have a light bone Omni01 then add a light with name Omni01
   and then set that lights color as you wish.
+New in version 1.3:
+* Morph animations. Use shape keys to define a morph. Then in dopesheet
+  change editor mode to ShapeKey editor and define animation frames.
+  Note: currently only Relative shapekeys are supported and only with
+  weight ranges from 0.0 to 1.0.
 
 The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
