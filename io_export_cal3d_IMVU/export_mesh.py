@@ -169,6 +169,7 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 
 	# Reset to original values and remove keymesh_data after use
 	scene.frame_set(save_frame)
+	mesh_obj.active_shape_key_index = save_active
 	mesh_obj.active_shape_key.value = save_val
 	mesh_obj.show_only_shape_key = save_show
 
