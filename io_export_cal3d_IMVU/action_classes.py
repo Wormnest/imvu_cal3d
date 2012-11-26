@@ -35,10 +35,6 @@ class KeyFrame:
 	def to_cal3d_xml(self):
 		s = "    <KEYFRAME TIME=\"{0:0.5f}\">\n".format(self.time)
 		s += "      <TRANSLATION>{0:0.6f} {1:0.6f} {2:0.6f}</TRANSLATION>\n".format(self.loc[0], self.loc[1], self.loc[2])
-#		s += "      <ROTATION>{0} {1} {2} {3}</ROTATION>\n".format(self.quat.inverted().x, # Etory : maybe this function inverted rotation :
-#		                                                           self.quat.inverted().y, 
-#		                                                           self.quat.inverted().z, 
-#		                                                           self.quat.inverted().w)
 
 		# jgb 2012-11-11 Maybe we need for w: -self.quat.w to get the same negative value as for the mesh.
 		s += "      <ROTATION>{0:0.6f} {1:0.6f} {2:0.6f} {3:0.6f}</ROTATION>\n".format(self.quat.copy().x, 
@@ -54,14 +50,10 @@ class KeyFrame:
 						 self.loc[0],
 						 self.loc[1],
 						 self.loc[2],
-#						 self.quat.inverted().x, # Etory : maybe this function inverted rotation :
-#						 self.quat.inverted().y,
-#						 self.quat.inverted().z,
-#						 self.quat.inverted().w])
 						 self.quat.copy().x, 
 						 self.quat.copy().y,
 						 self.quat.copy().z,
-						 self.quat.copy().w])
+						 -self.quat.copy().w])
 		ar.tofile(file)
 
 
@@ -121,10 +113,7 @@ class Animation:
 		ar = array('b', list(s))
 		ar.tofile(file)
 		
-		#ar = array('L', [1200]) # this is the file version I was working from
-		#ar.tofile(file)
 		# Etory : downgrade version to 700 for Cal3D 0.11 compatibility
-		#ar = array('L', [1300]) # one file version up from the documentation
 		ar = array('L', [700])
 		ar.tofile(file)
 		
@@ -192,4 +181,3 @@ class MorphAnimation:
 		s += "".join(map(MorphTrack.to_cal3d_xml, self.morph_tracks))
 		s += "</ANIMATION>\n"
 		return s
-
