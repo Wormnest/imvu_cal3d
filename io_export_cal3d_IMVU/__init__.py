@@ -46,8 +46,9 @@ bl_info = \
 
 # To support reload properly, try to access a package var, 
 # if it's there, reload everything
-print("")
-print("Initializing IMVU Cal3D export version " + str(bl_info['version'][0])+"."+str(bl_info['version'][1])+"."+str(bl_info['version'][2]))
+print("\nInitializing IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
+	str(bl_info['version'][1]), str(bl_info['version'][2])))
+print("Portions Copyright 2012 by DutchTroy aka Jacob Boerema\n")
 if "bpy" in locals():
 	import imp
 	print("reloading script classes")
@@ -204,7 +205,10 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 		# Always add empty line to make it easier to find start of our info
 		print("")
-		print("ExportCal3D started.")
+		print("IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
+			str(bl_info['version'][1]), str(bl_info['version'][2])))
+		print("Portions Copyright 2012 by DutchTroy aka Jacob Boerema\n")
+		print("Exporting to Cal3D started.")
 		
 		# jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
 		# Which version might possibly be required for animation settings like  
