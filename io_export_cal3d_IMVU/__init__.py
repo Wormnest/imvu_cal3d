@@ -144,12 +144,15 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
 	# jgb 2012-11-09 IMVU expects 30 fps (ref: http://www.imvu.com/catalog/modules.php?op=modload&name=phpbb2&file=viewtopic.php&t=307460&start=0)
 	# While I remember reading that blender default and the value that was here before = 25.
-	fps = FloatProperty(name="Frame Rate", description="Set the desired frame rate (IMVU expects 30). You can set the value in Blender in Scene, Render settings.",
-						default=30.0)
+	fps = FloatProperty(name="Frame Rate",
+		description="Set the desired frame rate (IMVU expects 30). You can set the value in Blender in Scene, Render settings.",
+		default=30.0)
 
 	#path_mode = bpy_extras.io_utils.path_reference_mode
 	
-	use_groups = BoolProperty(name="Vertex Groups", description="Export the meshes using vertex groups.", default=True)
+	use_groups = BoolProperty(name="Vertex Groups",
+		description="Export the meshes using vertex groups.", 
+		default=True)
 	#use_envelopes = BoolProperty(name="Envelopes", description="Export the meshes using bone envelopes.", default=True)
 	
 	skeleton_binary_bool = EnumProperty(
@@ -180,18 +183,35 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                    ),
 			default='xml'
             )
-	
-	export_xsf = BoolProperty(name="Export skeleton (.XSF)", description="Whether or not to export the skeleton.", default=True)
-	export_xmf = BoolProperty(name="Export mesh (.XMF)", description="Whether or not to export the mesh.", default=True)
-	export_xaf = BoolProperty(name="Export animations (.XAF)", description="Whether or not to export the animations.", default=True)
-	export_xpf = BoolProperty(name="Export morph animations (.XPF)", description="Whether or not to export the morph animations.", default=True)
+
+	# Options for what file types to export.
+	export_xsf = BoolProperty(name="Export skeleton (.XSF)",
+		description="Whether or not to export the skeleton.", 
+		default=True)
+	export_xmf = BoolProperty(name="Export mesh (.XMF)",
+		description="Whether or not to export the mesh.",
+		default=True)
+	export_xaf = BoolProperty(name="Export animations (.XAF)",
+		description="Whether or not to export the animations.",
+		default=True)
+	export_xpf = BoolProperty(name="Export morph animations (.XPF)",
+		description="Whether or not to export the morph animations.",
+		default=True)
 	# Since IMVU doesn't use XRF anymore and never used CFG we turn them off by default
-	export_xrf = BoolProperty(name="Export materials (.XRF)", description="Whether or not to export the materials (not needed for IMVU).", default=False)
-	export_cfg = BoolProperty(name="Export config file (.CFG)", description="Whether or not to export the .CFG file (not needed for IMVU).", default=False)
-	copy_img = BoolProperty(name="Copy images", description="Whether or not to copy used material images to export folder (not needed for IMVU).", default=False)
+	export_xrf = BoolProperty(name="Export materials (.XRF)",
+		description="Whether or not to export the materials (not needed for IMVU).",
+		default=False)
+	export_cfg = BoolProperty(name="Export config file (.CFG)",
+		description="Whether or not to export the .CFG file (not needed for IMVU).",
+		default=False)
+
+	copy_img = BoolProperty(name="Copy images",
+		description="Whether or not to copy used material images to export folder (not needed for IMVU).",
+		default=False)
 
 	write_amb = BoolProperty(name="Write scene ambient color to XSF", 
-		description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).", default=False)
+		description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).",
+		default=False)
 	
 	def execute(self, context):
 		from . import export_mesh
