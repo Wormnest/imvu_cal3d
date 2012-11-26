@@ -346,11 +346,9 @@ class Morph:
 		self.name = name
 		self.blend_vertices = []
 		self.morph_id = morph_id
-		# TODO: find out if morph_id index is 0 base local to submesh or if it is a global id number for all morphs in this mesh
-		# probably per submesh because we need vertex id to identify and vertex ids start at 0 for every submesh
 
 	def to_cal3d_xml(self):
-		# IMVU requires morph names (not counting Head morphs which are TODO here) to end in 1 of 4 names:
+		# IMVU requires morph names to end in 1 of 4 names:
 		# .Clamped, . Averaged, .Exclusive, or .Additive (see IMVU documentation on what they do)
 		# We will give a warning here if the morph name doesn't conform to that
 		if not (self.name.endswith(".Exclusive") or self.name.endswith(".Additive") or
