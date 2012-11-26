@@ -529,8 +529,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		#row = layout.row(align=True)
 		#row.label(text="Set Prefix for:")
 		
-		row = layout.row(align=True)
-		row.prop(self, "file_prefix")
+		#row = layout.row(align=True)
+		#row.prop(self, "file_prefix")
 
 		#row = layout.row(align=True)
 		#row.prop(self, "skeleton_prefix")
