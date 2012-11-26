@@ -69,7 +69,6 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
 								except Exception as e:
 									print("Error copying texture " + str(e))
 						maps_filenames.append(imagepath_prefix + imagename)
-						#maps_filenames.append(texture_slot.texture.image.filepath[2:]) #remove the double slash
 			tsi += 1
 		if len(maps_filenames) > 0:
 			cal3d_material = Material(material_name, material_index, xml_version)
@@ -172,7 +171,6 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	scene.frame_set(save_frame)
 	mesh_obj.active_shape_key.value = save_val
 	mesh_obj.show_only_shape_key = save_show
-	#bpy.data.meshes.remove(keymesh_data)
 
 	# Return the collected ShapeKey normals
 	return sk_normals, sk_vertices
@@ -235,30 +233,15 @@ def create_cal3d_mesh(scene, mesh_obj,
 		# No use going on if we can't assing influences
 		return None
 
-	#not compatible with Blender 2.6.3
-	#faces = mesh_data.faces
 	#For Blender 2.6.3, use tesselation :
 	mesh_data.update (calc_tessface=True)
 	faces = mesh_data.tessfaces
-
-	# currently 1 material per mesh
 
 	blender_material = None
 	if len(mesh_data.materials) > 0:
 		blender_material = mesh_data.materials[0]
 	
 	cal3d_material_index = -1
-	# for cal3d_material in cal3d_materials:
-		# # jgb 2012-11-03 debug
-		# print("material: blender name: " + blender_material.name + " cal3d name: " + cal3d_material.name)
-		# if (blender_material != None) and (cal3d_material.name == blender_material.name):
-			# cal3d_material_index = cal3d_material.index
-			# # jgb debug
-			# print("cal3d material index: " + str(cal3d_material_index))
-			# # jgb 2012-11-03 As far as I can see these next 2 calls need to go inside the if, and not outside the for loop like they were!!
-			# cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
-				# cal3d_material_index)
-			# cal3d_mesh.submeshes.append(cal3d_submesh)
 
 	# jgb 2012-11-03 For IMVU we need to go over all blender materials, try a new double for loop here instead of above
 	# Take test for blender_material None out of loop, no need to be tested more than once!
@@ -292,8 +275,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 
 	duplicate_index = len(mesh_data.vertices)
 
-	#Not compatible with Blender 2.6.3
-	#for face in mesh_data.faces:
 	#For Blender 2.6.3 use tesselation :
 	if debug_export > 0:
 		print("tess faces: " + str(len(mesh_data.tessfaces)))
@@ -363,8 +344,6 @@ def create_cal3d_mesh(scene, mesh_obj,
 			cal3d_vertex = None
 			uvs = []
 
-			#Not compatible with Blender 2.6.3
-			#for uv_texture in mesh_data.uv_textures:
 			#Blender 2.6.3 use tesselation : tessface_uv_textures
 			for uv_texture in mesh_data.tessface_uv_textures:
 				if not cal3d_vertex1:
@@ -377,7 +356,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 					uvs.append(uv_texture.data[face.index].uv4.copy())
 
 			# Etory : Don't flip texture verticaly
-			# jgb 2012-11-03 maybe IMVU does need it to be flipped, so uncommented the next 2 lines
+			# jgb 2012-11-03 IMVU does need it to be flipped, so uncommented the next 2 lines
 			for uv in uvs:
 				uv[1] = 1.0 - uv[1]
 
@@ -550,4 +529,3 @@ def create_cal3d_mesh(scene, mesh_obj,
 	bpy.data.meshes.remove(mesh_data)
 
 	return cal3d_mesh
-
