@@ -117,6 +117,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	# to the class instance from the operator settings before calling.
 
 	# context group
+	# jgb 2012-11-26 Now also removing file_prefix from gui. We will always use the selected filename as the prefix basename.
 	file_prefix = StringProperty(name="File prefix", description="Prefix name for all exported files (default is the Blender filename)",
 									 default="")
 	# jgb 2012-11-15 these next prefixes will be used but not be visible in gui: we copy value from file_prefix
@@ -230,6 +231,12 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		print("Portions Copyright 2012 by DutchTroy aka Jacob Boerema\n")
 		print("Exporting to Cal3D started.")
 		
+		# Get the user's desired filename
+		sc = ""
+		if len(bpy.data.scenes) > 1:
+			sc = context.scene.name + "_"
+		self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0] + "_" + sc
+
 		# jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
 		# Which version might possibly be required for animation settings like  
 		# TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
@@ -574,11 +581,13 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	def invoke(self, context, event):
 		
 		self.fps = context.scene.render.fps
-		sc = ""
-		if len(bpy.data.scenes) > 1:
-			sc = context.scene.name + "_"
-		pre = os.path.splitext(os.path.basename(bpy.data.filepath))[0] + "_" + sc
-		self.file_prefix = pre
+		# jgb 2012-11-26 Since we are disabling setting prefix from gui we remove this part here and use it in execute
+		# sc = ""
+		# if len(bpy.data.scenes) > 1:
+			# sc = context.scene.name + "_"
+		# pre = os.path.splitext(os.path.basename(bpy.data.filepath))[0] + "_" + sc
+		# self.file_prefix = pre
+		# --- end commenting out stuff
 		#self.mesh_prefix = pre
 		#self.skeleton_prefix = pre
 		#self.anim_prefix = pre
