@@ -137,7 +137,11 @@ class Influence:
     
 	
 	def to_cal3d_xml(self):
-		return "      <INFLUENCE ID=\"{0}\">{1:0.6f}</INFLUENCE>\n".format(self.bone_index, 
+		# Reduce filesize by testing for common situations (weight = 1.0) use int instead of float:
+		if self.weight == 1.0:
+			return "      <INFLUENCE ID=\"{0}\">1</INFLUENCE>\n".format(self.bone_index)
+		else:
+			return "      <INFLUENCE ID=\"{0}\">{1:0.6f}</INFLUENCE>\n".format(self.bone_index, 
 		                                                              self.weight)
 
 		
@@ -157,7 +161,7 @@ class Vertex:
 		# jgb 2012-11-06 vertex indexes should be exported  starting from 0 for every submesh apparently to work in imvu
 		self.exportindex = len(submesh.vertices)
 		# jgb 2012-11-07 Store vertex color of this vertex
-		self.vertex_color = vertex_color
+		self.vertex_color = vertex_color.copy()	# IMPORTANT needs copy or color will be 1,1,1
 
 		self.loc = loc.copy()
 		self.normal = normal.copy()
@@ -190,7 +194,13 @@ class Vertex:
 		                                               self.normal[1],
 		                                               self.normal[2])
 
-		s += "      <COLOR>{0:0.3f} {1:0.3f} {2:0.3f}</COLOR>\n".format(self.vertex_color[0],
+		# Reduce filesize by testing for common situations (all 1.0 means no vertex colors set) use int instead of float:
+		if self.vertex_color[0] == 1.0 and self.vertex_color[1] == 1.0 and self.vertex_color[2] == 1.0:
+			s += "      <COLOR>1 1 1</COLOR>\n"
+		elif self.vertex_color[0] == 0.0 and self.vertex_color[1] == 0.0 and self.vertex_color[2] == 0.0:
+			s += "      <COLOR>0 0 0</COLOR>\n"
+		else:
+			s += "      <COLOR>{0:0.3f} {1:0.3f} {2:0.3f}</COLOR>\n".format(self.vertex_color[0],
 		                                               self.vertex_color[1],
 		                                               self.vertex_color[2])
 

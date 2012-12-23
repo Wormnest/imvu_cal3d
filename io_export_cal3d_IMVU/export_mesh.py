@@ -426,7 +426,8 @@ def create_cal3d_mesh(scene, mesh_obj,
 					print(str(vertex_color))
 			else:
 				# jgb cal3d v 919 always requires the color tag to be written even if we don't use vertex colors thus set default colors
-				vertex_color = (1.0, 1.0, 1.0)
+				# 2012-12-23 Make it a Vector because we need to make a copy in mesh_classes if real vertex colors are used
+				vertex_color = Vector((1.0, 1.0, 1.0))
 
 			if debug_export > 0:
 				print("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
