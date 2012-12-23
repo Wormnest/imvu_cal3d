@@ -184,8 +184,6 @@ class Vertex:
 			for influence in self.influences:
 				influence.weight /= total_weight
 		
-		s = "    <VERTEX ID=\"{0}\" NUMINFLUENCES=\"{1}\">\n".format(self.exportindex,
-		                                                             len(self.influences))
 		# 2012-12-16 Since IMVU MAX exporter has NUMINFLUENCES first and then ID we change it to that order too
 		s = "    <VERTEX NUMINFLUENCES=\"{0}\" ID=\"{1}\">\n".format(
 			len(self.influences), self.exportindex )
