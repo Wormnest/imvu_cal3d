@@ -27,11 +27,11 @@ bl_info = \
             "Damien McGinnes, "           \
             "David Young, "               \
             "Alexey Dorokhov, "           \
-            "Matthias Ferch, "             \
-            "Peter Amstutz, "                \
-            "Etory, "                \
+            "Matthias Ferch, "            \
+            "Peter Amstutz, "             \
+            "Etory, "                     \
             "Jacob Boerema",
-  "version": (1, 3, 1),
+  "version": (1, 3, 2),
   "blender": (2, 6, 3),
   "location": "File > Export > IMVU Cal3D (.cfg)",
   "description": "Export mesh geometry, armature, "   \
