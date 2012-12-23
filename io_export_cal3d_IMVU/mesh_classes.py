@@ -186,6 +186,9 @@ class Vertex:
 		
 		s = "    <VERTEX ID=\"{0}\" NUMINFLUENCES=\"{1}\">\n".format(self.exportindex,
 		                                                             len(self.influences))
+		# 2012-12-16 Since IMVU MAX exporter has NUMINFLUENCES first and then ID we change it to that order too
+		s = "    <VERTEX NUMINFLUENCES=\"{0}\" ID=\"{1}\">\n".format(
+			len(self.influences), self.exportindex )
 		s += "      <POS>{0:0.6f} {1:0.6f} {2:0.6f}</POS>\n".format(self.loc[0],
 		                                             self.loc[1], 
 		                                             self.loc[2])
@@ -406,14 +409,16 @@ class SubMesh:
 			else:
 				faces_num += 1
 
-		s = "  <SUBMESH NUMVERTICES=\"{0}\" NUMFACES=\"{1}\" MATERIAL=\"{2}\" ".format(len(self.vertices),
-		                                                                        faces_num,
-		                                                                        self.material_id)
+		# 2012-12-16 Change order to that of the MAX exporter: MATERIAL last
+		s = "  <SUBMESH NUMVERTICES=\"{0}\" NUMFACES=\"{1}\" ".format(
+			len(self.vertices), faces_num )
 
-		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMMORPHS=\"{2}\" NUMTEXCOORDS=\"{3}\">\n".format(self.nb_lodsteps,
+		s += "NUMLODSTEPS=\"{0}\" NUMSPRINGS=\"{1}\" NUMMORPHS=\"{2}\" NUMTEXCOORDS=\"{3}\" ".format(self.nb_lodsteps,
 			len(self.springs),
 			len(self.morphs),
-			texcoords_num,)
+			texcoords_num)
+		# MATERIAL last:
+		s += "MATERIAL=\"{0}\">\n".format(self.material_id)
 
 		s += "".join(map(Vertex.to_cal3d_xml, self.vertices))
 		if self.springs and len(self.springs) > 0:
