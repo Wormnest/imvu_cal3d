@@ -105,7 +105,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 	# jgb To ease debugging use a class debugging var (0 means off)
 	debug_ExportCal3D = 0
 	
-	bl_idname = "cal3d_model.cfg"
+	bl_idname = "cal3d_model_export.cfg"
 	bl_label = 'Export Cal3D for IMVU'
 	bl_options = {'PRESET'}
 
