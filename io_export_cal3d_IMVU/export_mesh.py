@@ -385,27 +385,54 @@ def create_cal3d_mesh(scene, mesh_obj,
 
 			if not uvs:
 				print("WARNING: no uv texture assigned to face "+str(face.index) + " vertex "+str(vertex_index))
-			
+
+			# 2012-12-15 Moved computing of normal here because for duplicate vertex ids we also
+			# need to compare the normals!
+			vertex = mesh_data.vertices[vertex_index]
+			if debug_export > 0:
+				print("vertex "+str(vertex.co))
+
+			normal = vertex.normal.copy()
+			normal *= base_scale
+			normal.rotate(total_rotation)
+			normal.normalize()
+			if debug_export > 0:
+				print("vertex normal: "+str(normal))
+
+			# jgb 2012-12-15 We only need to duplicate a vertex if the uv coordinates differ
+			uv_matches = False
 			for cal3d_vertex_iter in cal3d_submesh.vertices:
+				# 2012-12-15 Since we are making duplicates in certain cases we can't just stop
+				# on the first equal index we find. In case they have differing uvs we should look
+				# for another corresponding index and test for equal uvs there too!
+				# Therefore we replace breaks with continue and we don't need duplicate variable anymore
+				# This change will of course make this part of the code slower
+				# because we need more iterations.
 				if cal3d_vertex_iter.index == vertex_index:
-					duplicate = True
+					#duplicate = True
 					if len(cal3d_vertex_iter.maps) != len(uvs):
-						break
+						#break
+						continue
 					
 					uv_matches = True
 					for i in range(len(uvs)):
 						if cal3d_vertex_iter.maps[i].u != uvs[i][0]:
 							uv_matches = False
-							break
+							#break
+							continue
 
 						if cal3d_vertex_iter.maps[i].v != uvs[i][1]:
 							uv_matches = False
-							break
+							#break
+							continue
 					
 					if uv_matches:
 						cal3d_vertex = cal3d_vertex_iter
+						# We have found an equal vertex thus can stop the loop
+						break
 
-					break
+					#break
+
 
 			# jgb 2012-11-07 try to figure out the vertex colors
 			# jgb 2012-11-08 but first test if there are any vertex colors
@@ -433,16 +460,17 @@ def create_cal3d_mesh(scene, mesh_obj,
 				print("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
 
 			if not cal3d_vertex:
-				vertex = mesh_data.vertices[vertex_index]
-				if debug_export > 0:
-					print("vertex "+str(vertex.co))
+				# 2012-12-15 jgb We need normals earlier in the code commenting it here
+				# vertex = mesh_data.vertices[vertex_index]
+				# if debug_export > 0:
+					# print("vertex "+str(vertex.co))
 
-				normal = vertex.normal.copy()
-				normal *= base_scale
-				normal.rotate(total_rotation)
-				normal.normalize()
-				if debug_export > 0:
-					print("vertex normal: "+str(normal))
+				# normal = vertex.normal.copy()
+				# normal *= base_scale
+				# normal.rotate(total_rotation)
+				# normal.normalize()
+				# if debug_export > 0:
+					# print("vertex normal: "+str(normal))
 
 				coord = vertex.co.copy()
 				coord = coord + total_translation
@@ -512,15 +540,19 @@ def create_cal3d_mesh(scene, mesh_obj,
 						# Increment the current ShapeKey index
 						sk_id += 1
 
-				if duplicate:
+				#if duplicate:
 					#print("duplicate vertex: "+str(coord))
-					cal3d_vertex = Vertex(cal3d_submesh, duplicate_index,
-					                      coord, normal, vertex_color)
-					duplicate_index += 1
+					# jgb 2012-12-15 vert index should be the real vertex index, not a duplicate or 
+					# we will get unnecessary duplicate vertices!
+				#	cal3d_vertex = Vertex(cal3d_submesh, vertex_index,	#duplicate_index,
+				#	                      coord, normal, vertex_color)
+				#	if cal3d_vertex.exportindex > 30 and cal3d_vertex.exportindex < 35:
+				#		print("face {0} vertex {1}, duplicate id {2} export id {3}".format(face.index,vertex_index,duplicate_index,cal3d_vertex.exportindex))
+				#	duplicate_index += 1
 
-				else:
-					cal3d_vertex = Vertex(cal3d_submesh, vertex_index,
-					                      coord, normal, vertex_color)
+				#else:
+				cal3d_vertex = Vertex(cal3d_submesh, vertex_index,
+									  coord, normal, vertex_color)
 
 				cal3d_vertex.influences = get_vertex_influences(vertex,
 						                                        mesh_obj,
