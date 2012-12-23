@@ -176,6 +176,20 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 	# Return the collected ShapeKey normals
 	return sk_normals, sk_vertices
 
+# functions to determine if a string ends in [number]  (a number between square brackets)
+# Returns None if not ending in [number], or the number 
+def ends_with_number(string):
+	last_left_bracket = string.rfind('[')
+	if (last_left_bracket == -1) or (string[-1] != ']'):
+		return None
+	else:
+		num = string[last_left_bracket+1:-1]
+		if num.isdigit():
+			return int(num)
+		else:
+			print("WARNING: {0} is not a number".format(num))
+			return None
+		
 
 def create_cal3d_mesh(scene, mesh_obj,
                       cal3d_skeleton,
@@ -261,8 +275,16 @@ def create_cal3d_mesh(scene, mesh_obj,
 						print("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
 					# jgb Set this material as being in use when needed:
 					if cal3d_material.in_use == False:
+						# 2012-12-14 Determine if material name ends in a number
+						mat_num = ends_with_number(cal3d_material.name)
+						if mat_num is not None:
+							# explicit material number set: use that instead of consecutive index
+							# WARNING: currently no checking that a material number is used twice
+							# or that it will interfere with another number using the consecutive indexing!
+							cal3d_material.used_index = mat_num
+						else:
+							cal3d_material.used_index = len(cal3d_used_materials)
 						cal3d_material.in_use = True
-						cal3d_material.used_index = len(cal3d_used_materials)
 						cal3d_used_materials.append(cal3d_material)
 					# jgb 2012-11-05 Add mesh_material id relative to mesh to SubMesh
 					cal3d_submesh = SubMesh(cal3d_mesh, len(cal3d_mesh.submeshes),
