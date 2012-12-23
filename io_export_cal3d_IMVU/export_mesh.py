@@ -282,6 +282,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 							# WARNING: currently no checking that a material number is used twice
 							# or that it will interfere with another number using the consecutive indexing!
 							cal3d_material.used_index = mat_num
+							print("Explicit material number {0} set for submesh {1}".format(mat_num,len(cal3d_mesh.submeshes)))
 						else:
 							cal3d_material.used_index = len(cal3d_used_materials)
 						cal3d_material.in_use = True
