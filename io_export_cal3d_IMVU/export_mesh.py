@@ -317,19 +317,21 @@ def create_cal3d_mesh(scene, mesh_obj,
 			do_shape_keys = True
 			# Requires same number of vertices in mesh and in each of the shape keys
 			vert_count = len(mesh_data.vertices)
+			# Keep track of shapekey id, starting at number 0
+			sk_id = 0
 			for kb in mesh_data.shape_keys.key_blocks[1:]:
 				if len(kb.data) != vert_count:
 					do_shape_keys = False
 					print("WARNING: shape key "+kb.name+" has a different vertex count as the base mesh."+
 						" Morph targets will be ignored and not exported!")
 					break
-				# Add a morph with this name to all submeshes
-				sk_id = 0
+				# Add a morph with this name and id to all submeshes
 				for sm in cal3d_mesh.submeshes:
 					cal3d_morph = Morph(kb.name,sk_id)
 					if cal3d_morph:
 						sm.morphs.append(cal3d_morph)
-					sk_id += 1
+				# Increase id for next shapekey
+				sk_id += 1
 		else:
 			print("WARNING: Only relative ShapeKeys are currently supported! Morph information will not be added to your mesh.")
 			do_shape_keys = False
