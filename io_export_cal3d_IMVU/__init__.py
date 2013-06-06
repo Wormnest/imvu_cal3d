@@ -44,11 +44,18 @@ bl_info = \
   "category": "Import-Export"
 }
 
+
+# Print Copyright 2012-<current year> line
+def print_copyright():
+	import datetime
+	from datetime import date
+	print("Portions Copyright 2012-{0} by DutchTroy aka Jacob Boerema\n".format(date.today().year))
+
 # To support reload properly, try to access a package var, 
 # if it's there, reload everything
 print("\nInitializing IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
 	str(bl_info['version'][1]), str(bl_info['version'][2])))
-print("Portions Copyright 2012 by DutchTroy aka Jacob Boerema\n")
+print_copyright()
 if "bpy" in locals():
 	import imp
 	print("reloading script classes")
@@ -228,7 +235,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 		print("")
 		print("IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
 			str(bl_info['version'][1]), str(bl_info['version'][2])))
-		print("Portions Copyright 2012 by DutchTroy aka Jacob Boerema\n")
+		print_copyright()
 		print("Exporting to Cal3D started.")
 		
 		# Get the user's desired filename
