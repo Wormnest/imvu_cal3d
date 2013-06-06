@@ -6,7 +6,8 @@ Contents
 0. Introduction
 1. Install
 2. Export
-3. Credits
+3. Questions and bug reporting
+4. Credits
 
 
 0. Introduction
@@ -70,7 +71,23 @@ console go to Blender's main menu: Window, Toggle system console. A separate
 Blender window should open which will show information about what happened.
 
 
-3. Credits
+3. Questions and bug reporting
+------------------------------
+If you have any questions about this exporter or think you have found a
+possible bug then the preferred place of contact is the Blender Creators 
+group on IMVU (you need to become a member first):
+http://www.imvu.com/groups/group/Blender+Creators/
+Note that questions regarding problems exporting need to always include
+the complete error text as shown in the system console. See Export on
+how to show the system console. In the system console you can use
+Alt+space, then Edit to access the copy, select and paste menu items.
+
+For reporting bugs or feature requests you can also add them to my Bitbucket
+issue tracker:
+https://bitbucket.org/jacobb/imvu_cal3d/issues
+
+
+4. Credits
 ----------
 This version was based on the version found in the terra tenebrae repository:
 http://sourceforge.net/p/terratenebrae/code/157/tree/trunk/tools/blender/2.6/
@@ -88,4 +105,4 @@ Besides these the following cal3d scripts were also inspected:
 * drtron version for blender 2.49 using vertex colors
 
 
-Jacob Boerema (DutchTroy on IMVU), november 2012
+Jacob Boerema (DutchTroy on IMVU), November 2012-June 2013
