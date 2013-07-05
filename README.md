@@ -49,14 +49,15 @@ Changes in version 1.4:
   script assigns increasing material numbers starting from 0 to each
   submesh. However in certain cases like updating an existing mesh or
   making a custom head the submeshes might need a fixed material
-  number. e.g. with a head the third material is for the eyes which
-  would get material id 2 but it needs material id 5, therefore add
-  [5] to the material name e.g. eyes_material[5].
+  number. e.g. with a head the third material is for the eyelashes which
+  would get material id 2 (because numbering starts at 0) but it needs 
+  material id 5, therefore add [5] to the material name
+  e.g. eyelashes_material[5]
 * Bugfix: incorrect shapekey id assignment.
 * Reduce size of exported mesh: certain vertices where exported twice.
 * IMVU's Morph Target tutorial wrongly states one of the morph suffixes
-  as .Averaged, it should be .Average (see IMVU's Avatar Morph Animations
-  page).
+  as .Averaged, it should be .Average as seen on IMVU's Avatar Morph 
+  Animations page.
 
 The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
