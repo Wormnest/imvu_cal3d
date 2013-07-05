@@ -4,8 +4,8 @@ Cal3d blender exporter for IMVU version 1.3
 Contents
 --------
 0. Introduction
-1. Install
-2. Export
+1. How to install in Blender
+2. How to export from Blender
 3. Questions and bug reporting
 4. Credits
 
@@ -40,8 +40,8 @@ The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
 
 
-1. Install
-----------
+1. How to install in Blender
+----------------------------
 After you have downloaded the zip file with this script start Blender.
 Go to menu File, User Preferences, Addons tab.
 Click the Install Addons button located at the bottom.
@@ -55,18 +55,18 @@ on where and how to do that:
 http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Add-Ons
 
 
-2. Export
----------
-To export select your bones and mesh, then go to menu File, Export, 
-IMVU Cal3d export.
-Note that currently it is required to have material(s) assigned to 
-the mesh for the export to work.
+2. How to export from Blender
+-----------------------------
+To export you need to select **both your bones (skeleton) and your mesh**,
+then go to menu File, Export, IMVU Cal3d export.
+Note that currently it is **required to have material(s) assigned to 
+the mesh** for the export to work.
 You can choose which files you want to export. IMVU only needs
-XMF, XSF and XAF files.
+XMF, XSF, XAF and XPF files.
 The default settings should generally be fine for IMVU.
 Choose a location where the files should be saved and press the button
 called Export Cal3d for IMVU.
-If anything went wrong look in the system console window. To see the system
+If anything went wrong look in the **system console window**. To see the system
 console go to Blender's main menu: Window, Toggle system console. A separate
 Blender window should open which will show information about what happened.
 
@@ -77,6 +77,7 @@ If you have any questions about this exporter or think you have found a
 possible bug then the preferred place of contact is the Blender Creators 
 group on IMVU (you need to become a member first):
 http://www.imvu.com/groups/group/Blender+Creators/
+
 Note that questions regarding problems exporting need to always include
 the complete error text as shown in the system console. See Export on
 how to show the system console. In the system console you can use
@@ -105,4 +106,4 @@ Besides these the following cal3d scripts were also inspected:
 * drtron version for blender 2.49 using vertex colors
 
 
-Jacob Boerema (DutchTroy on IMVU), November 2012-June 2013
+Jacob Boerema (DutchTroy on IMVU), November 2012-July 2013
