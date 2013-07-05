@@ -362,6 +362,8 @@ class Morph:
 		# IMVU requires morph names to end in 1 of 4 names:
 		# .Clamped, . Average, .Exclusive, or .Additive (see IMVU documentation on what they do)
 		# N.B.: the IMVU Morph Targets page wrongly says it should be .Averaged, it should be .Average
+		if self.name.endswith(".Averaged"):
+			print("WARNING: morph name " + self.name + " wrongly ends in .Averaged. It should end in .Average instead!")
 		# We will give a warning here if the morph name doesn't conform to that
 		if not (self.name.endswith(".Exclusive") or self.name.endswith(".Additive") or
 				self.name.endswith(".Average") or self.name.endswith(".Clamped")):
