@@ -13,12 +13,16 @@ Contents
 1. Introduction
 ---------------
 This python script is intended for Blender version 2.63 or higher.
-It's purpose is to export blender objects to Cal3d, and specifically
+Older versions of Blender are not supported.
+It's purpose is to export Blender objects to Cal3d, and specifically
 targeted at IMVU compatibility.
-This version has not been extensively tested yet. Please report all
-bugs, inconsistensies etc so that I can hopefully fix it.
 
-In addition to what older exporters for blender 2.49 could do, this
+Although this script has been used with success for a while there
+could still be some problems, especially with animations and morph
+animations. Please report all bugs, inconsistensies, etc. so that 
+I can have a look and hopefully fix it.
+
+In addition to what older exporters for Blender 2.49 could do, this
 version also supports:
 
 * Vertex colors.
