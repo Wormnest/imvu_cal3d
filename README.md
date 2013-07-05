@@ -1,4 +1,4 @@
-Cal3d blender exporter for IMVU version 1.3
+Cal3d blender exporter for IMVU version 1.4
 ===========================================
 
 Contents
