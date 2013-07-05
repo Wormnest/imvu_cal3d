@@ -54,6 +54,9 @@ Changes in version 1.4:
   [5] to the material name e.g. eyes_material[5].
 * Bugfix: incorrect shapekey id assignment.
 * Reduce size of exported mesh: certain vertices where exported twice.
+* IMVU's Morph Target tutorial wrongly states one of the morph suffixes
+  as .Averaged, it should be .Average (see IMVU's Avatar Morph Animations
+  page).
 
 The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
