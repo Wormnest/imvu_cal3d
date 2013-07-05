@@ -47,6 +47,7 @@ New in version 1.3:
   weight ranges from 0.0 to 1.0.
 
 Changes in version 1.4:
+
 * You can now set explicit material numbers by adding a number in
   square brackets to the end of the material name. By default this
   script assigns increasing material numbers starting from 0 to each
