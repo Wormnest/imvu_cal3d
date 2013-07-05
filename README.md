@@ -40,6 +40,9 @@ New in version 1.3:
 
 * Morph animations. Use shape keys to define a morph. Then in dopesheet
   change editor mode to ShapeKey editor and define animation frames.
+  Your shapekey name should end in one of the four IMVU defined
+  suffixes: .Clamped, .Average (not .Averaged as some documentation
+  wrongly states!), .Exclusive, or .Additive.
   Note: currently only Relative shapekeys are supported and only with
   weight ranges from 0.0 to 1.0.
 
