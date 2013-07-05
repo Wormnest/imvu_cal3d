@@ -364,7 +364,7 @@ class Morph:
 		# We will give a warning here if the morph name doesn't conform to that
 		if not (self.name.endswith(".Exclusive") or self.name.endswith(".Additive") or
 				self.name.endswith(".Averaged") or self.name.endswith(".Clamped")):
-			print("WARNING: morph name doesn't end in one of the IMVU specified suffixes!")
+			print("WARNING: morph name " + self.name + " doesn't end in one of the IMVU specified suffixes!")
 		#  Morph has 2  xml formats: 1 without blendvertex data ends with />, the other 2 has a separate end morph tag
 		s = "    <MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(self.name, len(self.blend_vertices), self.morph_id)
 		if len(self.blend_vertices) > 0:
