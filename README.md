@@ -3,14 +3,14 @@ Cal3d blender exporter for IMVU version 1.3
 
 Contents
 --------
-0. Introduction
-1. How to install in Blender
-2. How to export from Blender
-3. Questions and bug reporting
-4. Credits
+1. Introduction
+2. How to install in Blender
+3. How to export from Blender
+4. Questions and bug reporting
+5. Credits
 
 
-0. Introduction
+1. Introduction
 ---------------
 This python script is intended for Blender version 2.63 or higher.
 It's purpose is to export blender objects to Cal3d, and specifically
@@ -20,6 +20,7 @@ bugs, inconsistensies etc so that I can hopefully fix it.
 
 In addition to what older exporters for blender 2.49 could do, this
 version also supports:
+
 * Vertex colors.
 * Setting the room SCENEAMBIENTCOLOR when you check the exporter option.
   The color is taken from Blender's world ambient color which is gamma 
@@ -30,7 +31,9 @@ version also supports:
   your scene with the scene name as your light bone.
   e.g. if you have a light bone Omni01 then add a light with name Omni01
   and then set that lights color as you wish.
+
 New in version 1.3:
+
 * Morph animations. Use shape keys to define a morph. Then in dopesheet
   change editor mode to ShapeKey editor and define animation frames.
   Note: currently only Relative shapekeys are supported and only with
@@ -40,7 +43,7 @@ The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
 
 
-1. How to install in Blender
+2. How to install in Blender
 ----------------------------
 After you have downloaded the zip file with this script start Blender.
 Go to menu File, User Preferences, Addons tab.
@@ -55,23 +58,23 @@ on where and how to do that:
 http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Add-Ons
 
 
-2. How to export from Blender
+3. How to export from Blender
 -----------------------------
 To export you need to select **both your bones (skeleton) and your mesh**,
-then go to menu File, Export, IMVU Cal3d export.
-Note that currently it is **required to have material(s) assigned to 
-the mesh** for the export to work.
+then go to menu File, Export, IMVU Cal3d export. It is also **required to 
+have material(s) assigned to the mesh** for the export to work.
+
 You can choose which files you want to export. IMVU only needs
-XMF, XSF, XAF and XPF files.
-The default settings should generally be fine for IMVU.
+XMF, XSF, XAF and XPF files. The default settings should generally be fine for IMVU.
 Choose a location where the files should be saved and press the button
 called Export Cal3d for IMVU.
+
 If anything went wrong look in the **system console window**. To see the system
 console go to Blender's main menu: Window, Toggle system console. A separate
 Blender window should open which will show information about what happened.
 
 
-3. Questions and bug reporting
+4. Questions and bug reporting
 ------------------------------
 If you have any questions about this exporter or think you have found a
 possible bug then the preferred place of contact is the Blender Creators 
@@ -88,7 +91,7 @@ issue tracker:
 https://bitbucket.org/jacobb/imvu_cal3d/issues
 
 
-4. Credits
+5. Credits
 ----------
 This version was based on the version found in the terra tenebrae repository:
 http://sourceforge.net/p/terratenebrae/code/157/tree/trunk/tools/blender/2.6/
