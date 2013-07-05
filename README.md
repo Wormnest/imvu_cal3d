@@ -43,6 +43,18 @@ New in version 1.3:
   Note: currently only Relative shapekeys are supported and only with
   weight ranges from 0.0 to 1.0.
 
+Changes in version 1.4:
+* You can now set explicit material numbers by adding a number in
+  square brackets to the end of the material name. By default this
+  script assigns increasing material numbers starting from 0 to each
+  submesh. However in certain cases like updating an existing mesh or
+  making a custom head the submeshes might need a fixed material
+  number. e.g. with a head the third material is for the eyes which
+  would get material id 2 but it needs material id 5, therefore add
+  [5] to the material name e.g. eyes_material[5].
+* Bugfix: incorrect shapekey id assignment.
+* Reduce size of exported mesh: certain vertices where exported twice.
+
 The latest version of this script can always be found here:
 https://bitbucket.org/jacobb/imvu_cal3d
 
