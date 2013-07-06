@@ -150,18 +150,17 @@ class Bone:
 
 
 	def to_cal3d_xml(self):
+		s = "  <BONE NAME=\"{0}\" NUMCHILDS=\"{1}\" ID=\"{2}\"".format(
+			self.name, 
+			len(self.children),
+			self.index)
 		if self.is_light == True:
-			s = "  <BONE ID=\"{0}\" NAME=\"{1}\" NUMCHILDS=\"{2}\"".format(self.index,
-		                                                                  self.name, 
-		                                                                  len(self.children))
 			s += " LIGHTTYPE=\"{0}\" LIGHTCOLOR=\"{1:0.6f} {2:0.6f} {3:0.6f}\">\n".format(self.light_type,
 				self.light_color[0],
 				self.light_color[1],
 				self.light_color[2])
 		else:
-			s = "  <BONE ID=\"{0}\" NAME=\"{1}\" NUMCHILDS=\"{2}\">\n".format(self.index,
-		                                                                  self.name, 
-		                                                                  len(self.children))
+			s += ">\n"
 
 		s += "    <TRANSLATION>{0:0.6f} {1:0.6f} {2:0.6f}</TRANSLATION>\n".format(self.loc[0],
 		                                                         self.loc[1],
