@@ -244,6 +244,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
         # Initialize our logger
         LogMessage = Logger("Cal3dExportLogger", type ="file", file= self.log_file)
+        logger_class.LogMessage = LogMessage
 
         # Always add empty line to make it easier to find start of our info (don't log it to file though)
         print("")

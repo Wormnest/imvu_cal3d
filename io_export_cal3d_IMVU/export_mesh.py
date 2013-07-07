@@ -26,11 +26,16 @@ from . import mesh_classes
 from . import armature_classes
 from .mesh_classes import *
 from .armature_classes import *
+from . import logger_class
+from .logger_class import Logger, LogMessage
 
 # for debugging (0=off)
 debug_export = 0
+LogMessage = None
 
 def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_images):
+    global LogMessage
+    LogMessage = logger_class.LogMessage
     cal3d_materials = []
     for material in bpy.data.materials:
         material_index = len(cal3d_materials)
@@ -45,7 +50,7 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
                         if texture_slot.texture.image:
                             imagename = bpy.path.basename(texture_slot.texture.image.filepath)
                         else:
-                            print("WARNING: no image data available in texture slot {0} for material {1}".format(tsi, material_name))
+                            LogMessage.log_warning("no image data available in texture slot {0} for material {1}".format(tsi, material_name))
                             # Give it a dummy name, we don't need it for imvu anyway
                             imagename = "MATERIAL_{0}_TEXTURE_{1:03d}.JPG".format(material_name, tsi)
                         
@@ -55,9 +60,9 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
                             texturePath = os.path.join(cal3d_dirname, imagepath_prefix + imagename)
                             # jgb 2012-11-03 debugging info
                             if debug_export > 0:
-                                print ("----------")
-                                print( "material: " + material_name + " index: " + str(material_index))
-                                print("image: " + imagename + " filepath: " + filepath)
+                                LogMessage.log_message("----------")
+                                LogMessage.log_debug( "material: " + material_name + " index: " + str(material_index))
+                                LogMessage.log_debug("image: " + imagename + " filepath: " + filepath)
                             
                             if not os.path.exists(os.path.dirname(texturePath)):
                                 os.mkdir(os.path.dirname(texturePath))
@@ -65,9 +70,9 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
                                 import shutil
                                 try:
                                     shutil.copy(filepath, texturePath)
-                                    print("Copied texture to " + texturePath)
+                                    LogMessage.log_info("Copied texture to " + texturePath)
                                 except Exception as e:
-                                    print("Error copying texture " + str(e))
+                                    LogMessage.log_error("Error copying texture " + str(e))
                         maps_filenames.append(imagepath_prefix + imagename)
             tsi += 1
         if len(maps_filenames) > 0:
@@ -76,18 +81,21 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
             cal3d_materials.append(cal3d_material)
     # jgb 2012-11-08 get some info for testing in case there are no materials
     if len(cal3d_materials) == 0:
-        print("Sorry but you need to add materials to you meshes and add the images there in order to be able to export your mesh!")
-        print("Currently these images are known:")
+        LogMessage.log_error("You need to add materials to your meshes and add the images there in order to be able to export your mesh!")
+        LogMessage.log_info("Currently these images are known:")
         for img in bpy.data.images:
-            print(img.filepath)
+            LogMessage.log_message(img.filepath)
         
     return cal3d_materials
 
 
 def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_envelopes, armature_obj):
+    global LogMessage
+    LogMessage = logger_class.LogMessage
     if not cal3d_skeleton:
         return []
 
+    global LogMessage
     influences = []
     
     if use_groups:
@@ -96,7 +104,7 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
             group_name = mesh_obj.vertex_groups[group_index].name
             # jgb debug
             if debug_export > 0:
-                print( "group name " + group_name + ", group weight: " + str(group.weight))
+                LogMessage.log_debug( "group name " + group_name + ", group weight: " + str(group.weight))
             weight = group.weight
             if weight > 0.0001:
                 for bone in cal3d_skeleton.bones:
@@ -124,6 +132,8 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
 # some reason the ShapeKey vertex data there is off and for now I can't figure out how to compute the right values
 # Therefore we take the easy route and store and return the ShapeKey vertices from here too
 def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
+    global LogMessage
+    LogMessage = logger_class.LogMessage
     # Save original values and set to our wanted values
     save_frame = scene.frame_current
     save_show = mesh_obj.show_only_shape_key
@@ -157,7 +167,7 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
         for vx in range(len(keymesh_data.vertices)):
             # Get the normal for this vertex and store it in our list at list index sk_normals[si-1][vx]
             if vx == 0 and debug_export > 0:
-                print("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1, vx,
+                LogMessage.log_debug("ShapeKey {0} [{1}] has normal {2} and vertex {3}".format(si-1, vx,
                     keymesh_data.vertices[vx].normal, keymesh_data.vertices[vx].co))
             sk_normal = keymesh_data.vertices[vx].normal.copy()
             sk_normals[si-1].append(sk_normal)
@@ -179,6 +189,9 @@ def collect_shapekey_normals(mesh_obj, scene, mesh_matrix, shape_keys):
 # functions to determine if a string ends in [number]  (a number between square brackets)
 # Returns None if not ending in [number], or the number 
 def ends_with_number(string):
+    global LogMessage
+    LogMessage = logger_class.LogMessage
+
     last_left_bracket = string.rfind('[')
     if (last_left_bracket == -1) or (string[-1] != ']'):
         return None
@@ -187,7 +200,7 @@ def ends_with_number(string):
         if num.isdigit():
             return int(num)
         else:
-            print("WARNING: {0} is not a number".format(num))
+            LogMessage.log_warning("{0} is not a number".format(num))
             return None
         
 
@@ -200,15 +213,17 @@ def create_cal3d_mesh(scene, mesh_obj,
                       xml_version,
                       use_groups, use_envelopes, armature_obj):
 
+    global LogMessage
+    LogMessage = logger_class.LogMessage
     mesh_matrix = mesh_obj.matrix_world.copy()
 
     (mesh_translation, mesh_quat, mesh_scale) = mesh_matrix.decompose()
     mesh_rotation = mesh_quat.to_matrix()
     # Check to see if the mesh is scaled, if so give a warning and try to correct it
     if((mesh_scale.x != 1.0) or (mesh_scale.y != 1.0) or (mesh_scale.z != 1.0)):
-        print("WARNING: at least one of the matrix world scale components is not 1.0!\nMesh scale: "+str(mesh_scale))
-        print("matrix world:\n"+str(mesh_matrix))
-        print("Trying to correct scale to 1.0")
+        LogMessage.log_warning("WARNING: at least one of the matrix world scale components is not 1.0!\nMesh scale: "+str(mesh_scale))
+        LogMessage.log_info("matrix world:\n"+str(mesh_matrix))
+        LogMessage.log_info("Trying to correct scale to 1.0")
         # jgb Not sure if this computation will be always correct, see also in armature_export.py for a possible other way to do it
         # 1.  Scale down the translation by the used scale
         mesh_translation.x = mesh_translation.x / mesh_scale.x
@@ -223,13 +238,13 @@ def create_cal3d_mesh(scene, mesh_obj,
         (mesh_translation, mesh_quat, mesh_scale) = mesh_matrix.decompose()
         mesh_rotation = mesh_quat.to_matrix()
         # For info and checking print out the corrected matrix
-        print("Corrected scaled matrix:\n"+str(mesh_matrix))
+        LogMessage.log_info("Corrected scaled matrix:\n"+str(mesh_matrix))
 
     if debug_export > 0:
-        print("matrix world: "+str(mesh_matrix))
-        print("mesh translation: "+str(mesh_translation))
-        print("mesh quat: "+str(mesh_quat))
-        print("mesh scale: "+str(mesh_scale))
+        LogMessage.log_debug("matrix world: "+str(mesh_matrix))
+        LogMessage.log_debug("mesh translation: "+str(mesh_translation))
+        LogMessage.log_debug("mesh quat: "+str(mesh_quat))
+        LogMessage.log_debug("mesh scale: "+str(mesh_scale))
 
     mesh_data = mesh_obj.to_mesh(scene, False, "PREVIEW")
     mesh_data.transform(mesh_matrix)
@@ -242,10 +257,10 @@ def create_cal3d_mesh(scene, mesh_obj,
 
     cal3d_mesh = Mesh(mesh_obj.name, xml_version)
     if cal3d_skeleton:
-        print("mesh: " + mesh_obj.name)
+        LogMessage.log_message("Mesh: " + mesh_obj.name)
     else:
-        print("ERROR: mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
-        # No use going on if we can't assing influences
+        LogMessage.log_error("Mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
+        # No use going on if we can't assign influences
         return None
 
     #For Blender 2.6.3, use tesselation :
@@ -267,12 +282,12 @@ def create_cal3d_mesh(scene, mesh_obj,
             for cal3d_material in cal3d_materials:
                 # jgb 2012-11-03 debug
                 if debug_export > 0:
-                    print("material: blender name: " + blender_material.name + " cal3d name: " + cal3d_material.name)
+                    LogMessage.log_debug("material: blender name: " + blender_material.name + " cal3d name: " + cal3d_material.name)
                 if (cal3d_material.name == blender_material.name):
                     cal3d_material_index = cal3d_material.index
                     # jgb debug
                     if debug_export > 0:
-                        print("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
+                        LogMessage.log_debug("cal3d/mesh material indexes: " + str(cal3d_material_index) + " , " + str(bm))
                     # jgb Set this material as being in use when needed:
                     if cal3d_material.in_use == False:
                         # 2012-12-14 Determine if material name ends in a number
@@ -282,7 +297,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                             # WARNING: currently no checking that a material number is used twice
                             # or that it will interfere with another number using the consecutive indexing!
                             cal3d_material.used_index = mat_num
-                            print("Explicit material number {0} set for submesh {1}".format(mat_num,len(cal3d_mesh.submeshes)))
+                            LogMessage.log_info("Explicit material number {0} set for submesh {1}".format(mat_num,len(cal3d_mesh.submeshes)))
                         else:
                             cal3d_material.used_index = len(cal3d_used_materials)
                         cal3d_material.in_use = True
@@ -293,7 +308,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                     cal3d_mesh.submeshes.append(cal3d_submesh)
             bm += 1
     else:
-        print("ERROR: this mesh has no materials!")
+        LogMessage.log_error("ERROR: this mesh has no materials!")
         # Currently we can't continue without error unless there are materials
         return None
 
@@ -301,18 +316,18 @@ def create_cal3d_mesh(scene, mesh_obj,
 
     #For Blender 2.6.3 use tesselation :
     if debug_export > 0:
-        print("tess faces: " + str(len(mesh_data.tessfaces)))
+        LogMessage.log_debug("tess faces: " + str(len(mesh_data.tessfaces)))
     
     # Test for presence of any uv textures
     if not mesh_data.tessface_uv_textures:
-        print("ERROR: There are no uv textures assigned!")
+        LogMessage.log_error("ERROR: There are no uv textures assigned!")
         return None
 
     # Test existence of shape keys for morphing
     # Need more than 1 shape_key because first is the Basis which is the same as our mesh
     if mesh_data.shape_keys and len(mesh_data.shape_keys.key_blocks) > 1:
         if debug_export > 0:
-            print("Shape key(s) found in mesh")
+            LogMessage.log_debug("Shape key(s) found in mesh")
         if mesh_data.shape_keys.use_relative:
             do_shape_keys = True
             # Requires same number of vertices in mesh and in each of the shape keys
@@ -322,7 +337,7 @@ def create_cal3d_mesh(scene, mesh_obj,
             for kb in mesh_data.shape_keys.key_blocks[1:]:
                 if len(kb.data) != vert_count:
                     do_shape_keys = False
-                    print("WARNING: shape key "+kb.name+" has a different vertex count as the base mesh."+
+                    LogMessage.log_warning("shape key "+kb.name+" has a different vertex count as the base mesh."+
                         " Morph targets will be ignored and not exported!")
                     break
                 # Add a morph with this name and id to all submeshes
@@ -333,12 +348,12 @@ def create_cal3d_mesh(scene, mesh_obj,
                 # Increase id for next shapekey
                 sk_id += 1
         else:
-            print("WARNING: Only relative ShapeKeys are currently supported! Morph information will not be added to your mesh.")
+            LogMessage.log_warning("Only relative ShapeKeys are currently supported! Morph information will not be added to your mesh.")
             do_shape_keys = False
         if do_shape_keys:
             # Get the normals of the ShapeKeys
             if debug_export > 0:
-                print("Collecting ShapeKey normals and vertices")
+                LogMessage.log_debug("Collecting ShapeKey normals and vertices")
             sk_normals, sk_vertices = collect_shapekey_normals(mesh_obj, scene, mesh_matrix, mesh_data.shape_keys)
     else:
         do_shape_keys = False
@@ -355,14 +370,14 @@ def create_cal3d_mesh(scene, mesh_obj,
         if mind != face.material_index:
             mind = face.material_index
             if debug_export > 0:
-                print("tess material: " + str(face.material_index))
-                print("tess verts: " + str(len(face.vertices)))
+                LogMessage.log_debug("tess material: " + str(face.material_index))
+                LogMessage.log_debug("tess verts: " + str(len(face.vertices)))
             cal3d_submesh = cal3d_mesh.get_submesh(face.material_index)
             if cal3d_submesh != None:
                 if debug_export > 0:
-                    print("submesh material: " + str(cal3d_submesh.mesh_material_id))
+                    LogMessage.log_debug("submesh material: " + str(cal3d_submesh.mesh_material_id))
             else:
-                print("ERROR: submesh with correct material id not found!")
+                LogMessage.log_error("Submesh with correct material id not found!")
                 return None
 
         for vertex_index in face.vertices:
@@ -387,20 +402,20 @@ def create_cal3d_mesh(scene, mesh_obj,
                 uv[1] = 1.0 - uv[1]
 
             if not uvs:
-                print("WARNING: no uv texture assigned to face "+str(face.index) + " vertex "+str(vertex_index))
+                LogMessage.log_warning("No uv texture assigned to face "+str(face.index) + " vertex "+str(vertex_index))
 
             # 2012-12-15 Moved computing of normal here because for duplicate vertex ids we also
             # need to compare the normals!
             vertex = mesh_data.vertices[vertex_index]
             if debug_export > 0:
-                print("vertex "+str(vertex.co))
+                LogMessage.log_debug("vertex "+str(vertex.co))
 
             normal = vertex.normal.copy()
             normal *= base_scale
             normal.rotate(total_rotation)
             normal.normalize()
             if debug_export > 0:
-                print("vertex normal: "+str(normal))
+                LogMessage.log_debug("vertex normal: "+str(normal))
 
             # jgb 2012-12-15 We only need to duplicate a vertex if the uv coordinates differ
             uv_matches = False
@@ -442,8 +457,8 @@ def create_cal3d_mesh(scene, mesh_obj,
             if mesh_data.tessface_vertex_colors:
                 col = mesh_data.tessface_vertex_colors.active.data[face.index]
                 if debug_export > 0:
-                    print("vertex colors for face" + str(face.index))
-                    print("colors: " + str(col.color1) + ", "+ str(col.color2) + ", "+ str(col.color3) + ", "+ str(col.color4))
+                    LogMessage.log_debug("vertex colors for face" + str(face.index))
+                    LogMessage.log_debug("colors: " + str(col.color1) + ", "+ str(col.color2) + ", "+ str(col.color3) + ", "+ str(col.color4))
                 if not cal3d_vertex1:
                     vertex_color = col.color1
                 elif not cal3d_vertex2:
@@ -453,14 +468,14 @@ def create_cal3d_mesh(scene, mesh_obj,
                 elif not cal3d_vertex4:
                     vertex_color = col.color4
                 if debug_export > 0:
-                    print(str(vertex_color))
+                    LogMessage.log_debug(str(vertex_color))
             else:
                 # jgb cal3d v 919 always requires the color tag to be written even if we don't use vertex colors thus set default colors
                 # 2012-12-23 Make it a Vector because we need to make a copy in mesh_classes if real vertex colors are used
                 vertex_color = Vector((1.0, 1.0, 1.0))
 
             if debug_export > 0:
-                print("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
+                LogMessage.log_debug("vertex, duplicate indexes: "+str(vertex_index)+", "+str(duplicate_index))
 
             if not cal3d_vertex:
                 # 2012-12-15 jgb We need normals earlier in the code commenting it here
@@ -489,7 +504,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                         blend_vertex = mathutils.Vector(kb.data[vertex_index].co.copy())
                         if debug_export > 0:
                             if vertex_index == 0:
-                                print("vertex 0: {0}\nblend vertex 0: {1}".format(str(vertex.co),str(blend_vertex)))
+                                LogMessage.log_debug("vertex 0: {0}\nblend vertex 0: {1}".format(str(vertex.co),str(blend_vertex)))
 
                         # Get the previously collected normal for this ShapeKey and vertex index
                         #print("shapekey normal indexes sk, vertex "+str(sk_id)+", "+str(vertex_index))
@@ -501,7 +516,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                         sk_normal.normalize()
 
                         if debug_export > 0:
-                            print("ShapeKey normal: "+str(sk_normal))
+                            LogMessage.log_debug("ShapeKey normal: "+str(sk_normal))
 
                         # Compute ShapeKey position
                         # jgb 2012-11-24 Now use the stored ShapeKey vertex instead of the data from the ShapeKey array
@@ -522,7 +537,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                         differenceTolerance = 0.1;
                         posdiff = abs(vec_posdiff.length)
                         if debug_export > 0:
-                            print("posdiff: "+str(posdiff)+" vec_posdiff: "+str(vec_posdiff))
+                            LogMessage.log_debug("posdiff: "+str(posdiff)+" vec_posdiff: "+str(vec_posdiff))
                         
                         # Only add this Blend Vertex if there is enough difference with the original Vertex
                         if posdiff >= differenceTolerance:
@@ -563,7 +578,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                                                                 use_groups, use_envelopes, armature_obj)
                 # jgb 2012-11-14 Add warning when vertex has no influences!
                 if cal3d_vertex.influences == []:
-                    print("WARNING: vertex " + str(vertex.co) + " has no influences!")
+                    LogMessage.log_warning("Vertex " + str(vertex.co) + " has no influences!")
                 
                 for uv in uvs:
                     cal3d_vertex.maps.append(Map(uv[0], uv[1]))
