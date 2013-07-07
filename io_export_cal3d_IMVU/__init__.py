@@ -59,6 +59,9 @@ print_copyright()
 if "bpy" in locals():
     import imp
     print("reloading script classes")
+    # reload the logging class
+    if "logger_class" in locals():
+        imp.reload(logger_class)
 
     if "mesh_classes" in locals():
         #print("reload mesh_classes")
