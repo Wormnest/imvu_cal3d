@@ -37,6 +37,7 @@ class Logger:
             if self.file == '':
                 self.file = self.name + '.log'
             self.logfile = open(self.file, "wt")
+            print("\nLogging info to file: " + self.file)
         else:
             self.logfile = None
         self.errors = 0
@@ -54,6 +55,13 @@ class Logger:
             print(message)
         else:
             self.logfile.write(message + "\n")
+
+    def log_message_and_print(self, message):
+        if self.type == 'console':
+            print(message)
+        else:
+            self.logfile.write(message + "\n")
+            print(message)
 
     def log_warning(self, warning):
         self.warnings += 1
