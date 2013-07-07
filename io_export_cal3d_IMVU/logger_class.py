@@ -24,10 +24,11 @@
 #   name = name of logger
 #   type = console (default), or file
 #   file = filename
+# file_and_print = logging to file but also print message to console
 
 class Logger:
 
-    def __init__(self, name, type='console', file=''):
+    def __init__(self, name, type='console', file='', file_and_print=False):
         self.name = name
         if self.name == '':
             self.name = 'Logger'
@@ -40,6 +41,7 @@ class Logger:
             print("\nLogging info to file: " + self.file)
         else:
             self.logfile = None
+        self.file_and_print = file_and_print
         self.errors = 0
         self.warnings = 0
         self.debug = 0
@@ -55,6 +57,8 @@ class Logger:
             print(message)
         else:
             self.logfile.write(message + "\n")
+            if self.file_and_print:
+                print(message)
 
     def log_message_and_print(self, message):
         if self.type == 'console':
