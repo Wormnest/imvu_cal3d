@@ -80,7 +80,20 @@ class Logger:
         self.log_message("DEBUG: " + debug_msg)
 
     def log_error_count(self):
-        self.log_message("Total amount of errors: " + self.errors)
+        self.log_message("Total amount of errors: {0}" .format(self.errors))
+
+    def log_warning_count(self):
+        self.log_message("Total amount of warnings: {0}" .format(self.warnings))
+
+    def log_info_count(self):
+        self.log_message("Total amount of info messages: {0}" .format(self.errors))
+
+    def log_debug_count(self):
+        self.log_message("Total amount of debug messages: {0}" .format(self.errors))
+
+    def log_counters(self):
+        self.log_error_count()
+        self.log_warning_count()
 
 # ---------------------------------------------------------------------------------------------------------------------------------
 
