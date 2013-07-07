@@ -20,19 +20,48 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # A class to log messages
+# Input:
+#   name = name of logger
+#   type = console (default), or file
+#   file = filename
 
 class Logger:
 
-    def __init__(self, name):
+    def __init__(self, name, type='console', file=''):
         self.name = name
+        if self.name == '':
+            self.name = 'Logger'
+        self.type = type
+        if self.type == 'file':
+            self.file = file
+            if self.file == '':
+                self.file = self.name + '.log'
+            self.logfile = open(self.file, "wt")
+        else:
+            self.logfile = None
         self.errors = 0
         self.warnings = 0
         self.debug = 0
         self.info = 0
 
+
+    def close_log(self):
+        if self.logfile:
+            self.logfile.close()
+
+    def log_message(self, message):
+        if self.type == 'console':
+            print(message)
+        else:
+            self.logfile.write(message + "\n")
+
     def log_warning(self, warning):
         self.warnings += 1
-        print(warning)
+        self.log_message("WARNING: " + warning)
+
+    def log_error(self, error):
+        self.warnings += 1
+        self.log_message("ERROR: " + error)
 
 # ---------------------------------------------------------------------------------------------------------------------------------
 
