@@ -245,8 +245,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         # Initialize our logger
         LogMessage = Logger("Cal3dExportLogger", type ="file", file= self.log_file)
 
-        # Always add empty line to make it easier to find start of our info
-        LogMessage.log_message_and_print("\nIMVU Cal3D export " + get_version_string())
+        # Always add empty line to make it easier to find start of our info (don't log it to file though)
+        print("")
+        LogMessage.log_message_and_print("IMVU Cal3D export " + get_version_string())
         LogMessage.log_message_and_print(get_copyright())
         LogMessage.log_message_and_print("Exporting to Cal3D started.")
         
