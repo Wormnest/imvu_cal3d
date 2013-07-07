@@ -44,11 +44,15 @@ bl_info = \
 }
 
 
-# Print Copyright 2012-<current year> line
-def print_copyright():
+# Get string: Copyright 2012-<current year> 
+def get_copyright():
     import datetime
     from datetime import date
-    print("Portions Copyright 2012-{0} by DutchTroy aka Jacob Boerema\n".format(date.today().year))
+    return "Portions Copyright 2012-{0} by DutchTroy aka Jacob Boerema\n".format(date.today().year)
+
+# Print Copyright 2012-<current year> line
+def print_copyright():
+    print(get_copyright())
 
 print("\nInitializing IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
     str(bl_info['version'][1]), str(bl_info['version'][2])))
