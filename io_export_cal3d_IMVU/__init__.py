@@ -237,10 +237,13 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         sc = ""
         if len(bpy.data.scenes) > 1:
             sc = context.scene.name + "_"
-        self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0] + "_" + sc
+        self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0]
+        self.log_file = os.path.dirname(self.filepath)+'\\'+self.file_prefix+".log"
+        # dont want the last part added to logfile name:
+        self.file_prefix = self.file_prefix + "_" + sc
 
         # Initialize our logger
-        LogMessage = Logger("Cal3dExportLogger", type ="file", file=self.file_prefix+".log")
+        LogMessage = Logger("Cal3dExportLogger", type ="file", file= self.log_file)
 
         # Always add empty line to make it easier to find start of our info
         LogMessage.log_message_and_print("\nIMVU Cal3D export " + get_version_string())
