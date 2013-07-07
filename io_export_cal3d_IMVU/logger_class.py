@@ -60,8 +60,19 @@ class Logger:
         self.log_message("WARNING: " + warning)
 
     def log_error(self, error):
-        self.warnings += 1
+        self.errors += 1
         self.log_message("ERROR: " + error)
+
+    def log_info(self, info):
+        self.info += 1
+        self.log_message("INFO: " + info)
+
+    def log_debug(self, debug_msg):
+        self.debug += 1
+        self.log_message("DEBUG: " + debug_msg)
+
+    def log_error_count(self):
+        self.log_message("Total amount of errors: " + self.errors)
 
 # ---------------------------------------------------------------------------------------------------------------------------------
 
