@@ -509,6 +509,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         print("Export finished.")
         print("")
 
+        # Log amount of errors
+        LogMessage.log_counters()
+
         # Close the logger
         LogMessage.close_log()
         LogMessage = None
