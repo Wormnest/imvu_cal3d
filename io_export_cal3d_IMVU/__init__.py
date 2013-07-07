@@ -230,6 +230,17 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         from .export_mesh import create_cal3d_mesh
         from .export_action import create_cal3d_animation
         from .export_action import create_cal3d_morph_animation
+        from . import logger_class
+        from .logger_class import Logger, LogMessage
+
+        # Get the user's desired filename
+        sc = ""
+        if len(bpy.data.scenes) > 1:
+            sc = context.scene.name + "_"
+        self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0] + "_" + sc
+
+        # Initialize our logger
+        LogMessage = Logger("Cal3dExportLogger", type ="file", file=self.file_prefix+".log")
 
         # Always add empty line to make it easier to find start of our info
         print("")
@@ -238,12 +249,6 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         print_copyright()
         print("Exporting to Cal3D started.")
         
-        # Get the user's desired filename
-        sc = ""
-        if len(bpy.data.scenes) > 1:
-            sc = context.scene.name + "_"
-        self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0] + "_" + sc
-
         # jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
         # Which version might possibly be required for animation settings like  
         # TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
@@ -501,6 +506,10 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
         print("Export finished.")
         print("")
+
+        # Close the logger
+        LogMessage.close_log()
+        LogMessage = None
 
         return {"FINISHED"}
 
