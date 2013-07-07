@@ -54,8 +54,13 @@ def get_copyright():
 def print_copyright():
     print(get_copyright())
 
-print("\nInitializing IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
-    str(bl_info['version'][1]), str(bl_info['version'][2])))
+def get_version_string():
+    return "version {0}.{1}.{2}".format(
+        str(bl_info['version'][0]),
+        str(bl_info['version'][1]),
+        str(bl_info['version'][2]))
+
+print("\nInitializing IMVU Cal3D export " + get_version_string())
 print_copyright()
 
 # To support reload properly, try to access a package var, 
