@@ -47,53 +47,53 @@ bl_info = \
 
 # Print Copyright 2012-<current year> line
 def print_copyright():
-	import datetime
-	from datetime import date
-	print("Portions Copyright 2012-{0} by DutchTroy aka Jacob Boerema\n".format(date.today().year))
+    import datetime
+    from datetime import date
+    print("Portions Copyright 2012-{0} by DutchTroy aka Jacob Boerema\n".format(date.today().year))
 
 # To support reload properly, try to access a package var, 
 # if it's there, reload everything
 print("\nInitializing IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
-	str(bl_info['version'][1]), str(bl_info['version'][2])))
+    str(bl_info['version'][1]), str(bl_info['version'][2])))
 print_copyright()
 if "bpy" in locals():
-	import imp
-	print("reloading script classes")
+    import imp
+    print("reloading script classes")
 
-	if "mesh_classes" in locals():
-		#print("reload mesh_classes")
-		imp.reload(mesh_classes)
+    if "mesh_classes" in locals():
+        #print("reload mesh_classes")
+        imp.reload(mesh_classes)
 
-	if "export_mesh" in locals():
-		#print("reload export_mesh")
-		imp.reload(export_mesh)
+    if "export_mesh" in locals():
+        #print("reload export_mesh")
+        imp.reload(export_mesh)
 
-	if "armature_classes" in locals():
-		#print("reload armature_classes")
-		imp.reload(armature_classes)
+    if "armature_classes" in locals():
+        #print("reload armature_classes")
+        imp.reload(armature_classes)
 
-	if "export_armature" in locals():
-		#print("reload export_armature")
-		imp.reload(export_armature)
+    if "export_armature" in locals():
+        #print("reload export_armature")
+        imp.reload(export_armature)
 
-	if "action_classes" in locals():
-		#print("reload action_classes")
-		imp.reload(action_classes)
+    if "action_classes" in locals():
+        #print("reload action_classes")
+        imp.reload(action_classes)
 
-	if "export_action" in locals():
-		#print("reload export_action")
-		imp.reload(export_action)
+    if "export_action" in locals():
+        #print("reload export_action")
+        imp.reload(export_action)
 
 
 import bpy
 from bpy import ops
 from bpy import context
-from bpy.props import BoolProperty,			\
-                      EnumProperty,			\
-                      CollectionProperty,	\
-                      FloatProperty,		\
-                      StringProperty,		\
-                      FloatVectorProperty,	\
+from bpy.props import BoolProperty,         \
+                      EnumProperty,         \
+                      CollectionProperty,   \
+                      FloatProperty,        \
+                      StringProperty,       \
+                      FloatVectorProperty,  \
                       IntProperty
 
 
@@ -107,525 +107,525 @@ import sys
 import traceback
 
 class ExportCal3D(bpy.types.Operator, ExportHelper):
-	'''Save Cal3d files for IMVU'''
+    '''Save Cal3d files for IMVU'''
 
-	# jgb To ease debugging use a class debugging var (0 means off)
-	debug_ExportCal3D = 0
-	
-	bl_idname = "cal3d_model_export.cfg"
-	bl_label = 'Export Cal3D for IMVU'
-	bl_options = {'PRESET'}
+    # jgb To ease debugging use a class debugging var (0 means off)
+    debug_ExportCal3D = 0
+    
+    bl_idname = "cal3d_model_export.cfg"
+    bl_label = 'Export Cal3D for IMVU'
+    bl_options = {'PRESET'}
 
-	filename_ext = ".cfg"
-	filter_glob = StringProperty(default="*.cfg;*.xsf;*.xaf;*.xmf;*.xrf;*.csf;*.caf;*.cmf;*.crf",
-								 options={'HIDDEN'})
+    filename_ext = ".cfg"
+    filter_glob = StringProperty(default="*.cfg;*.xsf;*.xaf;*.xmf;*.xrf;*.csf;*.caf;*.cmf;*.crf",
+                                 options={'HIDDEN'})
 
-	# List of operator properties, the attributes will be assigned
-	# to the class instance from the operator settings before calling.
+    # List of operator properties, the attributes will be assigned
+    # to the class instance from the operator settings before calling.
 
-	# context group
-	# jgb 2012-11-26 Now also removing file_prefix from gui. We will always use the selected filename as the prefix basename.
-	file_prefix = StringProperty(name="File prefix", description="Prefix name for all exported files (default is the Blender filename)",
-									 default="")
-	# jgb 2012-11-15 these next prefixes will be used but not be visible in gui: we copy value from file_prefix
-	mesh_prefix = StringProperty(name="Mesh", 
-									 default="model_")
-									 
-	skeleton_prefix = StringProperty(name="Skeleton", 
-									 default="")
-									 
-	anim_prefix = StringProperty(name="Animation",
-									  default="")
-									  
-	material_prefix = StringProperty(name="Material",
-									  default="")
-	
-	imagepath_prefix = StringProperty(name="Image Path",
-									  default="")
-									  
-	base_rotation = FloatVectorProperty(name="Base Rotation (XYZ)", 
-										default = (0.0, 0.0, 0.0),
-										subtype="EULER")
+    # context group
+    # jgb 2012-11-26 Now also removing file_prefix from gui. We will always use the selected filename as the prefix basename.
+    file_prefix = StringProperty(name="File prefix", description="Prefix name for all exported files (default is the Blender filename)",
+                                     default="")
+    # jgb 2012-11-15 these next prefixes will be used but not be visible in gui: we copy value from file_prefix
+    mesh_prefix = StringProperty(name="Mesh", 
+                                     default="model_")
+                                     
+    skeleton_prefix = StringProperty(name="Skeleton", 
+                                     default="")
+                                     
+    anim_prefix = StringProperty(name="Animation",
+                                      default="")
+                                      
+    material_prefix = StringProperty(name="Material",
+                                      default="")
+    
+    imagepath_prefix = StringProperty(name="Image Path",
+                                      default="")
+                                      
+    base_rotation = FloatVectorProperty(name="Base Rotation (XYZ)", 
+                                        default = (0.0, 0.0, 0.0),
+                                        subtype="EULER")
 
-	base_scale = FloatProperty(name="Base Scale",
-								default=1.0)
+    base_scale = FloatProperty(name="Base Scale",
+                                default=1.0)
 
-	# jgb 2012-11-09 IMVU expects 30 fps (ref: http://www.imvu.com/catalog/modules.php?op=modload&name=phpbb2&file=viewtopic.php&t=307460&start=0)
-	# While I remember reading that blender default and the value that was here before = 25.
-	fps = FloatProperty(name="Frame Rate",
-		description="Set the desired frame rate (IMVU expects 30). You can set the value in Blender in Scene, Render settings.",
-		default=30.0)
+    # jgb 2012-11-09 IMVU expects 30 fps (ref: http://www.imvu.com/catalog/modules.php?op=modload&name=phpbb2&file=viewtopic.php&t=307460&start=0)
+    # While I remember reading that blender default and the value that was here before = 25.
+    fps = FloatProperty(name="Frame Rate",
+        description="Set the desired frame rate (IMVU expects 30). You can set the value in Blender in Scene, Render settings.",
+        default=30.0)
 
-	#path_mode = bpy_extras.io_utils.path_reference_mode
-	
-	use_groups = BoolProperty(name="Vertex Groups",
-		description="Export the meshes using vertex groups.", 
-		default=True)
-	#use_envelopes = BoolProperty(name="Envelopes", description="Export the meshes using bone envelopes.", default=True)
-	
-	skeleton_binary_bool = EnumProperty(
+    #path_mode = bpy_extras.io_utils.path_reference_mode
+    
+    use_groups = BoolProperty(name="Vertex Groups",
+        description="Export the meshes using vertex groups.", 
+        default=True)
+    #use_envelopes = BoolProperty(name="Envelopes", description="Export the meshes using bone envelopes.", default=True)
+    
+    skeleton_binary_bool = EnumProperty(
             name="Skeleton Filetype",
             items=(('binary', "Binary (.CSF)", "Export a binary skeleton"),
                    ('xml', "XML (.XSF)", "Export an xml skeleton"),
                    ),
-			default='xml'
+            default='xml'
             )
-	mesh_binary_bool = EnumProperty(
+    mesh_binary_bool = EnumProperty(
             name="Mesh Filetype",
             items=(('binary', "Binary (.CMF)", "Export a binary mesh"),
                    ('xml', "XML (.XMF)", "Export an xml mesh"),
                    ),
-			default='xml'
+            default='xml'
             )
-	animation_binary_bool = EnumProperty(
+    animation_binary_bool = EnumProperty(
             name="Animation Filetype",
             items=(('binary', "Binary (.CAF)", "Export a binary animation"),
                    ('xml', "XML (.XAF)", "Export an xml animation"),
                    ),
-			default='xml'
+            default='xml'
             )
-	material_binary_bool = EnumProperty(
+    material_binary_bool = EnumProperty(
             name="Material Filetype",
             items=(('binary', "Binary (.CRF)", "Export a binary material"),
                    ('xml', "XML (.XRF)", "Export an xml material"),
                    ),
-			default='xml'
+            default='xml'
             )
 
-	# Options for what file types to export.
-	export_xsf = BoolProperty(name="Export skeleton (.XSF)",
-		description="Whether or not to export the skeleton.", 
-		default=True)
-	export_xmf = BoolProperty(name="Export mesh (.XMF)",
-		description="Whether or not to export the mesh.",
-		default=True)
-	export_xaf = BoolProperty(name="Export animations (.XAF)",
-		description="Whether or not to export the animations.",
-		default=True)
-	export_xpf = BoolProperty(name="Export morph animations (.XPF)",
-		description="Whether or not to export the morph animations.",
-		default=True)
-	# Since IMVU doesn't use XRF anymore and never used CFG we turn them off by default
-	export_xrf = BoolProperty(name="Export materials (.XRF)",
-		description="Whether or not to export the materials (not needed for IMVU).",
-		default=False)
-	export_cfg = BoolProperty(name="Export config file (.CFG)",
-		description="Whether or not to export the .CFG file (not needed for IMVU).",
-		default=False)
+    # Options for what file types to export.
+    export_xsf = BoolProperty(name="Export skeleton (.XSF)",
+        description="Whether or not to export the skeleton.", 
+        default=True)
+    export_xmf = BoolProperty(name="Export mesh (.XMF)",
+        description="Whether or not to export the mesh.",
+        default=True)
+    export_xaf = BoolProperty(name="Export animations (.XAF)",
+        description="Whether or not to export the animations.",
+        default=True)
+    export_xpf = BoolProperty(name="Export morph animations (.XPF)",
+        description="Whether or not to export the morph animations.",
+        default=True)
+    # Since IMVU doesn't use XRF anymore and never used CFG we turn them off by default
+    export_xrf = BoolProperty(name="Export materials (.XRF)",
+        description="Whether or not to export the materials (not needed for IMVU).",
+        default=False)
+    export_cfg = BoolProperty(name="Export config file (.CFG)",
+        description="Whether or not to export the .CFG file (not needed for IMVU).",
+        default=False)
 
-	copy_img = BoolProperty(name="Copy images",
-		description="Whether or not to copy used material images to export folder (not needed for IMVU).",
-		default=False)
+    copy_img = BoolProperty(name="Copy images",
+        description="Whether or not to copy used material images to export folder (not needed for IMVU).",
+        default=False)
 
-	write_amb = BoolProperty(name="Write scene ambient color to XSF", 
-		description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).",
-		default=True)
-	
-	def execute(self, context):
-		from . import export_mesh
-		from . import export_armature
-		from . import export_action
-		from .export_armature import create_cal3d_skeleton
-		from .export_mesh import create_cal3d_materials
-		from .export_mesh import create_cal3d_mesh
-		from .export_action import create_cal3d_animation
-		from .export_action import create_cal3d_morph_animation
+    write_amb = BoolProperty(name="Write scene ambient color to XSF", 
+        description="Whether or not to write scene ambient color (uses Blender's world ambient color which is gamma corrected and may look different than the color in IMVU).",
+        default=True)
+    
+    def execute(self, context):
+        from . import export_mesh
+        from . import export_armature
+        from . import export_action
+        from .export_armature import create_cal3d_skeleton
+        from .export_mesh import create_cal3d_materials
+        from .export_mesh import create_cal3d_mesh
+        from .export_action import create_cal3d_animation
+        from .export_action import create_cal3d_morph_animation
 
-		# Always add empty line to make it easier to find start of our info
-		print("")
-		print("IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
-			str(bl_info['version'][1]), str(bl_info['version'][2])))
-		print_copyright()
-		print("Exporting to Cal3D started.")
-		
-		# Get the user's desired filename
-		sc = ""
-		if len(bpy.data.scenes) > 1:
-			sc = context.scene.name + "_"
-		self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0] + "_" + sc
+        # Always add empty line to make it easier to find start of our info
+        print("")
+        print("IMVU Cal3D export version {0}.{1}.{2}".format(str(bl_info['version'][0]),
+            str(bl_info['version'][1]), str(bl_info['version'][2])))
+        print_copyright()
+        print("Exporting to Cal3D started.")
+        
+        # Get the user's desired filename
+        sc = ""
+        if len(bpy.data.scenes) > 1:
+            sc = context.scene.name + "_"
+        self.file_prefix = os.path.splitext(os.path.basename(self.filepath))[0] + "_" + sc
 
-		# jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
-		# Which version might possibly be required for animation settings like  
-		# TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
-		Cal3d_xml_version = 919
-		# Set prefixes
-		self.mesh_prefix = self.file_prefix
-		self.skeleton_prefix = self.file_prefix
-		self.anim_prefix = self.file_prefix
-		self.material_prefix = self.file_prefix
-		
-		cal3d_dirname = os.path.dirname(self.filepath)
+        # jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
+        # Which version might possibly be required for animation settings like  
+        # TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
+        Cal3d_xml_version = 919
+        # Set prefixes
+        self.mesh_prefix = self.file_prefix
+        self.skeleton_prefix = self.file_prefix
+        self.anim_prefix = self.file_prefix
+        self.material_prefix = self.file_prefix
+        
+        cal3d_dirname = os.path.dirname(self.filepath)
 
-		cal3d_skeleton = None
-		cal3d_materials = []
-		cal3d_meshes = []
-		cal3d_animations = []
-		cal3d_morph_animations = []
-		cal3d_used_materials = []
-		armature_obj = None
+        cal3d_skeleton = None
+        cal3d_materials = []
+        cal3d_meshes = []
+        cal3d_animations = []
+        cal3d_morph_animations = []
+        cal3d_used_materials = []
+        armature_obj = None
 
-		# base_translation, base_rotation, and base_scale are user adjustments to the export
-		base_translation = mathutils.Vector([0.0, 0.0, 0.0])
-		base_rotation = mathutils.Euler([self.base_rotation[0],
-		                                 self.base_rotation[1],
-		                                 self.base_rotation[2]], 'XYZ').to_matrix()
-		base_scale = self.base_scale
-		fps = self.fps
-		
-		#visible_objects = [ob for ob in context.scene.objects if ob.is_visible(context.scene)]
-		visible_objects = context.selected_objects
-		
-		# Export armatures
-		# Always read skeleton because both meshes and animations need it.
-		if self.debug_ExportCal3D > 0:
-			print("ExportCal3D: export armatures.")
-		try:
-			for obj in visible_objects:
-				if obj.type == "ARMATURE":
-					if cal3d_skeleton:
-						raise RuntimeError("Only one armature is supported per scene")
-					armature_obj = obj
-					cal3d_skeleton = create_cal3d_skeleton(obj, obj.data,
-					                                       base_rotation.copy(),
-					                                       base_translation.copy(),
-					                                       base_scale, Cal3d_xml_version, 
-														   self.write_amb, bpy.data.lamps)
-					# Add the ambient color as set in blend world to the skeleton
-					# Note that color in Blender may look different than in IMVU due to Blender using color management!
-					if context.scene.world:
-						cal3d_skeleton.scene_ambient_color = context.scene.world.ambient_color
-		except Exception as e:
-			print("###### ERROR DURING ARMATURE EXPORT ######")
-			traceback.print_exc()
-			return {"FINISHED"}
+        # base_translation, base_rotation, and base_scale are user adjustments to the export
+        base_translation = mathutils.Vector([0.0, 0.0, 0.0])
+        base_rotation = mathutils.Euler([self.base_rotation[0],
+                                         self.base_rotation[1],
+                                         self.base_rotation[2]], 'XYZ').to_matrix()
+        base_scale = self.base_scale
+        fps = self.fps
+        
+        #visible_objects = [ob for ob in context.scene.objects if ob.is_visible(context.scene)]
+        visible_objects = context.selected_objects
+        
+        # Export armatures
+        # Always read skeleton because both meshes and animations need it.
+        if self.debug_ExportCal3D > 0:
+            print("ExportCal3D: export armatures.")
+        try:
+            for obj in visible_objects:
+                if obj.type == "ARMATURE":
+                    if cal3d_skeleton:
+                        raise RuntimeError("Only one armature is supported per scene")
+                    armature_obj = obj
+                    cal3d_skeleton = create_cal3d_skeleton(obj, obj.data,
+                                                           base_rotation.copy(),
+                                                           base_translation.copy(),
+                                                           base_scale, Cal3d_xml_version, 
+                                                           self.write_amb, bpy.data.lamps)
+                    # Add the ambient color as set in blend world to the skeleton
+                    # Note that color in Blender may look different than in IMVU due to Blender using color management!
+                    if context.scene.world:
+                        cal3d_skeleton.scene_ambient_color = context.scene.world.ambient_color
+        except Exception as e:
+            print("###### ERROR DURING ARMATURE EXPORT ######")
+            traceback.print_exc()
+            return {"FINISHED"}
 
-		# Export meshes and materials
-		# Test for xmf first because that one is the most likely to be set.
-		if self.export_xmf or self.export_xrf:
-			if self.debug_ExportCal3D > 0:
-				print("ExportCal3D: export meshes and materials.")
-			try:
-				cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version, self.copy_img)
+        # Export meshes and materials
+        # Test for xmf first because that one is the most likely to be set.
+        if self.export_xmf or self.export_xrf:
+            if self.debug_ExportCal3D > 0:
+                print("ExportCal3D: export meshes and materials.")
+            try:
+                cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version, self.copy_img)
 
-				# jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
-				if len(cal3d_materials) > 0:
-					for obj in visible_objects:
-						if obj.type == "MESH" and obj.is_visible(context.scene):
-							# jgb 2012-11-14 Creating mesh can fail for several reasons.
-							# Therefore append only after we have checked there really is a mesh
-							mesh_result = create_cal3d_mesh(context.scene, obj, 
-									cal3d_skeleton, cal3d_materials, cal3d_used_materials,
-									base_rotation, base_translation, base_scale, 
-									Cal3d_xml_version, self.use_groups, False, armature_obj)
-							if mesh_result:
-								cal3d_meshes.append(mesh_result)
-				else:
-					if self.debug_ExportCal3D > 0:
-						print("ExportCal3D: no cal3d materials found!")
+                # jgb 2012-11-09 We currently  can't do the meshes without at least 1 material
+                if len(cal3d_materials) > 0:
+                    for obj in visible_objects:
+                        if obj.type == "MESH" and obj.is_visible(context.scene):
+                            # jgb 2012-11-14 Creating mesh can fail for several reasons.
+                            # Therefore append only after we have checked there really is a mesh
+                            mesh_result = create_cal3d_mesh(context.scene, obj, 
+                                    cal3d_skeleton, cal3d_materials, cal3d_used_materials,
+                                    base_rotation, base_translation, base_scale, 
+                                    Cal3d_xml_version, self.use_groups, False, armature_obj)
+                            if mesh_result:
+                                cal3d_meshes.append(mesh_result)
+                else:
+                    if self.debug_ExportCal3D > 0:
+                        print("ExportCal3D: no cal3d materials found!")
 
-			except RuntimeError as e:
-				print("###### ERROR DURING MESH EXPORT ######")
-				print(e)
-				return {"FINISHED"}
-
-
-		if self.export_xaf:
-			# Export animations
-			if self.debug_ExportCal3D > 0:
-				print("ExportCal3D: export animations.")
-			try:
-				if cal3d_skeleton:
-					for action in bpy.data.actions:
-						# TODO: check action.id_root first for correct type (see morph animation)
-						cal3d_animation = create_cal3d_animation(cal3d_skeleton,
-																 action, fps, Cal3d_xml_version)
-						if cal3d_animation:
-							cal3d_animations.append(cal3d_animation)
-				else:
-					print("ERROR: can't export animations: no skeleton selected!")
-							
-			except RuntimeError as e:
-				print("###### ERROR DURING ACTION EXPORT ######")
-				print(e)
-				return {"FINISHED"}
-
-		if self.export_xpf:
-			# Export morph animations
-			if self.debug_ExportCal3D > 0:
-				print("ExportCal3D: export morph animations.")
-			try:
-				for action in bpy.data.actions:
-					if action.id_root == "KEY":
-						if bpy.data.shape_keys:
-							cal3d_morph_animation = create_cal3d_morph_animation(
-								bpy.data.shape_keys, action, fps, Cal3d_xml_version)
-							if cal3d_morph_animation:
-								cal3d_morph_animations.append(cal3d_morph_animation)
-							
-			except RuntimeError as e:
-				print("###### ERROR DURING ACTION EXPORT ######")
-				print(e)
-				return {"FINISHED"}
+            except RuntimeError as e:
+                print("###### ERROR DURING MESH EXPORT ######")
+                print(e)
+                return {"FINISHED"}
 
 
-		if self.debug_ExportCal3D > 0:
-			print("ExportCal3D: write files.")
+        if self.export_xaf:
+            # Export animations
+            if self.debug_ExportCal3D > 0:
+                print("ExportCal3D: export animations.")
+            try:
+                if cal3d_skeleton:
+                    for action in bpy.data.actions:
+                        # TODO: check action.id_root first for correct type (see morph animation)
+                        cal3d_animation = create_cal3d_animation(cal3d_skeleton,
+                                                                 action, fps, Cal3d_xml_version)
+                        if cal3d_animation:
+                            cal3d_animations.append(cal3d_animation)
+                else:
+                    print("ERROR: can't export animations: no skeleton selected!")
+                            
+            except RuntimeError as e:
+                print("###### ERROR DURING ACTION EXPORT ######")
+                print(e)
+                return {"FINISHED"}
 
-		if self.export_xsf:
-			if cal3d_skeleton:
-				if self.skeleton_binary_bool == 'binary':
-					skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".csf"
-					skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
-					cal3d_skeleton_file = open(skeleton_filepath, "wb")
-					cal3d_skeleton.to_cal3d_binary(cal3d_skeleton_file)
-				else:
-					skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".xsf"
-					skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
-					cal3d_skeleton_file = open(skeleton_filepath, "wt")
-					cal3d_skeleton_file.write(cal3d_skeleton.to_cal3d_xml())
-				cal3d_skeleton_file.close()
-				print("Wrote skeleton '%s'" % (skeleton_filename))
-			else:
-				print("ERROR: No skeleton selected!")
-
-		if self.export_xrf:
-			i = 0
-			for cal3d_material in cal3d_used_materials:
-				if cal3d_material.in_use == True:	# Should not be necessary now but cant hurt
-					if self.material_binary_bool == 'binary':
-						material_filename = self.material_prefix + cal3d_material.name + ".crf"
-						material_filepath = os.path.join(cal3d_dirname, material_filename)
-						cal3d_material_file = open(material_filepath, "wb")
-						cal3d_material.to_cal3d_binary(cal3d_material_file)
-					else:
-						material_filename = self.material_prefix + cal3d_material.name + ".xrf"
-						material_filepath = os.path.join(cal3d_dirname, material_filename)
-						cal3d_material_file = open(material_filepath, "wt")
-						cal3d_material_file.write(cal3d_material.to_cal3d_xml())
-					cal3d_material_file.close()
-					print("Wrote material '%s' with index %s" % (material_filename, i))
-				i += 1
-
-		if self.export_xmf:
-			if cal3d_meshes != []:
-				for cal3d_mesh in cal3d_meshes:
-					if self.mesh_binary_bool == 'binary':
-						mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
-						mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
-						cal3d_mesh_file = open(mesh_filepath, "wb")
-						cal3d_mesh.to_cal3d_binary(cal3d_mesh_file)
-					else:
-						mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
-						mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
-						cal3d_mesh_file = open(mesh_filepath, "wt")
-						cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
-					cal3d_mesh_file.close()
-					print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
-			else:
-				print("ERROR: No mesh selected or error exporting mesh!")
-			
-		if self.export_xaf:
-			for cal3d_animation in cal3d_animations:
-				if self.animation_binary_bool == 'binary':
-					animation_filename = self.anim_prefix + cal3d_animation.name + ".caf"
-					animation_filepath = os.path.join(cal3d_dirname, animation_filename)
-					cal3d_animation_file = open(animation_filepath, "wb")
-					cal3d_animation.to_cal3d_binary(cal3d_animation_file)
-				else:
-					animation_filename = self.anim_prefix + cal3d_animation.name + ".xaf"
-					animation_filepath = os.path.join(cal3d_dirname, animation_filename)
-					cal3d_animation_file = open(animation_filepath, "wt")
-					cal3d_animation_file.write(cal3d_animation.to_cal3d_xml())
-				cal3d_animation_file.close()
-				print("Wrote animation '%s'" % (animation_filename))
+        if self.export_xpf:
+            # Export morph animations
+            if self.debug_ExportCal3D > 0:
+                print("ExportCal3D: export morph animations.")
+            try:
+                for action in bpy.data.actions:
+                    if action.id_root == "KEY":
+                        if bpy.data.shape_keys:
+                            cal3d_morph_animation = create_cal3d_morph_animation(
+                                bpy.data.shape_keys, action, fps, Cal3d_xml_version)
+                            if cal3d_morph_animation:
+                                cal3d_morph_animations.append(cal3d_morph_animation)
+                            
+            except RuntimeError as e:
+                print("###### ERROR DURING ACTION EXPORT ######")
+                print(e)
+                return {"FINISHED"}
 
 
-		if self.export_xpf:
-			for cal3d_morph_animation in cal3d_morph_animations:
-				if self.animation_binary_bool == 'binary':
-					print("ERROR: binary not supported here!")
-				else:
-					# using animation settings also for morph animation
-					animation_filename = self.anim_prefix + cal3d_morph_animation.name + ".xpf"
-					animation_filepath = os.path.join(cal3d_dirname, animation_filename)
-					cal3d_morph_animation_file = open(animation_filepath, "wt")
-					cal3d_morph_animation_file.write(cal3d_morph_animation.to_cal3d_xml())
-				cal3d_morph_animation_file.close()
-				print("Wrote morph animation '%s'" % (animation_filename))
+        if self.debug_ExportCal3D > 0:
+            print("ExportCal3D: write files.")
+
+        if self.export_xsf:
+            if cal3d_skeleton:
+                if self.skeleton_binary_bool == 'binary':
+                    skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".csf"
+                    skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
+                    cal3d_skeleton_file = open(skeleton_filepath, "wb")
+                    cal3d_skeleton.to_cal3d_binary(cal3d_skeleton_file)
+                else:
+                    skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".xsf"
+                    skeleton_filepath = os.path.join(cal3d_dirname, skeleton_filename)
+                    cal3d_skeleton_file = open(skeleton_filepath, "wt")
+                    cal3d_skeleton_file.write(cal3d_skeleton.to_cal3d_xml())
+                cal3d_skeleton_file.close()
+                print("Wrote skeleton '%s'" % (skeleton_filename))
+            else:
+                print("ERROR: No skeleton selected!")
+
+        if self.export_xrf:
+            i = 0
+            for cal3d_material in cal3d_used_materials:
+                if cal3d_material.in_use == True:   # Should not be necessary now but cant hurt
+                    if self.material_binary_bool == 'binary':
+                        material_filename = self.material_prefix + cal3d_material.name + ".crf"
+                        material_filepath = os.path.join(cal3d_dirname, material_filename)
+                        cal3d_material_file = open(material_filepath, "wb")
+                        cal3d_material.to_cal3d_binary(cal3d_material_file)
+                    else:
+                        material_filename = self.material_prefix + cal3d_material.name + ".xrf"
+                        material_filepath = os.path.join(cal3d_dirname, material_filename)
+                        cal3d_material_file = open(material_filepath, "wt")
+                        cal3d_material_file.write(cal3d_material.to_cal3d_xml())
+                    cal3d_material_file.close()
+                    print("Wrote material '%s' with index %s" % (material_filename, i))
+                i += 1
+
+        if self.export_xmf:
+            if cal3d_meshes != []:
+                for cal3d_mesh in cal3d_meshes:
+                    if self.mesh_binary_bool == 'binary':
+                        mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
+                        mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
+                        cal3d_mesh_file = open(mesh_filepath, "wb")
+                        cal3d_mesh.to_cal3d_binary(cal3d_mesh_file)
+                    else:
+                        mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
+                        mesh_filepath = os.path.join(cal3d_dirname, mesh_filename)
+                        cal3d_mesh_file = open(mesh_filepath, "wt")
+                        cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
+                    cal3d_mesh_file.close()
+                    print("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
+            else:
+                print("ERROR: No mesh selected or error exporting mesh!")
+            
+        if self.export_xaf:
+            for cal3d_animation in cal3d_animations:
+                if self.animation_binary_bool == 'binary':
+                    animation_filename = self.anim_prefix + cal3d_animation.name + ".caf"
+                    animation_filepath = os.path.join(cal3d_dirname, animation_filename)
+                    cal3d_animation_file = open(animation_filepath, "wb")
+                    cal3d_animation.to_cal3d_binary(cal3d_animation_file)
+                else:
+                    animation_filename = self.anim_prefix + cal3d_animation.name + ".xaf"
+                    animation_filepath = os.path.join(cal3d_dirname, animation_filename)
+                    cal3d_animation_file = open(animation_filepath, "wt")
+                    cal3d_animation_file.write(cal3d_animation.to_cal3d_xml())
+                cal3d_animation_file.close()
+                print("Wrote animation '%s'" % (animation_filename))
 
 
-		if self.export_cfg:
-			# jgb 2012-11-09 We don't want to overwrite a .blend file by accident:
-			if not self.filepath.endswith('.cfg'):
-				filename = self.filepath + '.cfg'
-			else:
-				filename = self.filepath
-			cal3d_cfg_file = open(filename, "wt")
+        if self.export_xpf:
+            for cal3d_morph_animation in cal3d_morph_animations:
+                if self.animation_binary_bool == 'binary':
+                    print("ERROR: binary not supported here!")
+                else:
+                    # using animation settings also for morph animation
+                    animation_filename = self.anim_prefix + cal3d_morph_animation.name + ".xpf"
+                    animation_filepath = os.path.join(cal3d_dirname, animation_filename)
+                    cal3d_morph_animation_file = open(animation_filepath, "wt")
+                    cal3d_morph_animation_file.write(cal3d_morph_animation.to_cal3d_xml())
+                cal3d_morph_animation_file.close()
+                print("Wrote morph animation '%s'" % (animation_filename))
 
-			if self.debug_ExportCal3D > 0:
-				print("ExportCal3D: write cfg.")
 
-			# lolwut?
-			#cal3d_cfg_file.write("path={0}\n".format("data\\models\\" + os.path.basename(self.filepath[:-4])+ "\\"))
-			#cal3d_cfg_file.write("scale=0.01f\n")
-			
-			if cal3d_skeleton:
-				if self.skeleton_binary_bool == 'binary':
-					skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".csf"
-				else:
-					skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".xsf"
-				cal3d_cfg_file.write("skeleton={0}\n".format(skeleton_filename))
+        if self.export_cfg:
+            # jgb 2012-11-09 We don't want to overwrite a .blend file by accident:
+            if not self.filepath.endswith('.cfg'):
+                filename = self.filepath + '.cfg'
+            else:
+                filename = self.filepath
+            cal3d_cfg_file = open(filename, "wt")
 
-			for cal3d_animation in cal3d_animations:
-				if self.animation_binary_bool == 'binary':
-					animation_filename = self.anim_prefix + cal3d_animation.name + ".caf"
-				else:
-					animation_filename = self.anim_prefix + cal3d_animation.name + ".xaf"
-				cal3d_cfg_file.write("animation={0}\n".format(animation_filename))
+            if self.debug_ExportCal3D > 0:
+                print("ExportCal3D: write cfg.")
 
-			for cal3d_material in cal3d_materials:
-				if self.material_binary_bool == 'binary':
-					material_filename = self.material_prefix + cal3d_material.name + ".crf"
-				else:
-					material_filename = self.material_prefix + cal3d_material.name + ".xrf"
-				cal3d_cfg_file.write("material={0}\n".format(material_filename))
+            # lolwut?
+            #cal3d_cfg_file.write("path={0}\n".format("data\\models\\" + os.path.basename(self.filepath[:-4])+ "\\"))
+            #cal3d_cfg_file.write("scale=0.01f\n")
+            
+            if cal3d_skeleton:
+                if self.skeleton_binary_bool == 'binary':
+                    skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".csf"
+                else:
+                    skeleton_filename = self.skeleton_prefix + cal3d_skeleton.name + ".xsf"
+                cal3d_cfg_file.write("skeleton={0}\n".format(skeleton_filename))
 
-			for cal3d_mesh in cal3d_meshes:
-				if self.mesh_binary_bool == 'binary':
-					mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
-				else:
-					mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
-				cal3d_cfg_file.write("mesh={0}\n".format(mesh_filename))
+            for cal3d_animation in cal3d_animations:
+                if self.animation_binary_bool == 'binary':
+                    animation_filename = self.anim_prefix + cal3d_animation.name + ".caf"
+                else:
+                    animation_filename = self.anim_prefix + cal3d_animation.name + ".xaf"
+                cal3d_cfg_file.write("animation={0}\n".format(animation_filename))
 
-			cal3d_cfg_file.close()
+            for cal3d_material in cal3d_materials:
+                if self.material_binary_bool == 'binary':
+                    material_filename = self.material_prefix + cal3d_material.name + ".crf"
+                else:
+                    material_filename = self.material_prefix + cal3d_material.name + ".xrf"
+                cal3d_cfg_file.write("material={0}\n".format(material_filename))
 
-		print("Export finished.")
-		print("")
+            for cal3d_mesh in cal3d_meshes:
+                if self.mesh_binary_bool == 'binary':
+                    mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".cmf"
+                else:
+                    mesh_filename = self.mesh_prefix + cal3d_mesh.name + ".xmf"
+                cal3d_cfg_file.write("mesh={0}\n".format(mesh_filename))
 
-		return {"FINISHED"}
+            cal3d_cfg_file.close()
 
-	def draw(self, context):
-		layout = self.layout
-		
-		row = layout.row(align=True)
-		row.label(text="Which files to export:")
-		row = layout.row(align=True)
-		row.prop(self, "export_xsf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xmf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xaf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xpf")
-		row = layout.row(align=True)
-		row.prop(self, "export_xrf")
-		row = layout.row(align=True)
-		row.prop(self, "export_cfg")
-		row = layout.row(align=True)
-		row.prop(self, "copy_img")
+        print("Export finished.")
+        print("")
 
-		row = layout.row(align=True)
-		row.label(text="Export options:")
+        return {"FINISHED"}
 
-		row = layout.row(align=True)
-		row.prop(self, "write_amb")
+    def draw(self, context):
+        layout = self.layout
+        
+        row = layout.row(align=True)
+        row.label(text="Which files to export:")
+        row = layout.row(align=True)
+        row.prop(self, "export_xsf")
+        row = layout.row(align=True)
+        row.prop(self, "export_xmf")
+        row = layout.row(align=True)
+        row.prop(self, "export_xaf")
+        row = layout.row(align=True)
+        row.prop(self, "export_xpf")
+        row = layout.row(align=True)
+        row.prop(self, "export_xrf")
+        row = layout.row(align=True)
+        row.prop(self, "export_cfg")
+        row = layout.row(align=True)
+        row.prop(self, "copy_img")
 
-		row = layout.row(align=True)
-		row.prop(self, "fps")
-		
-		#row = layout.row(align=True)
-		#row.label(text="Set Prefix for:")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "file_prefix")
+        row = layout.row(align=True)
+        row.label(text="Export options:")
 
-		#row = layout.row(align=True)
-		#row.prop(self, "skeleton_prefix")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "mesh_prefix")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "anim_prefix")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "material_prefix")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "imagepath_prefix")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "base_rotation")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "base_scale")
-		
-		#row = layout.row(align=True)
-		#row.prop(self, "path_mode")
-		
-		# jgb 2012-11-14 Remove user configurability of vertex groups setting because export to IMVU won't work when it is unchecked.
-		#row = layout.row(align=True)
-		#row.label(text="Export with:")
-		#row = layout.row(align=True)
-		#row.prop(self, "use_groups")
-		#row.prop(self, "use_envelopes")
-		
-		# jgb 2012-11-11 Binary not supported on IMVU afaik therefore no need to give a choice
-		#row = layout.row(align=True)
-		#row.label(text="Skeleton")
-		#row.prop(self, "skeleton_binary_bool", expand=True)
-		#row = layout.row(align=True)
-		#row.label(text="Mesh")
-		#row.prop(self, "mesh_binary_bool", expand=True)
-		#row = layout.row(align=True)
-		#row.label(text="Animation")
-		#row.prop(self, "animation_binary_bool", expand=True)
-		#row = layout.row(align=True)
-		#row.label(text="Material")
-		#row.prop(self, "material_binary_bool", expand=True)
-		
+        row = layout.row(align=True)
+        row.prop(self, "write_amb")
 
-	def invoke(self, context, event):
-		
-		self.fps = context.scene.render.fps
-		# jgb 2012-11-26 Since we are disabling setting prefix from gui we remove this part here and use it in execute
-		# sc = ""
-		# if len(bpy.data.scenes) > 1:
-			# sc = context.scene.name + "_"
-		# pre = os.path.splitext(os.path.basename(bpy.data.filepath))[0] + "_" + sc
-		# self.file_prefix = pre
-		# --- end commenting out stuff
-		#self.mesh_prefix = pre
-		#self.skeleton_prefix = pre
-		#self.anim_prefix = pre
-		#self.material_prefix = pre
-		r = super(ExportCal3D, self).invoke(context, event)
-		
-		#print(bpy.context.active_operator)
-		#preset = bpy.utils.preset_find("default", "operator\\cal3d_model.cfg", display_name=False)
-		#print("preset is " + preset)
-		#orig = context["active_operator"]
-		#try:
-		#	bpy.context["active_operator"] = self
-		#	bpy.ops.script.execute_preset(context_copy, filepath=preset, menu_idname="WM_MT_operator_presets")
-		#finally:
-		#	context["active_operator"] = orig
-		
-		return r
+        row = layout.row(align=True)
+        row.prop(self, "fps")
+        
+        #row = layout.row(align=True)
+        #row.label(text="Set Prefix for:")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "file_prefix")
+
+        #row = layout.row(align=True)
+        #row.prop(self, "skeleton_prefix")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "mesh_prefix")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "anim_prefix")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "material_prefix")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "imagepath_prefix")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "base_rotation")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "base_scale")
+        
+        #row = layout.row(align=True)
+        #row.prop(self, "path_mode")
+        
+        # jgb 2012-11-14 Remove user configurability of vertex groups setting because export to IMVU won't work when it is unchecked.
+        #row = layout.row(align=True)
+        #row.label(text="Export with:")
+        #row = layout.row(align=True)
+        #row.prop(self, "use_groups")
+        #row.prop(self, "use_envelopes")
+        
+        # jgb 2012-11-11 Binary not supported on IMVU afaik therefore no need to give a choice
+        #row = layout.row(align=True)
+        #row.label(text="Skeleton")
+        #row.prop(self, "skeleton_binary_bool", expand=True)
+        #row = layout.row(align=True)
+        #row.label(text="Mesh")
+        #row.prop(self, "mesh_binary_bool", expand=True)
+        #row = layout.row(align=True)
+        #row.label(text="Animation")
+        #row.prop(self, "animation_binary_bool", expand=True)
+        #row = layout.row(align=True)
+        #row.label(text="Material")
+        #row.prop(self, "material_binary_bool", expand=True)
+        
+
+    def invoke(self, context, event):
+        
+        self.fps = context.scene.render.fps
+        # jgb 2012-11-26 Since we are disabling setting prefix from gui we remove this part here and use it in execute
+        # sc = ""
+        # if len(bpy.data.scenes) > 1:
+            # sc = context.scene.name + "_"
+        # pre = os.path.splitext(os.path.basename(bpy.data.filepath))[0] + "_" + sc
+        # self.file_prefix = pre
+        # --- end commenting out stuff
+        #self.mesh_prefix = pre
+        #self.skeleton_prefix = pre
+        #self.anim_prefix = pre
+        #self.material_prefix = pre
+        r = super(ExportCal3D, self).invoke(context, event)
+        
+        #print(bpy.context.active_operator)
+        #preset = bpy.utils.preset_find("default", "operator\\cal3d_model.cfg", display_name=False)
+        #print("preset is " + preset)
+        #orig = context["active_operator"]
+        #try:
+        #   bpy.context["active_operator"] = self
+        #   bpy.ops.script.execute_preset(context_copy, filepath=preset, menu_idname="WM_MT_operator_presets")
+        #finally:
+        #   context["active_operator"] = orig
+        
+        return r
 
 def menu_func_export(self, context):
-	self.layout.operator(ExportCal3D.bl_idname, text="IMVU Cal3D export")
+    self.layout.operator(ExportCal3D.bl_idname, text="IMVU Cal3D export")
 
 
 def register():
-	bpy.utils.register_module(__name__)
-	bpy.types.INFO_MT_file_export.append(menu_func_export)
+    bpy.utils.register_module(__name__)
+    bpy.types.INFO_MT_file_export.append(menu_func_export)
 
 
 def unregister():
-	bpy.utils.unregister_module(__name__)
-	bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    bpy.utils.unregister_module(__name__)
+    bpy.types.INFO_MT_file_export.remove(menu_func_export)
 
 
 if __name__ == "__main__":
-	register()
+    register()
