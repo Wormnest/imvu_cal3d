@@ -286,11 +286,12 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         # Export armatures
         # Always read skeleton because both meshes and animations need it.
         if self.debug_ExportCal3D > 0:
-            print("ExportCal3D: export armatures.")
+            LogMessage.log_debug("ExportCal3D: export armatures.")
         try:
             for obj in visible_objects:
                 if obj.type == "ARMATURE":
                     if cal3d_skeleton:
+                        LogMessage.log_error("Only one armature is supported per scene")
                         raise RuntimeError("Only one armature is supported per scene")
                     armature_obj = obj
                     cal3d_skeleton = create_cal3d_skeleton(obj, obj.data,
@@ -303,7 +304,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     if context.scene.world:
                         cal3d_skeleton.scene_ambient_color = context.scene.world.ambient_color
         except Exception as e:
-            print("###### ERROR DURING ARMATURE EXPORT ######")
+            LogMessage.log_error("###### FATAL ERROR DURING ARMATURE EXPORT ######")
             traceback.print_exc()
             return {"FINISHED"}
 
@@ -311,7 +312,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         # Test for xmf first because that one is the most likely to be set.
         if self.export_xmf or self.export_xrf:
             if self.debug_ExportCal3D > 0:
-                print("ExportCal3D: export meshes and materials.")
+                LogMessage.log_debug("ExportCal3D: export meshes and materials.")
             try:
                 cal3d_materials = create_cal3d_materials(cal3d_dirname, self.imagepath_prefix, Cal3d_xml_version, self.copy_img)
 
@@ -329,18 +330,18 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                                 cal3d_meshes.append(mesh_result)
                 else:
                     if self.debug_ExportCal3D > 0:
-                        print("ExportCal3D: no cal3d materials found!")
+                        LogMessage.log_debug("ExportCal3D: no cal3d materials found!")
 
             except RuntimeError as e:
-                print("###### ERROR DURING MESH EXPORT ######")
-                print(e)
+                LogMessage.log_error("###### FATAL ERROR DURING MESH EXPORT ######")
+                LogMessage.log_error(e)
                 return {"FINISHED"}
 
 
         if self.export_xaf:
             # Export animations
             if self.debug_ExportCal3D > 0:
-                print("ExportCal3D: export animations.")
+                LogMessage.log_debug("ExportCal3D: export animations.")
             try:
                 if cal3d_skeleton:
                     for action in bpy.data.actions:
@@ -353,14 +354,14 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     LogMessage.log_error("can't export animations: no skeleton selected!")
                             
             except RuntimeError as e:
-                print("###### ERROR DURING ACTION EXPORT ######")
-                print(e)
+                LogMessage.log_error("###### FATAL ERROR DURING ACTION EXPORT ######")
+                LogMessage.log_error(e)
                 return {"FINISHED"}
 
         if self.export_xpf:
             # Export morph animations
             if self.debug_ExportCal3D > 0:
-                print("ExportCal3D: export morph animations.")
+                LogMessage.log_debug("ExportCal3D: export morph animations.")
             try:
                 for action in bpy.data.actions:
                     if action.id_root == "KEY":
@@ -371,13 +372,13 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                                 cal3d_morph_animations.append(cal3d_morph_animation)
                             
             except RuntimeError as e:
-                print("###### ERROR DURING ACTION EXPORT ######")
-                print(e)
+                LogMessage.log_error("###### FATAL ERROR DURING ACTION EXPORT ######")
+                LogMessage.log_error(e)
                 return {"FINISHED"}
 
 
         if self.debug_ExportCal3D > 0:
-            print("ExportCal3D: write files.")
+            LogMessage.log_debug("ExportCal3D: write files.")
 
         if self.export_xsf:
             if cal3d_skeleton:
@@ -451,7 +452,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         if self.export_xpf:
             for cal3d_morph_animation in cal3d_morph_animations:
                 if self.animation_binary_bool == 'binary':
-                    print("ERROR: binary not supported here!")
+                    LogMessage.log_error("binary not supported here!")
                 else:
                     # using animation settings also for morph animation
                     animation_filename = self.anim_prefix + cal3d_morph_animation.name + ".xpf"
@@ -471,7 +472,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
             cal3d_cfg_file = open(filename, "wt")
 
             if self.debug_ExportCal3D > 0:
-                print("ExportCal3D: write cfg.")
+                LogMessage.log_debug("ExportCal3D: write cfg.")
 
             # lolwut?
             #cal3d_cfg_file.write("path={0}\n".format("data\\models\\" + os.path.basename(self.filepath[:-4])+ "\\"))
