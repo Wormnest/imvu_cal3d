@@ -34,13 +34,12 @@ bl_info = \
   "version": (1, 4, 9),
   "blender": (2, 6, 3),
   "location": "File > Export > IMVU Cal3D (.cfg)",
-  "description": "Export mesh geometry, armature, "   \
-                 "materials and animations to Cal3D "  \
-                 "for IMVU",
+  "description": "Export mesh, armature (skeleton), materials, " \
+                 "animations and morph animation to Cal3D for IMVU.",
   "warning": "You must have Blender 2.6.3 or higher to run this script." \
             "Assigning material(s) to your mesh is required for the exporter to work.",
   "wiki_url": "https://bitbucket.org/jacobb/imvu_cal3d",
-  "tracker_url": "",
+  "tracker_url": "https://bitbucket.org/jacobb/imvu_cal3d/issues?status=new&status=open",
   "category": "Import-Export"
 }
 
@@ -88,20 +87,18 @@ if "bpy" in locals():
 import bpy
 from bpy import ops
 from bpy import context
-from bpy.props import BoolProperty,         \
-                      EnumProperty,         \
-                      CollectionProperty,   \
-                      FloatProperty,        \
-                      StringProperty,       \
-                      FloatVectorProperty,  \
+from bpy.props import BoolProperty,       \
+                      EnumProperty,        \
+                      CollectionProperty,  \
+                      FloatProperty,       \
+                      StringProperty,      \
+                      FloatVectorProperty, \
                       IntProperty
-
 
 import bpy_extras
 from bpy_extras.io_utils import ExportHelper, ImportHelper
 
 import mathutils
-
 import os.path
 import sys
 import traceback
@@ -128,27 +125,17 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
     file_prefix = StringProperty(name="File prefix", description="Prefix name for all exported files (default is the Blender filename)",
                                      default="")
     # jgb 2012-11-15 these next prefixes will be used but not be visible in gui: we copy value from file_prefix
-    mesh_prefix = StringProperty(name="Mesh", 
-                                     default="model_")
-                                     
-    skeleton_prefix = StringProperty(name="Skeleton", 
-                                     default="")
-                                     
-    anim_prefix = StringProperty(name="Animation",
-                                      default="")
-                                      
-    material_prefix = StringProperty(name="Material",
-                                      default="")
-    
-    imagepath_prefix = StringProperty(name="Image Path",
-                                      default="")
-                                      
+    mesh_prefix = StringProperty(name="Mesh", default="model_")
+    skeleton_prefix = StringProperty(name="Skeleton", default="")
+    anim_prefix = StringProperty(name="Animation", default="")
+    material_prefix = StringProperty(name="Material", default="")
+    imagepath_prefix = StringProperty(name="Image Path", default="")
+
     base_rotation = FloatVectorProperty(name="Base Rotation (XYZ)", 
                                         default = (0.0, 0.0, 0.0),
                                         subtype="EULER")
 
-    base_scale = FloatProperty(name="Base Scale",
-                                default=1.0)
+    base_scale = FloatProperty(name="Base Scale", default=1.0)
 
     # jgb 2012-11-09 IMVU expects 30 fps (ref: http://www.imvu.com/catalog/modules.php?op=modload&name=phpbb2&file=viewtopic.php&t=307460&start=0)
     # While I remember reading that blender default and the value that was here before = 25.
@@ -157,7 +144,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         default=30.0)
 
     #path_mode = bpy_extras.io_utils.path_reference_mode
-    
+
     use_groups = BoolProperty(name="Vertex Groups",
         description="Export the meshes using vertex groups.", 
         default=True)
