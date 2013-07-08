@@ -97,8 +97,8 @@ def importer_main(filename, name_only, LogMessage):
         # start the XSF class
         skeleton = root.find('SKELETON')
         if skeleton is not None:    # This way because of a python warning about future changes
-            LogMessage.log_message("Importing armature from {0}".format(filename))
-            xsf_importer = ImportXsf(skeleton)
+            LogMessage.log_message("Importing armature from {0}\n".format(filename))
+            xsf_importer = ImportXsf(skeleton, LogMessage)
             xsf_importer.parse_xml()
             xsf_importer.DEBUG = 1  # debug armature creation only atm
             xsf_importer.create_armature(name_only)

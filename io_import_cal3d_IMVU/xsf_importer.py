@@ -157,11 +157,12 @@ def mat3_to_vec_roll(mat):
 class ImportXsf():
 
     # Init variables of our class
-    def __init__(self, skeleton):
+    def __init__(self, skeleton, LogMessage):
         self.DEBUG = 0
 
         # Copy parameters
         self.skeleton = skeleton
+        self.log = LogMessage
 
         # Set some default initial values
         self.numbones = 0
@@ -170,15 +171,15 @@ class ImportXsf():
         self.bones = []
         
         if self.DEBUG:
-            print("init ImportXSF")
+            self.log.log_debug("init ImportXSF")
 
 
     # parse_xml: parses the xml and collects all needed data
     def parse_xml(self):
 
         if self.DEBUG:
-            print("ImportXSF: parse xml")
-            print("Reading Skeleton")
+            self.log.log_debug("ImportXSF: parse xml")
+            self.log.log_debug("Reading Skeleton")
 
         # 1. Read the global skeleton values
         # 1.1 Get the number of bones in this skeleton
@@ -196,8 +197,8 @@ class ImportXsf():
                 self.scene_ambient_color = sac
 
         if self.DEBUG:
-            print("Bonecount: "+self.numbones)
-            print("Scene ambient color: "+str(self.scene_ambient_color))
+            self.log.log_debug("Bonecount: "+self.numbones)
+            self.log.log_debug("Scene ambient color: "+str(self.scene_ambient_color))
 
         # 2. Loop over all the bones
         for i, bone in enumerate(self.skeleton):
@@ -206,20 +207,20 @@ class ImportXsf():
                 bone_name = bone.get("NAME")
                 if bone_name == None:
                     bone_name = "UNKNOWN_"+str(i)
-                    print("ERROR: can't find name of bone!")
+                    self.log.log_error("Can't find name of bone!")
 
                 bone_id = bone.get("ID")
                 if bone_id == None:
                     bone_id = -1
-                    print("ERROR: can't find id of bone!")
+                    self.log.log_error("Can't find id of bone!")
                 elif int(bone_id) != i:
-                    print("ERROR: invalid bone id {0}, expected: {1}".format(str(bone_id),str(i)))
+                    self.log.log_error("Invalid bone id {0}, expected: {1}".format(str(bone_id),str(i)))
                     break
 
                 bone_childs = bone.get("NUMCHILDS")
                 if bone_childs == None:
                     bone_childs = 0
-                    print("ERROR: can't find number of children of bone!")
+                    self.log.log_error("Can't find number of children of bone!")
 
                 # optional lighttype and lightcolor values
                 light_type = bone.get("LIGHTTYPE")
@@ -268,11 +269,11 @@ class ImportXsf():
                         obj_bone.PrintBone()
 
         if self.numbones != len(self.bones):
-            print("WARNING: number of bones read ({0}) is not the same as the expected number of bones ({1})!".
+            self.log.log_warning("number of bones read ({0}) is not the same as the expected number of bones ({1})!".
                 format(len(self.bones),self.numbones))
 
         if self.DEBUG:
-            print("ImportXSF: parsing finished")
+            self.log.log_debug("ImportXSF: parsing finished")
 
     # Add bone btree and all its children to armature arm
     def add_bone_tree(self, arm, btree, parent_bone):
@@ -281,14 +282,14 @@ class ImportXsf():
             ma = matrix.to_euler().to_matrix()
             crossXY = ma[0].cross(ma[1])
             check = crossXY.dot(ma[2])
-            print("LeftHand check: {0}".format(check))
+            self.log.log_debug("LeftHand check: {0}".format(check))
             if check < 0.00001: return 1
             return 0
 
         # FOR DEBUGGING ONLY
-        MAX_DEBUG_BONE = 5
-        if int(btree.id) > MAX_DEBUG_BONE:
-            return
+        #MAX_DEBUG_BONE = 5
+        #if int(btree.id) > MAX_DEBUG_BONE:
+        #    return
         # ###############
         # info
 
@@ -310,11 +311,11 @@ class ImportXsf():
             SystemMatrix *= NegRotX4
         if Config_CoordinateSystem == 1:
             SystemMatrix *= NegScaleY4
-            print("{0} = System Matrix".format(SystemMatrix))
+            self.log.log_debug("{0} = System Matrix".format(SystemMatrix))
         elif Config_RotateX:
-            print("")
+            self.log.log_message("")
         else:
-            print("<SystemMatrix is Identity>")
+            self.log.log_debug("<SystemMatrix is Identity>")
 
         # Console output handling
         if btree.parent is not None:
@@ -331,7 +332,8 @@ class ImportXsf():
                 else:
                     dash_len = 10
             
-            print("-"*dash_len + " "*SPACE_LEN + btree.name)
+            self.log.log_message("") # add empty line before dashes
+            self.log.log_message("-"*dash_len + " "*SPACE_LEN + btree.name + "\n")
 
             #print("Adding bone: {0} as child of: {1}".format(btree.name,bparent))
             TRY_CROSS_DOT = 0
@@ -356,7 +358,7 @@ class ImportXsf():
                     rc = "COLUMN"
                 else:
                     rc = "ROW"
-                print("dot(cross) {0} vector: {1}".format(rc,dot_vec))
+                self.log.log_debug("dot(cross) {0} vector: {1}".format(rc,dot_vec))
 
         # TESTING
         # if btree.name == "lfHip":
@@ -421,12 +423,12 @@ class ImportXsf():
         #if isLeftHand(bmatrix):
         #   print("LEFTHAND MATRIX!")
         # #########
-        print("quat axis (%.2f, %.2f, %.2f), angle %.2f" % (bquat.axis[:] +
+        self.log.log_debug("quat axis (%.2f, %.2f, %.2f), angle %.2f" % (bquat.axis[:] +
             (math.degrees(bquat.angle), )))
-        print("quat as euler: %.2f, %.2f, %.2f" % tuple(math.degrees(a) for a in bquat.to_euler()))
+        self.log.log_debug("quat as euler: %.2f, %.2f, %.2f" % tuple(math.degrees(a) for a in bquat.to_euler()))
         if parent_bone:
             pquat = parent_bone.matrix.to_quaternion()
-            print("parent axis (%.2f, %.2f, %.2f), angle %.2f" % (pquat.axis[:] +
+            self.log.log_debug("parent axis (%.2f, %.2f, %.2f), angle %.2f" % (pquat.axis[:] +
                 (math.degrees(pquat.angle), )))
         
         # Test if we need to rotate the matrix
@@ -437,11 +439,11 @@ class ImportXsf():
         if TEST1 == 1:
             if parent_bone is not None:
                 if int(btree.id) < 0:
-                    print("rotation: {0}".format(str(btree.rotation)))
-                    print("bquat: {0}".format(str(bquat)))
-                    print("quat axis (%.2f, %.2f, %.2f), angle %.2f" % (bquat.axis[:] +
+                    self.log.log_debug("rotation: {0}".format(str(btree.rotation)))
+                    self.log.log_debug("bquat: {0}".format(str(bquat)))
+                    self.log.log_debug("quat axis (%.2f, %.2f, %.2f), angle %.2f" % (bquat.axis[:] +
                         (math.degrees(bquat.angle), )))
-                    print("bmatrix: {0}".format(str(bmatrix)))
+                    self.log.log_debug("bmatrix: {0}".format(str(bmatrix)))
                 bone.parent = parent_bone
                 bone.head = mathutils.Vector(btree.translation)
                 bone.align_roll((parent_bone.matrix.to_3x3()*bmatrix)[2])
@@ -494,17 +496,17 @@ class ImportXsf():
                 # We need to do the inverse: matrix divided by the inverted parent:
                 # Which I think the inverse of an inverted matrix is the matrix itself so just multiply?
                 if int(btree.id) < 0:
-                    print("matrix:\n{0}".format(str(mat2)))
+                    self.log.log_debug("matrix:\n{0}".format(str(mat2)))
                 mat2 = mat2 * par_mat
                 if int(btree.id) < 0:
-                    print("matrix * parent matrix:\n{0}".format(str(mat2)))
+                    self.log.log_debug("matrix * parent matrix:\n{0}".format(str(mat2)))
 
         # 2012-12-02 new try: take into account the way its exported and revert that:
         TEST3 = 0
         if TEST3 == 1:
             transmat = mathutils.Matrix.Translation(btree.translation)
             if bone.parent is not None:
-                print("translation: {0}\nhead of parent: {1}".format(
+                self.log.log_debug("translation: {0}\nhead of parent: {1}".format(
                     transmat.to_translation(),bone.parent.head))
                 # # first take out the parent matrix
                 # pmat = bone.parent.matrix.inverted().to_4x4()
@@ -537,7 +539,7 @@ class ImportXsf():
                     # print("mat * 90y: {0}".format(maty))
                     # print("mat * 90z: {0}".format(matz))
                 mat_local = bone.parent.matrix.to_4x4() * transmat
-                print("parent mat * transmat: {0}".format(mat_local))
+                self.log.log_debug("parent mat * transmat: {0}".format(mat_local))
                 locmat = mat_local.copy()
                 loctrans = locmat.to_translation()
                 # bp = bone.parent
@@ -548,7 +550,7 @@ class ImportXsf():
                     # bp = bp.parent
                 bmatrix = bmatrix * bone.parent.matrix.to_3x3()
                 if btree.name.endswith("Hip-TURNED OFF"):
-                    print("Rotating Hip bone -90 degrees over Z")
+                    self.log.log_debug("Rotating Hip bone -90 degrees over Z")
                     mat_rot_test = mathutils.Matrix.Rotation(math.radians(-90.0), 3, 'Z')
                     bmatrix = bmatrix * mat_rot_test
                 #testmat = mathutils.matrix.
@@ -572,7 +574,7 @@ class ImportXsf():
                 adjusted_mat2 = btransmat * inv_par_mat
                 local_trans1 = adjusted_mat1.to_translation() + parent_bone.head
                 local_trans2 = adjusted_mat2.to_translation() #+ parent_bone.head
-                print("{0} = local trans\n{1} = local trans inverted".format(local_trans1,local_trans2))
+                self.log.log_debug("{0} = local trans\n{1} = local trans inverted".format(local_trans1,local_trans2))
                 loctrans = local_trans2
                 #bone_mat = Matrix.Translation(bloc) * bmatrix.to_4x4() * parent_bone.matrix.inverted()
                 #loctrans = bone_mat.to_translation()
@@ -581,14 +583,14 @@ class ImportXsf():
 
         
         POSITION_CODE_TO_USE = 0
-        print("Matrix before Blender conversion:\n{0}".format(bmatrix))
-        print("Same as quat: {0}".format(bmatrix.to_quaternion()))
+        self.log.log_debug("Matrix before Blender conversion:\n{0}".format(bmatrix))
+        self.log.log_debug("Same as quat: {0}".format(bmatrix.to_quaternion()))
         if POSITION_CODE_TO_USE == 0:
             pos = loctrans
-            print("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
+            self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
             axis, roll = mat3_to_vec_roll(bmatrix)
             if int(btree.id) < 10:
-                print("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
+                self.log.log_debug("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
             bone.head = pos
             bone.tail = pos + (axis*100.0)
@@ -613,11 +615,11 @@ class ImportXsf():
             bone.transform(bmatrix) # try with roll = True/False ?????????????
             bone.translate(loctrans)
 
-        print("Matrix after conversion:\n{0}".format(bone.matrix))
-        print("Same as quat: {0}".format(bmatrix.to_quaternion()))
+        self.log.log_debug("Matrix after conversion:\n{0}".format(bone.matrix))
+        self.log.log_debug("Same as quat: {0}".format(bmatrix.to_quaternion()))
 
         if int(btree.id) < 10:
-            print("head: {0}\ntail: {1}".format(bone.head,bone.tail))
+            self.log.log_debug("head: {0}\ntail: {1}".format(bone.head,bone.tail))
 
         # 2. loop over all children
         for b in btree.children:
@@ -626,10 +628,7 @@ class ImportXsf():
     # create_armature: convert the collected bone data into an armature
     def create_armature(self, armature_name):
 
-        if self.DEBUG:
-            print("ImportXSF: create armature")
-
-        print("Create armature: {0}".format(armature_name))
+        self.log.log_message("Create armature: {0}".format(armature_name))
         # Create armature and object
         arm_origin = arm_rotation = Vector((0,0,0))
         bpy.ops.object.add(type = 'ARMATURE', 
@@ -650,8 +649,8 @@ class ImportXsf():
         for b in self.bones:
             # Handle only toplevel bones here
             if b.parent is None:
-                print("Creating root level bone: {0}".format(b.name))
+                self.log.log_message("Creating root level bone: {0}\n".format(b.name))
                 self.add_bone_tree(arm, b, None)
 
         if self.DEBUG:
-            print("ImportXSF: armature created")
+            self.log.log_debug("ImportXSF: armature created")
