@@ -256,7 +256,7 @@ def create_cal3d_mesh(scene, mesh_obj,
 
     cal3d_mesh = Mesh(mesh_obj.name, xml_version)
     if cal3d_skeleton:
-        LogMessage.log_message("Mesh: " + mesh_obj.name)
+        LogMessage.log_message("  Mesh: " + mesh_obj.name)
     else:
         LogMessage.log_error("Mesh: " + mesh_obj.name + " is not attached to a skeleton or skeleton is not selected!")
         # No use going on if we can't assign influences
@@ -344,13 +344,13 @@ def create_cal3d_mesh(scene, mesh_obj,
                     # IMVU requires morph names to end in 1 of 4 names:
                     # .Clamped, . Average, .Exclusive, or .Additive (see IMVU documentation on what they do)
                     # N.B.: the IMVU Morph Targets page wrongly says it should be .Averaged, it should be .Average
-                    print("  Morph name: "+kb.name)
+                    LogMessage.log_message("    Morph name: "+kb.name)
                     if kb.name.endswith(".Averaged"):
-                        print("WARNING: Morph name " + kb.name + " wrongly ends in .Averaged. It should end in .Average instead!")
+                        LogMessage.log_warning("WARNING: Morph name " + kb.name + " wrongly ends in .Averaged. It should end in .Average instead!")
                     # We will give a warning here if the morph name doesn't conform to that
-                    if not (kb.name.endswith(".Exclusive") or kb.name.endswith(".XAdditive") or
+                    if not (kb.name.endswith(".Exclusive") or kb.name.endswith(".Additive") or
                             kb.name.endswith(".Average") or kb.name.endswith(".Clamped")):
-                        print("WARNING: Morph name " + kb.name + " doesn't end in one of the IMVU specified suffixes!")
+                        LogMessage.log_warning("WARNING: Morph name " + kb.name + " doesn't end in one of the IMVU specified suffixes!")
                     cal3d_morph = Morph(kb.name,sk_id)
                     if cal3d_morph:
                         sm.morphs.append(cal3d_morph)
