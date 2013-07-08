@@ -27,6 +27,10 @@ from .armature_classes import *
 
 from . import action_classes
 from .action_classes import *
+from . import logger_class
+from .logger_class import Logger, get_logger
+
+LogMessage = None
 
 def get_action_group_fcurve(action_group, data_path, array_index):
     for fcu in action_group.channels:
@@ -90,6 +94,10 @@ def track_sort_key(track):
 
 
 def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
+    global LogMessage
+    # Initialize our logger
+    LogMessage = get_logger()
+
     cal3d_animation = Animation(action.name, xml_version)
 
     initialized_borders = False
@@ -105,7 +113,7 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
                 break
 
         if not cal3d_bone:
-            print("WARNING: no bone found corresponding to action group "+action_group.name)
+            LogMessage.log_warning("No bone found corresponding to action group "+action_group.name)
             continue
 
         cal3d_track = Track(cal3d_bone.index)
@@ -141,7 +149,7 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
         keyframes_list.sort()
         
         if len(keyframes_list) == 0:
-            print("WARNING: no keyframes in action group "+action_group.name)
+            LogMessage.log_warning("No keyframes in action group "+action_group.name)
             continue
 
         if initialized_borders:
@@ -186,29 +194,35 @@ def create_cal3d_animation(cal3d_skeleton, action, fps, xml_version):
 
 
     if len(cal3d_animation.tracks) > 0:
+        LogMessage.log_message("  Animation: "+action.name)
         return cal3d_animation
 
     return None
 
 def MorphFromDataPath(dataPath):
+    global LogMessage
     if dataPath.startswith("key_blocks["):
         words = dataPath.split('"')
         if len(words) == 3:
             return words[1]
         else:
-            print("UNEXPECTED datapath type!")
+            LogMessage.log_error("UNEXPECTED datapath type!")
             #  e.g. location
             return None
     else:
-        print("UNEXPECTED datapath type!")
+        LogMessage.log_error("UNEXPECTED datapath type!")
         return None
 
 # jgb: Morph animation export handler based on the normal animation handler
 # Note: the shape_keys parameter is currently not used but as I'm not sure whether I won't need it
 # in the future here I'm leaving it in
 def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
+    global LogMessage
+    # Initialize our logger
+    LogMessage = get_logger()
+
     cal3d_morph_animation = MorphAnimation(action.name, xml_version)
-    print("Morph animation: "+action.name)
+    LogMessage.log_message("  Morph animation: "+action.name)
     # determine animation duration
     cal3d_morph_animation.duration = ((action.frame_range.y - action.frame_range.x) / fps)
 
@@ -219,6 +233,7 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
         if morph_name:
             # Add a track with this morphname
             cal3d_morph_track = MorphTrack(morph_name)
+            LogMessage.log_message("    Morph name: "+morph_name)
             if cal3d_morph_track:
                 # Add track to morph animation
                 cal3d_morph_animation.morph_tracks.append(cal3d_morph_track)
@@ -236,6 +251,6 @@ def create_cal3d_morph_animation(shape_keys, action, fps, xml_version):
                             #print("frame, weight: "+ str(frame)+", "+str(value))
                             cal3d_morph_track.keyframes.append(cal3d_morph_key_frame)
                 else:
-                    print("WARNING: no keyframe points for morph "+morph_name)
+                    LogMessage.log_warning("No keyframe points for morph "+morph_name)
 
     return cal3d_morph_animation
