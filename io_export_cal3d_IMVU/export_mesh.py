@@ -91,12 +91,9 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
 
 
 def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_envelopes, armature_obj):
-    global LogMessage
-    LogMessage = logger_class.LogMessage
     if not cal3d_skeleton:
         return []
 
-    global LogMessage
     influences = []
     
     if use_groups:
@@ -105,6 +102,7 @@ def get_vertex_influences(vertex, mesh_obj, cal3d_skeleton, use_groups, use_enve
             group_name = mesh_obj.vertex_groups[group_index].name
             # jgb debug
             if debug_export > 0:
+                global LogMessage
                 LogMessage.log_debug( "group name " + group_name + ", group weight: " + str(group.weight))
             weight = group.weight
             if weight > 0.0001:
@@ -343,6 +341,16 @@ def create_cal3d_mesh(scene, mesh_obj,
                     break
                 # Add a morph with this name and id to all submeshes
                 for sm in cal3d_mesh.submeshes:
+                    # IMVU requires morph names to end in 1 of 4 names:
+                    # .Clamped, . Average, .Exclusive, or .Additive (see IMVU documentation on what they do)
+                    # N.B.: the IMVU Morph Targets page wrongly says it should be .Averaged, it should be .Average
+                    print("  Morph name: "+kb.name)
+                    if kb.name.endswith(".Averaged"):
+                        print("WARNING: Morph name " + kb.name + " wrongly ends in .Averaged. It should end in .Average instead!")
+                    # We will give a warning here if the morph name doesn't conform to that
+                    if not (kb.name.endswith(".Exclusive") or kb.name.endswith(".XAdditive") or
+                            kb.name.endswith(".Average") or kb.name.endswith(".Clamped")):
+                        print("WARNING: Morph name " + kb.name + " doesn't end in one of the IMVU specified suffixes!")
                     cal3d_morph = Morph(kb.name,sk_id)
                     if cal3d_morph:
                         sm.morphs.append(cal3d_morph)

@@ -359,15 +359,6 @@ class Morph:
         self.morph_id = morph_id
 
     def to_cal3d_xml(self):
-        # IMVU requires morph names to end in 1 of 4 names:
-        # .Clamped, . Average, .Exclusive, or .Additive (see IMVU documentation on what they do)
-        # N.B.: the IMVU Morph Targets page wrongly says it should be .Averaged, it should be .Average
-        if self.name.endswith(".Averaged"):
-            print("WARNING: morph name " + self.name + " wrongly ends in .Averaged. It should end in .Average instead!")
-        # We will give a warning here if the morph name doesn't conform to that
-        if not (self.name.endswith(".Exclusive") or self.name.endswith(".Additive") or
-                self.name.endswith(".Average") or self.name.endswith(".Clamped")):
-            print("WARNING: morph name " + self.name + " doesn't end in one of the IMVU specified suffixes!")
         #  Morph has 2  xml formats: 1 without blendvertex data ends with />, the other 2 has a separate end morph tag
         s = "    <MORPH NAME=\"{0}\" NUMBLENDVERTS=\"{1}\" MORPHID=\"{2}\"".format(self.name, len(self.blend_vertices), self.morph_id)
         if len(self.blend_vertices) > 0:
