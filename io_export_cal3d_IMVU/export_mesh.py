@@ -70,7 +70,7 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
                                 import shutil
                                 try:
                                     shutil.copy(filepath, texturePath)
-                                    LogMessage.log_info("Copied texture to " + texturePath)
+                                    LogMessage.log_message("  Copied texture to " + texturePath)
                                 except Exception as e:
                                     # warning, not an error since this is not essential for export
                                     LogMessage.log_warning("Error copying texture " + str(e))
@@ -296,7 +296,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                             # WARNING: currently no checking that a material number is used twice
                             # or that it will interfere with another number using the consecutive indexing!
                             cal3d_material.used_index = mat_num
-                            LogMessage.log_info("Explicit material number {0} set for submesh {1}".format(mat_num,len(cal3d_mesh.submeshes)))
+                            LogMessage.log_message("    Explicit material number {0} set for submesh {1}".format(mat_num,len(cal3d_mesh.submeshes)))
                         else:
                             cal3d_material.used_index = len(cal3d_used_materials)
                         cal3d_material.in_use = True

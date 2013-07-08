@@ -445,7 +445,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                         cal3d_mesh_file = open(mesh_filepath, "wt")
                         cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
                     cal3d_mesh_file.close()
-                    LogMessage.log_message("  Mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
+                    LogMessage.log_message("  Mesh '%s' with material(s) %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
             else:
                 LogMessage.log_error("No mesh selected or error exporting mesh!")
             
