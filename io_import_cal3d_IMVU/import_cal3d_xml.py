@@ -20,14 +20,14 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # This file is intended to be the main part of the XML importer.
-# Copyright 2012 Jacob Boerema
+# Copyright 2012-2013 Jacob Boerema
 
 
 import sys
 import bpy
 
 # importer_main: Main function for importing Cal3D XML files
-def importer_main(filename, name_only):
+def importer_main(filename, name_only, LogMessage):
     # We need an xml parser
     import xml.etree.ElementTree as ET
     # XSF parser

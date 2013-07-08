@@ -155,7 +155,7 @@ class TestImportCal3D(bpy.types.Operator, ImportHelper):
         LogMessage.log_message("Importing Cal3D to Blender started.")
 
         # start the main importer function
-        importer_main(self.filepath, name_only)
+        importer_main(self.filepath, name_only, LogMessage)
 
         LogMessage.log_message("\nImport finished.\n")
 
