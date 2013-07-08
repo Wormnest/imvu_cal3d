@@ -20,7 +20,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # This file is intended to be the XSF importer.
-# Copyright 2012 Jacob Boerema
+# Copyright 2012-2013 Jacob Boerema
 
 # Import some general stuff
 import bpy
@@ -31,40 +31,6 @@ from mathutils import Vector, Matrix, Quaternion
 from . import support_functions
 from .support_functions import ReadNodeAsFloats, ReadNodeAsInt, ReadFloats, \
     quaternion_to_cal3d_matrix, cal3d_matrix3_multiply
-
-# Read count string float values and return them as a list of floats
-# Returns None if there is a different amount of floats than specified in count
-# def ReadFloats(input,count):
-    # if input:
-        # # Cal3d XML divides float strings by a single space
-        # floats = input.split(' ')
-        # if len(floats) == count:
-            # result = [float(f) for f in floats]
-            # return result
-
-    # # All other cases: there was an error
-    # print("WARNING: incorrect number of input values")
-    # return None
-
-
-# # ReadNodeAsFloats read the xml node text which has count float values
-# def ReadNodeAsFloats(tag, count):
-    # data = tag.text
-    # if data:
-        # return ReadFloats(data,count)
-    # else:
-        # print("ERROR: tag {0} has no values".format(str(tag.tag)))
-        # return None
-
-
-# # ReadNodeAsInt read the xml node text as an int, in case of error return default_value
-# def ReadNodeAsInt(tag, default_value):
-    # data = tag.text
-    # if data:
-        # return int(data)
-    # else:
-        # print("ERROR: tag {0} has no value".format(str(tag.tag)))
-        # return default_value
 
 # Class Bone will hold the Bone data as read from XSF
 class Bone():
