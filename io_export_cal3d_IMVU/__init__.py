@@ -265,9 +265,9 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         LogMessage.log_message("IMVU Cal3D export " + get_version_string())
         LogMessage.log_message(get_copyright())
         # Console only message to show where we are writing the log file:
-        print("Logging info to file: " + LogMessage.file)
+        print("Logging info to file: " + LogMessage.file + "\n")
         
-        LogMessage.log_message("\nReading and converting selected objects.")
+        LogMessage.log_message("Reading and converting selected objects.")
 
         # jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
         # Which version might possibly be required for animation settings like  
