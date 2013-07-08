@@ -27,6 +27,7 @@ import string
 
 import bpy
 from mathutils import *
+from .logger_class import Logger, get_logger
 
 class Skeleton:
     def __init__(self, name, matrix, anim_scale, xml_version, write_ambient_color):
@@ -76,6 +77,9 @@ class Bone:
         rot is the rotation from the parent coordinate frame to the tail of the bone
         '''
         
+        # Initialize our logger
+        self.LogMessage = get_logger()
+        
         # jgb debug var (0=off)
         self.debug_bone = 0
         
@@ -93,14 +97,14 @@ class Bone:
         if str(testname).startswith("omni"):
             self.is_light = True
             self.light_type = 1
-            print("omni light found: " + self.name)
+            self.LogMessage.log_message("    Omni light found: " + self.name)
         elif str(testname).startswith("spot"):
             self.is_light = True
             self.light_type = 3
-            print("spot light found: " + self.name)
+            self.LogMessage.log_message("    Spot light found: " + self.name)
         if self.is_light:
             self.light_color = self.get_light_color(name, lights)
-            print (str(self.light_color))
+            self.LogMessage.log_message("    Light color: " + str(self.light_color))
         else:
             self.light_color = [0.0, 0.0, 0.0]
 
@@ -113,8 +117,8 @@ class Bone:
         self.matrix[1][3] += self.loc[1]
         self.matrix[2][3] += self.loc[2]
         if self.debug_bone > 0:
-            print("Calculated matrix for bone "+self.name)
-            print(self.matrix)
+            self.LogMessage.log_debug("Calculated matrix for bone "+self.name)
+            self.LogMessage.log_debug(self.matrix)
 
         if parent:
             self.matrix = parent.matrix * self.matrix
@@ -124,9 +128,9 @@ class Bone:
         self.lloc = lmatrix.to_translation()
         self.lquat = lmatrix.to_quaternion()
         if self.debug_bone > 0:
-            print("lloc, lquat:")
-            print(self.lloc)
-            print(self.lquat)
+            self.LogMessage.log_debug("lloc, lquat:")
+            self.LogMessage.log_debug(self.lloc)
+            self.LogMessage.log_debug(self.lquat)
 
         self.skeleton = skeleton
         self.index = skeleton.next_bone_id
@@ -145,7 +149,7 @@ class Bone:
                 return light.color
 
         # Set default color if no light with same name as light bone present
-        print ("WARNING: no light called "+name+" found, setting default light color")
+        self.LogMessage.log_warning ("No light called " + name + " found, setting default light color.")
         return [0.5, 0.5, 0.5]
 
 
