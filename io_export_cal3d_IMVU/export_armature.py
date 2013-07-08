@@ -27,6 +27,7 @@ from mathutils import *
 
 from . import armature_classes
 from .armature_classes import *
+from .logger_class import Logger, get_logger
 
 
 def treat_bone(b, scale, parent, skeleton, lights):
@@ -78,6 +79,7 @@ def create_cal3d_skeleton(arm_obj, arm_data,
                           xml_version,
                           write_ambient_color,
                           lights):
+    LogMessage = get_logger()
 
     #not used
     base_matrix = Matrix.Scale(base_scale, 4)          * \
@@ -89,7 +91,8 @@ def create_cal3d_skeleton(arm_obj, arm_data,
     (total_translation, total_rotation, total_scale) = arm_obj.matrix_world.decompose()
 
     skeleton = Skeleton(arm_obj.name, arm_obj.matrix_world, total_scale, xml_version, write_ambient_color)
-
+    LogMessage.log_message("  Skeleton: "+arm_obj.name)
+    
     #not used
     scalematrix = Matrix()
     scalematrix[0][0] = total_scale.x
