@@ -233,6 +233,19 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         from . import logger_class
         from .logger_class import Logger, LogMessage
 
+        # local function in case of an exception/crash to log the error and close log file
+        def fatal_error(LogMessage, fatal_error_msg, fatal_error_e, traceback=''):
+            if LogMessage:
+                LogMessage.log_error(fatal_error_msg)
+                LogMessage.log_message("Runtime error message: " + str(fatal_error_e))
+                if traceback != '':
+                    LogMessage.log_message(traceback)
+                LogMessage.log_message("\nExport aborted.\n")
+                # Log amount of errors
+                LogMessage.log_counters()
+                # Close the logger
+                LogMessage.close_log()
+        
         # Get the user's desired filename
         sc = ""
         if len(bpy.data.scenes) > 1:
@@ -247,12 +260,15 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
         logger_class.LogMessage = LogMessage
 
         # Always add empty line to make it easier to find start of our info (don't log it to file though)
-        print("")
+        print("\n\n")
         LogMessage.file_and_print = True
         LogMessage.log_message("IMVU Cal3D export " + get_version_string())
         LogMessage.log_message(get_copyright())
-        LogMessage.log_message("Exporting to Cal3D started.")
+        # Console only message to show where we are writing the log file:
+        print("Logging info to file: " + LogMessage.file)
         
+        LogMessage.log_message("\nReading and converting selected objects.")
+
         # jgb Set desired Cal3d xml export version only once and change it from 900 to 919.
         # Which version might possibly be required for animation settings like  
         # TRANSLATIONREQUIRED="0" TRANSLATIONISDYNAMIC="0" HIGHRANGEREQUIRED="1"
@@ -292,7 +308,6 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
             for obj in visible_objects:
                 if obj.type == "ARMATURE":
                     if cal3d_skeleton:
-                        LogMessage.log_error("Only one armature is supported per scene")
                         raise RuntimeError("Only one armature is supported per scene")
                     armature_obj = obj
                     cal3d_skeleton = create_cal3d_skeleton(obj, obj.data,
@@ -305,8 +320,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     if context.scene.world:
                         cal3d_skeleton.scene_ambient_color = context.scene.world.ambient_color
         except Exception as e:
-            LogMessage.log_error("###### FATAL ERROR DURING ARMATURE EXPORT ######")
-            traceback.print_exc()
+            fatal_error(LogMessage, "###### FATAL ERROR DURING ARMATURE EXPORT ######", 
+                        e, traceback.format_exc())
             return {"FINISHED"}
 
         # Export meshes and materials
@@ -334,8 +349,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                         LogMessage.log_debug("ExportCal3D: no cal3d materials found!")
 
             except RuntimeError as e:
-                LogMessage.log_error("###### FATAL ERROR DURING MESH EXPORT ######")
-                LogMessage.log_error(e)
+                fatal_error(LogMessage, "###### FATAL ERROR DURING MESH EXPORT ######", 
+                            e, traceback.format_exc())
                 return {"FINISHED"}
 
 
@@ -355,8 +370,8 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     LogMessage.log_error("can't export animations: no skeleton selected!")
                             
             except RuntimeError as e:
-                LogMessage.log_error("###### FATAL ERROR DURING ACTION EXPORT ######")
-                LogMessage.log_error(e)
+                fatal_error(LogMessage, "###### FATAL ERROR DURING ANIMATION EXPORT ######", 
+                            e, traceback.format_exc())
                 return {"FINISHED"}
 
         if self.export_xpf:
@@ -373,13 +388,13 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                                 cal3d_morph_animations.append(cal3d_morph_animation)
                             
             except RuntimeError as e:
-                LogMessage.log_error("###### FATAL ERROR DURING ACTION EXPORT ######")
-                LogMessage.log_error(e)
+                fatal_error(LogMessage, "###### FATAL ERROR DURING MORPH ANIMATION EXPORT ######", 
+                            e, traceback.format_exc())
                 return {"FINISHED"}
 
 
-        if self.debug_ExportCal3D > 0:
-            LogMessage.log_debug("ExportCal3D: write files.")
+        # Start writing the collected info to files...
+        LogMessage.log_message("\nWriting Cal3d files.")
 
         if self.export_xsf:
             if cal3d_skeleton:
@@ -394,7 +409,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     cal3d_skeleton_file = open(skeleton_filepath, "wt")
                     cal3d_skeleton_file.write(cal3d_skeleton.to_cal3d_xml())
                 cal3d_skeleton_file.close()
-                LogMessage.log_message("Wrote skeleton '%s'" % (skeleton_filename))
+                LogMessage.log_message("  Skeleton '%s'" % (skeleton_filename))
             else:
                 LogMessage.log_error("No skeleton selected!")
 
@@ -413,7 +428,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                         cal3d_material_file = open(material_filepath, "wt")
                         cal3d_material_file.write(cal3d_material.to_cal3d_xml())
                     cal3d_material_file.close()
-                    LogMessage.log_message("Wrote material '%s' with index %s" % (material_filename, i))
+                    LogMessage.log_message("  Material '%s' with index %s" % (material_filename, i))
                 i += 1
 
         if self.export_xmf:
@@ -430,7 +445,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                         cal3d_mesh_file = open(mesh_filepath, "wt")
                         cal3d_mesh_file.write(cal3d_mesh.to_cal3d_xml())
                     cal3d_mesh_file.close()
-                    LogMessage.log_message("Wrote mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
+                    LogMessage.log_message("  Mesh '%s' with materials %s" % (mesh_filename, [x.material_id for x in cal3d_mesh.submeshes]))
             else:
                 LogMessage.log_error("No mesh selected or error exporting mesh!")
             
@@ -447,7 +462,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     cal3d_animation_file = open(animation_filepath, "wt")
                     cal3d_animation_file.write(cal3d_animation.to_cal3d_xml())
                 cal3d_animation_file.close()
-                LogMessage.log_message("Wrote animation '%s'" % (animation_filename))
+                LogMessage.log_message("  Animation '%s'" % (animation_filename))
 
 
         if self.export_xpf:
@@ -461,7 +476,7 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
                     cal3d_morph_animation_file = open(animation_filepath, "wt")
                     cal3d_morph_animation_file.write(cal3d_morph_animation.to_cal3d_xml())
                 cal3d_morph_animation_file.close()
-                LogMessage.log_message("Wrote morph animation '%s'" % (animation_filename))
+                LogMessage.log_message("  Morph animation '%s'" % (animation_filename))
 
 
         if self.export_cfg:
@@ -509,14 +524,13 @@ class ExportCal3D(bpy.types.Operator, ExportHelper):
 
             cal3d_cfg_file.close()
 
-        LogMessage.log_message("Export finished.\n")
+        LogMessage.log_message("\nExport finished.\n")
 
         # Log amount of errors
         LogMessage.log_counters()
 
         # Close the logger
         LogMessage.close_log()
-        LogMessage = None
 
         return {"FINISHED"}
 
