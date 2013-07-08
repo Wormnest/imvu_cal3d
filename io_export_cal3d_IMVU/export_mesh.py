@@ -72,7 +72,8 @@ def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_im
                                     shutil.copy(filepath, texturePath)
                                     LogMessage.log_info("Copied texture to " + texturePath)
                                 except Exception as e:
-                                    LogMessage.log_error("Error copying texture " + str(e))
+                                    # warning, not an error since this is not essential for export
+                                    LogMessage.log_warning("Error copying texture " + str(e))
                         maps_filenames.append(imagepath_prefix + imagename)
             tsi += 1
         if len(maps_filenames) > 0:
