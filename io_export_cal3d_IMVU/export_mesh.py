@@ -27,7 +27,7 @@ from . import armature_classes
 from .mesh_classes import *
 from .armature_classes import *
 from . import logger_class
-from .logger_class import Logger, LogMessage
+from .logger_class import Logger, get_logger
 
 # for debugging (0=off)
 debug_export = 0
@@ -35,7 +35,7 @@ LogMessage = None
 
 def create_cal3d_materials(cal3d_dirname, imagepath_prefix, xml_version, copy_images):
     global LogMessage
-    LogMessage = logger_class.LogMessage
+    LogMessage = get_logger()
     cal3d_materials = []
     for material in bpy.data.materials:
         material_index = len(cal3d_materials)
@@ -214,7 +214,7 @@ def create_cal3d_mesh(scene, mesh_obj,
                       use_groups, use_envelopes, armature_obj):
 
     global LogMessage
-    LogMessage = logger_class.LogMessage
+    LogMessage = get_logger()
     mesh_matrix = mesh_obj.matrix_world.copy()
 
     (mesh_translation, mesh_quat, mesh_scale) = mesh_matrix.decompose()

@@ -38,7 +38,7 @@ class Logger:
             if self.file == '':
                 self.file = self.name + '.log'
             self.logfile = open(self.file, "wt")
-            print("\nLogging info to file: " + self.file)
+            #print("\nLogging info to file: " + self.file)
         else:
             self.logfile = None
         self.file_and_print = file_and_print
@@ -103,3 +103,8 @@ class Logger:
 
 # Current logger class:
 LogMessage = None
+
+# get_logger returns LogMessage
+def get_logger():
+    global LogMessage
+    return LogMessage
