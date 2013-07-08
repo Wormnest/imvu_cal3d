@@ -37,6 +37,7 @@ def importer_main(filename, name_only, LogMessage):
     file = open(filename, "rb")
     close_file = True
     try:
+        LogMessage.log_message('Parsing XML...')
         # Set the xml parser
         parser = ET.XMLParser()
 
@@ -75,7 +76,7 @@ def importer_main(filename, name_only, LogMessage):
                         break
                     parser.feed(data)
             else:
-                print("ERROR: File format not recognized")
+                LogMessage.log_error("File format not recognized")
                 return False
 
     finally:
@@ -96,23 +97,23 @@ def importer_main(filename, name_only, LogMessage):
         # start the XSF class
         skeleton = root.find('SKELETON')
         if skeleton is not None:    # This way because of a python warning about future changes
-            print("Importing armature from {0}".format(filename))
+            LogMessage.log_message("Importing armature from {0}".format(filename))
             xsf_importer = ImportXsf(skeleton)
             xsf_importer.parse_xml()
             xsf_importer.DEBUG = 1  # debug armature creation only atm
             xsf_importer.create_armature(name_only)
         else:
-            print("ERROR: couldn't find SKELETON tag!")
+            LogMessage.log_error("Couldn't find SKELETON tag!")
     elif magic == "XMF":
-        print("XMF not supported yet")
+        LogMessage.log_message("XMF not supported yet")
     elif magic == "XAF":
-        print("XAF not supported yet")
+        LogMessage.log_message("XAF not supported yet")
     elif magic == "XPF":
-        print("XPF not supported yet")
+        LogMessage.log_message("XPF not supported yet")
     elif magic == "XRF":
-        print("XRF not supported yet")
+        LogMessage.log_message("XRF not supported yet")
     else:
-        print("ERROR: unrecognized Cal3D file type.")
+        LogMessage.log_error("Unrecognized Cal3D file type.")
 
     obj = bpy.context.object
     if obj and obj == save_obj:
