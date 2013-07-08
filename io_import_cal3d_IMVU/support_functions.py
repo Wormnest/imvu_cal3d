@@ -20,13 +20,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Purpose of this file: support functions
-# Copyright 2012 Jacob Boerema
-
-# Import some general stuff
-#import bpy
-#import mathutils
-#import math
-#from mathutils import Vector, Matrix, Quaternion
+# Copyright 2012-2013 Jacob Boerema
 
 
 # Read count string float values and return them as a list of floats
