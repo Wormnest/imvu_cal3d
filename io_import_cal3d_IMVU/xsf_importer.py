@@ -380,26 +380,31 @@ class ImportXsf():
         NEGATE_QUAT_W = 0
         NEGATE_NON_ZERO = 0
 
-        # Currently the default XSF exporter 1.4 exports negated x, y, z and w! (2013-07-09)
+        # Currently the default XSF exporter 1.4 exports negated x, y, z and w from and inverted quat! (2013-07-09)
         if (NEGATE_QUAT_W == 0) and (NEGATE_NON_ZERO == 0):
                 btree.rotation[0] = -btree.rotation[0]
                 btree.rotation[1] = -btree.rotation[1]
                 btree.rotation[2] = -btree.rotation[2]
                 btree.rotation[3] = -btree.rotation[3]
-
-        if NEGATE_QUAT_W == 1:
+                bquat = mathutils.Quaternion((btree.rotation[3], btree.rotation[0], 
+                    btree.rotation[1], btree.rotation[2])).inverted()
+        elif NEGATE_QUAT_W == 1:
             NEGATE_NON_ZERO = 0     # MUTUALLY EXCLUSIVE
             btree.rotation[3] = -btree.rotation[3]
-        if NEGATE_NON_ZERO == 1:
+            bquat = mathutils.Quaternion((btree.rotation[3], btree.rotation[0], 
+                btree.rotation[1], btree.rotation[2]))
+        elif NEGATE_NON_ZERO == 1:
             if btree.rotation[0] != 0.0:
                 btree.rotation[0] = -btree.rotation[0]
             if btree.rotation[1] != 0.0:
                 btree.rotation[1] = -btree.rotation[1]
             if btree.rotation[2] != 0.0:
                 btree.rotation[2] = -btree.rotation[2]
+            bquat = mathutils.Quaternion((btree.rotation[3], btree.rotation[0], 
+                btree.rotation[1], btree.rotation[2]))
+        else: # should not happen!
+            bquat = None
 
-        bquat = mathutils.Quaternion((btree.rotation[3], btree.rotation[0], 
-            btree.rotation[1], btree.rotation[2]))
         bmatrix = bquat.to_matrix()
         #print("{0} = bquat as Matrix".format(bmatrix))
         bloc = mathutils.Vector(btree.translation)
@@ -495,11 +500,14 @@ class ImportXsf():
         # #####
 
         # test 2 #
-        TEST2 = 0
+        TEST2 = 1
         if TEST2 == 1:
             mat2 = bmatrix.to_4x4() * mathutils.Matrix.Translation(btree.translation)
-            if bone.parent is not None:
-                par_mat = bone.parent.matrix.copy().inverted()
+            if parent_bone is not None:
+                bone.parent = parent_bone
+                #par_mat = bone.parent.matrix.copy().inverted()
+                par_mat = bone.parent.matrix.copy()
+                par_mat_inv = par_mat.inverted()
                 # In exporter we do local matrix * inverted parent matrix
                 # We need to do the inverse: matrix divided by the inverted parent:
                 # Which I think the inverse of an inverted matrix is the matrix itself so just multiply?
@@ -508,6 +516,10 @@ class ImportXsf():
                 mat2 = mat2 * par_mat
                 if int(btree.id) < 0:
                     self.log.log_debug("matrix * parent matrix:\n{0}".format(str(mat2)))
+                #loctrans = mat2.to_translation()
+                mat3 = par_mat * btransmat 
+                loctrans = mat3.to_translation()
+                bmatrix = par_mat.to_3x3() * bmatrix
 
         # 2012-12-02 new try: take into account the way its exported and revert that:
         TEST3 = 0
@@ -567,7 +579,7 @@ class ImportXsf():
                 loctrans = locmat.to_translation()
 
         # new test 2012-12-21
-        TEST4 = 1
+        TEST4 = 0
         if TEST4 == 1:
             if parent_bone is None:
                 # We are the root:
@@ -590,7 +602,7 @@ class ImportXsf():
             
 
         
-        POSITION_CODE_TO_USE = 0
+        POSITION_CODE_TO_USE = 1
         self.log.log_debug("Matrix before Blender conversion:\n{0}".format(bmatrix))
         self.log.log_debug("Same as quat: {0}".format(bmatrix.to_quaternion()))
         if POSITION_CODE_TO_USE == 0:
@@ -598,7 +610,7 @@ class ImportXsf():
             self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
             axis, roll = mat3_to_vec_roll(bmatrix, self.log)
             if int(btree.id) < 10:
-                self.log.log_debug("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
+                self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
             bone.head = pos
             bone.tail = pos + (axis*100.0)
@@ -627,7 +639,7 @@ class ImportXsf():
         self.log.log_debug("Same as quat: {0}".format(bmatrix.to_quaternion()))
 
         if int(btree.id) < 10:
-            self.log.log_debug("head: {0}\ntail: {1}".format(bone.head,bone.tail))
+            self.log.log_message("head: {0}\ntail: {1}".format(bone.head,bone.tail))
 
         # 2. loop over all children
         for b in btree.children:
