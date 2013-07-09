@@ -70,24 +70,24 @@ class Bone():
             parent.children.append(self)
 
     # For debugging: print the values of Bone
-    def PrintBone(self):
-        print("Bone {0}, name: {1}, has {2} children".format(self.id,
+    def PrintBone(self, log):
+        log.log_message("Bone {0}, name: {1}, has {2} children".format(self.id,
             self.name, self.numchilds))
         if self.lighttype != 0:
-            print("light type: {0}, light color: {1}, {2}, {3}".format(self.lighttype,
+            log.log_message("Light type: {0}, light color: {1}, {2}, {3}".format(self.lighttype,
                 str(self.lightcolor[0]), str(self.lightcolor[1]), str(self.lightcolor[2])))
-        print("Translation: {0}, {1}, {2}".format(self.translation[0],
+        log.log_message("Translation: {0}, {1}, {2}".format(self.translation[0],
             self.translation[1], self.translation[2]))
-        print("Rotation: {0}, {1}, {2}, {3}".format(self.rotation[0],
+        log.log_message("Rotation: {0}, {1}, {2}, {3}".format(self.rotation[0],
             self.rotation[1], self.rotation[2], self.rotation[3]))
-        print("Local Translation: {0}, {1}, {2}".format(self.localtranslation[0],
+        log.log_message("Local Translation: {0}, {1}, {2}".format(self.localtranslation[0],
             self.localtranslation[1], self.localtranslation[2]))
-        print("Local Rotation: {0}, {1}, {2}, {3}".format(self.localrotation[0],
+        log.log_message("Local Rotation: {0}, {1}, {2}, {3}".format(self.localrotation[0],
             self.localrotation[1], self.localrotation[2], self.localrotation[3]))
         if self.parent == None:
-            print("Parent id: -1")
+            log.log_message("Parent id: -1\n")
         else:
-            print("Parent id: {0}, name: {1}".format(str(self.parent.id),self.parent.name))
+            log.log_message("Parent id: {0}, name: {1}\n".format(str(self.parent.id),self.parent.name))
 
 # jgb 2012-12-04 utility functions now moved outside the Class
 # Taken from: http://gamedev.stackexchange.com/questions/32529/calculating-the-correct-roll-from-a-bone-transform-matrix
@@ -110,7 +110,7 @@ def vec_roll_to_mat3(vec, roll):
         bMatrix = mathutils.Matrix.Rotation(theta, 3, axis)
     else:
         updown = 1 if target.dot(nor) > 0 else -1
-        print("small axis.dot! Updown = {0}".format(updown))
+        print("----- small axis.dot {0}! Updown = {1} -----".format(axis.dot(axis),updown))
         bMatrix = mathutils.Matrix.Scale(updown, 3)
         # jgb NOTE: original c code/old cal3d only seems to only change updown for first 2 rows not z row
         # INVESTIGATE!!!!!!! test below:
@@ -158,7 +158,7 @@ class ImportXsf():
 
     # Init variables of our class
     def __init__(self, skeleton, LogMessage):
-        self.DEBUG = 0
+        self.DEBUG = 1
 
         # Copy parameters
         self.skeleton = skeleton
@@ -197,8 +197,8 @@ class ImportXsf():
                 self.scene_ambient_color = sac
 
         if self.DEBUG:
-            self.log.log_debug("Bonecount: "+self.numbones)
-            self.log.log_debug("Scene ambient color: "+str(self.scene_ambient_color))
+            self.log.log_debug("Bonecount: {0}".format(self.numbones))
+            self.log.log_debug("Scene ambient color: {0}\n".format(self.scene_ambient_color))
 
         # 2. Loop over all the bones
         for i, bone in enumerate(self.skeleton):
@@ -265,8 +265,8 @@ class ImportXsf():
                         parent = self.bones[parent_id]
                     obj_bone.SetParent(parent)
                     
-                    if self.DEBUG:
-                        obj_bone.PrintBone()
+                    if self.DEBUG > 0:
+                        obj_bone.PrintBone(self.log)
 
         if self.numbones != len(self.bones):
             self.log.log_warning("number of bones read ({0}) is not the same as the expected number of bones ({1})!".
