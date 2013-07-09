@@ -379,6 +379,14 @@ class ImportXsf():
         # NOT ENTIRELY SURE IF THIS IS CORRECT, TEST WITH/WITHOUT IT!
         NEGATE_QUAT_W = 0
         NEGATE_NON_ZERO = 0
+
+        # Currently the default XSF exporter 1.4 exports negated x, y, z and w! (2013-07-09)
+        if (NEGATE_QUAT_W == 0) and (NEGATE_NON_ZERO == 0):
+                btree.rotation[0] = -btree.rotation[0]
+                btree.rotation[1] = -btree.rotation[1]
+                btree.rotation[2] = -btree.rotation[2]
+                btree.rotation[3] = -btree.rotation[3]
+
         if NEGATE_QUAT_W == 1:
             NEGATE_NON_ZERO = 0     # MUTUALLY EXCLUSIVE
             btree.rotation[3] = -btree.rotation[3]
