@@ -99,7 +99,7 @@ Y_ON = 1    # default 1
 Z_ON = 0    # default 0
 AXIS_ON_1 = 1   # default 1 (y)
 AXIS_ON_2 = 1   # default 1
-def vec_roll_to_mat3(vec, roll):
+def vec_roll_to_mat3(vec, roll, log):
     global X_ON, Y_ON, Z_ON
     target = mathutils.Vector((X_ON,Y_ON,Z_ON)) # original/default = 0,1,0
     nor = vec.normalized()
@@ -110,11 +110,11 @@ def vec_roll_to_mat3(vec, roll):
         bMatrix = mathutils.Matrix.Rotation(theta, 3, axis)
     else:
         updown = 1 if target.dot(nor) > 0 else -1
-        print("----- small axis.dot {0}! Updown = {1} -----".format(axis.dot(axis),updown))
+        log.log_message("----- small axis.dot {0}! Updown = {1} -----".format(axis.dot(axis),updown))
         bMatrix = mathutils.Matrix.Scale(updown, 3)
         # jgb NOTE: original c code/old cal3d only seems to only change updown for first 2 rows not z row
         # INVESTIGATE!!!!!!! test below:
-        #bMatrix[2][2] = 1
+        bMatrix[2][2] = 1
         # ##############
     rMatrix = mathutils.Matrix.Rotation(roll, 3, nor)
     mat = rMatrix * bMatrix
@@ -122,11 +122,11 @@ def vec_roll_to_mat3(vec, roll):
     return mat
 
 # Taken from: http://gamedev.stackexchange.com/questions/32529/calculating-the-correct-roll-from-a-bone-transform-matrix
-def mat3_to_vec_roll(mat):
+def mat3_to_vec_roll(mat, log):
     global AXIS_ON_1, AXIS_ON_2
     vec = mat.col[AXIS_ON_1]    # original was 1
     #print("mat col 1: {0}".format(vec))
-    vecmat = vec_roll_to_mat3(mat.col[AXIS_ON_2], 0)    # original for AXIS_ON was 1
+    vecmat = vec_roll_to_mat3(mat.col[AXIS_ON_2], 0, log)    # original for AXIS_ON was 1
     vecmatinv = vecmat.inverted()
     rollmat = vecmatinv * mat
     roll = math.atan2(rollmat[0][2], rollmat[2][2])
@@ -171,7 +171,7 @@ class ImportXsf():
         self.bones = []
         
         if self.DEBUG:
-            self.log.log_debug("init ImportXSF")
+            self.log.log_debug("Init ImportXSF")
 
 
     # parse_xml: parses the xml and collects all needed data
@@ -197,8 +197,8 @@ class ImportXsf():
                 self.scene_ambient_color = sac
 
         if self.DEBUG:
-            self.log.log_debug("Bonecount: {0}".format(self.numbones))
-            self.log.log_debug("Scene ambient color: {0}\n".format(self.scene_ambient_color))
+            self.log.log_message("Bonecount: {0}".format(self.numbones))
+            self.log.log_message("Scene ambient color: {0}\n".format(self.scene_ambient_color))
 
         # 2. Loop over all the bones
         for i, bone in enumerate(self.skeleton):
@@ -588,7 +588,7 @@ class ImportXsf():
         if POSITION_CODE_TO_USE == 0:
             pos = loctrans
             self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
-            axis, roll = mat3_to_vec_roll(bmatrix)
+            axis, roll = mat3_to_vec_roll(bmatrix, self.log)
             if int(btree.id) < 10:
                 self.log.log_debug("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
