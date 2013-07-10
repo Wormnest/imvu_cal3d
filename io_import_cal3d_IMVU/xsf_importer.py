@@ -173,6 +173,46 @@ class ImportXsf():
         if self.DEBUG:
             self.log.log_debug("Init ImportXSF")
 
+    # parse_csf: parses the xml and collects all needed data
+    def parse_bone(self, file, cal3d_version):
+        self.log.log_message("parse bone")
+
+    # parse_csf: parses the xml and collects all needed data
+    def parse_csf(self, file, cal3d_version):
+        # Need struct in parse_csf and parse_bone
+        import struct
+
+        # initialize
+        #self.FIRST_FILE_VERSION_WITH_ANIMATION_COMPRESSION6 = 918;
+        #self.FIRST_FILE_VERSION_WITH_ANIMATION_COMPRESSION5 = 917;
+        #self.FIRST_FILE_VERSION_WITH_ANIMATION_COMPRESSION4 = 916;
+        #self.FIRST_FILE_VERSION_WITH_ANIMATION_COMPRESSION = 913;
+        #self.FIRST_FILE_VERSION_WITH_VERTEX_COLORS = 911;
+        self.FIRST_FILE_VERSION_WITH_NODE_LIGHTS = 911;
+        #self.FIRST_FILE_VERSION_WITH_MATERIAL_TYPES = 911;
+        #self.FIRST_FILE_VERSION_WITH_MORPH_TARGETS_IN_MORPH_FILES = 911;
+        #self.versionHasCompressionFlag = cal3d_version >= 919;
+        
+        self.has_node_lights = cal3d_version >= self.FIRST_FILE_VERSION_WITH_NODE_LIGHTS
+
+        self.DEBUG = 1
+        if self.DEBUG:
+            self.log.log_debug("ImportXSF: parse csf")
+            self.log.log_debug("Reading Skeleton")
+
+        # Read number of bones
+        bone_count = struct.unpack("<I", file.read(4))[0]
+        self.log.log_message("Number of bones: {0}".format(bone_count))
+        
+        # Read Scene Ambient Color if version >= 911
+        if self.has_node_lights:
+            scene_ambient_color = struct.unpack("<fff", file.read(3*4))
+            self.log.log_message("Scene ambient color: {0:0.6f}, {1:0.6f}, {2:0.6f}".
+                format(scene_ambient_color[0], scene_ambient_color[1], scene_ambient_color[2]))
+        
+        for b in range(bone_count):
+            # read all bone data
+            self.parse_bone(file, cal3d_version)
 
     # parse_xml: parses the xml and collects all needed data
     def parse_xml(self):

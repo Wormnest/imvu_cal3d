@@ -45,19 +45,23 @@ def importer_main(filename, name_only, file_ext, LogMessage):
             if header == b'CSF\0':
                 #file.seek(4)
                 #version_data = file.read(4)
-                version = struct.unpack("<I", file.read(4))[0]
-                if version > 0:
-                    LogMessage.log_message("Cal3D CSF file version: {0}".format(version))
+
+                EARLIEST_COMPATIBLE_FILE_VERSION = 699
+                cal3d_version = struct.unpack("<I", file.read(4))[0]
+                if cal3d_version > EARLIEST_COMPATIBLE_FILE_VERSION:
+                    LogMessage.log_message("Cal3D CSF file version: {0}".format(cal3d_version))
                     save_obj = bpy.context.object
                     if save_obj:
                         save_mode = save_obj.mode
                         bpy.ops.object.mode_set(mode='OBJECT')
-                    #xsf_importer = ImportXsf(skeleton, LogMessage)
-                    #xsf_importer.parse_xml()
+                    xsf_importer = ImportXsf(None, LogMessage)
+                    xsf_importer.parse_csf(file, cal3d_version)
                     #xsf_importer.create_armature(name_only)
                     obj = bpy.context.object
                     if obj and obj == save_obj:
                         bpy.ops.object.mode_set(mode=save_mode)
+                else:
+                    LogMessage.log_ERROR("Incompatible CSF file version {0}, 700 or higher needed".format(cal3d_version))
                 
         finally:
             # Close input file
