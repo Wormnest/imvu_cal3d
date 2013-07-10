@@ -92,11 +92,13 @@ def importer_main(filename, name_only, LogMessage):
     # Close parsing and get the root
     root = parser.close()
     magic = root.get("MAGIC")
+    version = root.get("VERSION")
     if magic == "XSF":
         #print("XML: magic is XSF")
         # start the XSF class
         skeleton = root.find('SKELETON')
         if skeleton is not None:    # This way because of a python warning about future changes
+            LogMessage.log_message("Cal3D version {0} XSF file".format(version))
             LogMessage.log_message("Importing armature from {0}\n".format(filename))
             xsf_importer = ImportXsf(skeleton, LogMessage)
             xsf_importer.parse_xml()
