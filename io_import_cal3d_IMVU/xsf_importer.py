@@ -433,8 +433,9 @@ class ImportXsf():
             
             # IMVU: test different matrix computation since that's what's going wrong
             # TEST: bmatrix = bmatrix * par_mat.to_3x3()  - FAIL
-            # TEST:  * y-AXIS?
-            bmatrix = par_mat.to_3x3().inverted() * bmatrix
+            # TEST:  * y-AXIS? - FAIL: RotY3 * par_mat.to_3x3() * bmatrix
+            #RotZ3 = Matrix.Rotation(radians(90), 3, "Z")
+            bmatrix = par_mat.to_3x3() * bmatrix
 
         
         POSITION_CODE_TO_USE = 0
