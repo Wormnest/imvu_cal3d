@@ -382,6 +382,101 @@ class ImportXsf():
         for b in btree.children:
             self.add_bone_tree_exporter_v14_xsf(arm, b, bone)
     
+    # Add bone btree and all its children to armature arm for IMVU compliant XSF files
+    def add_bone_tree_imvu(self, arm, btree, parent_bone):
+
+        self.DEBUG = 0
+        #SystemMatrix = Matrix()
+        
+        self.log_bone_name(btree)
+
+        # 1. add bone
+        bone = arm.edit_bones.new(btree.name)
+
+        # Convert Cal3d xyzw roation to quaternion wxyz
+        # Since the export script does -self.quat.inverted on export we do try the reverse here
+        # Currently the default XSF exporter 1.4 exports negated x, y, z and w from and inverted quat! (2013-07-09)
+        # TESTS DONE 2013-07-10:
+        # - Only w negative - NO LUCK
+        # - Only w positive - NO LUCK
+        # - All positive - SIMILAR TO all negative but bones pointing different directions
+        # For now keep it all negaative
+        btree.rotation[0] = -btree.rotation[0]
+        btree.rotation[1] = -btree.rotation[1]
+        btree.rotation[2] = -btree.rotation[2]
+        btree.rotation[3] = -btree.rotation[3]
+        bquat = mathutils.Quaternion((btree.rotation[3], btree.rotation[0], 
+            btree.rotation[1], btree.rotation[2])).inverted()
+
+        bmatrix = bquat.to_matrix()
+        bloc = mathutils.Vector(btree.translation)
+        btransmat = Matrix.Translation(bloc)
+        loctrans = bloc
+        
+        if self.DEBUG > 0:
+            self.log.log_debug("quat axis (%.2f, %.2f, %.2f), angle %.2f" % (bquat.axis[:] +
+                (math.degrees(bquat.angle), )))
+            self.log.log_debug("quat as euler: %.2f, %.2f, %.2f" % tuple(math.degrees(a) for a in bquat.to_euler()))
+            if parent_bone:
+                pquat = parent_bone.matrix.to_quaternion()
+                self.log.log_debug("parent axis (%.2f, %.2f, %.2f), angle %.2f" % (pquat.axis[:] +
+                    (math.degrees(pquat.angle), )))
+        
+        if parent_bone is not None:
+            bone.parent = parent_bone
+            par_mat = bone.parent.matrix.copy()
+            # 1. Translate our position by the parent matrix to get the right coordinates
+            mat3 = par_mat * btransmat 
+            loctrans = mat3.to_translation()
+            # 2.  Get the absolute rotation matrix by multiplying parent matrix with current bone matrix
+            # bmatrix = par_mat.to_3x3() * bmatrix
+            
+            # IMVU: test different matrix computation since that's what's going wrong
+            # TEST: bmatrix = bmatrix * par_mat.to_3x3()  - FAIL
+            # TEST:  * y-AXIS?
+            bmatrix = par_mat.to_3x3().inverted() * bmatrix
+
+        
+        POSITION_CODE_TO_USE = 0
+        if self.DEBUG > 0:
+            self.log.log_debug("Matrix before Blender conversion:\n{0}".format(bmatrix))
+            self.log.log_debug("Same as quat: {0}".format(bmatrix.to_quaternion()))
+
+        if POSITION_CODE_TO_USE == 0:
+            pos = loctrans
+            if self.DEBUG > 0:
+                self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
+            axis, roll = mat3_to_vec_roll(bmatrix, self.log)
+            if self.DEBUG > 0:
+                self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
+
+            bone.head = pos
+            bone.tail = pos + (axis*100.0)
+            
+            # Question: doesn cal3d have the notion of roll? maybe we shouldnt define a roll????
+            bone.roll = roll
+            #bone.roll = 0.0
+            
+        if POSITION_CODE_TO_USE == 1:
+            # Test another solution for setting head and tail
+            # This does not produce as good results as the one above because
+            # as soon as you change a head or tail the bone matrix gets changed
+            bone.head = Vector([0,0,0])
+            bone.tail = Vector([0,100,0])   # try 100 at different axis?
+            bone.transform(bmatrix) # try with roll = True/False ?????????????
+            bone.translate(loctrans)
+
+
+        if self.DEBUG > 0:
+            self.log.log_debug("Matrix after conversion:\n{0}".format(bone.matrix))
+            self.log.log_debug("Same as quat: {0}".format(bmatrix.to_quaternion()))
+            self.log.log_message("head: {0}\ntail: {1}".format(bone.head,bone.tail))
+
+        # 2. loop over all children
+        for b in btree.children:
+            self.add_bone_tree_imvu(arm, b, bone)
+
+
     # Add bone btree and all its children to armature arm
     def add_bone_tree(self, arm, btree, parent_bone):
         def isLeftHand(matrix):
@@ -779,7 +874,8 @@ class ImportXsf():
             if b.parent is None:
                 self.log.log_message("Creating root level bone: {0}\n".format(b.name))
                 #self.add_bone_tree(arm, b, None)
-                self.add_bone_tree_exporter_v14_xsf(arm, b, None)
+                #self.add_bone_tree_exporter_v14_xsf(arm, b, None)
+                self.add_bone_tree_imvu(arm, b, None)
 
         if self.DEBUG:
             self.log.log_debug("ImportXSF: armature created")
