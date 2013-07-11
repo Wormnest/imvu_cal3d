@@ -49,6 +49,8 @@ class Bone():
         self.localrotation = [0.0, 0.0, 0.0, 0.0]
         self.parent = None
         self.children = []
+        # For fixing bone.tail:
+        self.axis = [0.0, 0.0, 0.0, 0.0]
 
     def SetLocation(self, translation, rotation, localtranslation, localrotation):
         if translation:
@@ -477,6 +479,7 @@ class ImportXsf():
             if self.DEBUG > 0:
                 self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
             axis, roll = mat3_to_vec_roll(bmatrix, self.log)
+            btree.axis = axis
             if self.DEBUG > 0:
                 self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
@@ -572,11 +575,14 @@ class ImportXsf():
             if self.DEBUG > 0:
                 self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
             axis, roll = mat3_to_vec_roll(bmatrix, self.log)
+            btree.axis = axis
             if self.DEBUG > 0:
                 self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
             bone.head = pos
             bone.tail = pos + (axis*100.0)
+            if self.DEBUG >= 0:
+                self.log.log_message("--Bone axis {0}, roll {1}".format(str(axis),str(roll)))
             
             # Question: doesn cal3d have the notion of roll? maybe we shouldnt define a roll????
             bone.roll = roll
@@ -937,6 +943,7 @@ class ImportXsf():
             pos = loctrans
             self.log.log_debug("Vector columns 0,1,2:\n{0}\n{1}\n{2}".format(bmatrix.col[0],bmatrix.col[1],bmatrix.col[2]))
             axis, roll = mat3_to_vec_roll(bmatrix, self.log)
+            btree.axis = axis
             if int(btree.id) < 10:
                 self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
@@ -1004,3 +1011,47 @@ class ImportXsf():
 
         if self.DEBUG:
             self.log.log_debug("ImportXSF: armature created")
+        
+        # return armature so we can use it in later calls (maybe also save a self.armature for ease of use?)
+        return arm
+
+    # fix bone
+    def fix_bone(self, bone, bone_id):
+        def max_of_three(vertex):
+            if abs(vertex[0]) > abs(vertex[1]) and abs(vertex[0]) > abs(vertex[2]):
+                return 0, vertex[0]
+            elif abs(vertex[1]) > abs(vertex[2]):
+                return 1, vertex[1]
+            else:
+                return 2, vertex[2]
+
+        self.log.log_message("  Bone {0}\n  Head {1}\n  Tail {2}".format(bone.name, bone.head, bone.tail))
+        if bone.children:
+            # for now do it simple, pick first bone even if there are more
+            child_bone = bone.children[0]
+            our_axis = self.bones[bone_id].axis
+            i,v = max_of_three(our_axis)
+            tail_corrected = child_bone.head - bone.head
+            if abs(v) > 0.0:   # else div by zero
+                factor = tail_corrected[i] / v
+                new_tail = bone.head + (factor * our_axis)
+                if ((abs(new_tail[0] - child_bone.head[0]) < 1.0) and
+                   (abs(new_tail[1] - child_bone.head[1]) < 1.0) and
+                   (abs(new_tail[2] - child_bone.head[2]) < 1.0)):
+                    self.log.log_message("  Computed new tail: {0}\n".format(new_tail))
+                    bone.tail = new_tail
+                else:
+                    self.log.log_message("  Tail not updated, position too different ({0}).\n".format(new_tail))
+            else:
+                self.log.log_message("  i {0}, v: {1}\n".format(i, v))
+        else:
+            self.log.log_message("    Can't fix: no children!\n")
+
+    # fix_bone_length: fix the length of bones as far as we can determine the probable length
+    def fix_bone_length(self, armature):
+
+        self.log.log_message("Fixing bone lengths")
+        
+        # loop over all bones
+        for i, bone in enumerate(armature.edit_bones.values()):
+            self.fix_bone(bone,i)
