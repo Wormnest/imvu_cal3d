@@ -175,6 +175,11 @@ class ImportXsf():
         # bones will hold the info of all found bones, bone id is index into this list
         self.bones = []
         
+        # Default length of bones (since we can't determine length from cal3d input)
+        self.default_bone_length = 100.0
+        # Length of IMVU "tipbone's
+        self.default_xtipbone = 10.0
+        
         if self.DEBUG:
             self.log.log_debug("Init ImportXSF")
 
@@ -484,7 +489,7 @@ class ImportXsf():
                 self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
             bone.head = pos
-            bone.tail = pos + (axis*100.0)
+            bone.tail = pos + (axis*self.default_bone_length)
             
             # Question: doesn cal3d have the notion of roll? maybe we shouldnt define a roll????
             bone.roll = roll
@@ -495,7 +500,7 @@ class ImportXsf():
             # This does not produce as good results as the one above because
             # as soon as you change a head or tail the bone matrix gets changed
             bone.head = Vector([0,0,0])
-            bone.tail = Vector([0,100,0])   # try 100 at different axis?
+            bone.tail = Vector([0,self.default_bone_length,0])   # try 100 at different axis?
             bone.transform(bmatrix) # try with roll = True/False ?????????????
             bone.translate(loctrans)
 
@@ -580,7 +585,13 @@ class ImportXsf():
                 self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
             bone.head = pos
-            bone.tail = pos + (axis*100.0)
+            if btree.name.startswith("xTip"):
+                # IMVU's xTipBone end bones are usually shorter (fingers/toes)
+                # Most start with xTipBone, but we also have xTiprtFingerneXX
+                default_bone_len = self.default_xtipbone
+            else:
+                default_bone_len = self.default_bone_length
+            bone.tail = pos + (axis*default_bone_len)
             if self.DEBUG >= 0:
                 self.log.log_message("--Bone axis {0}, roll {1}".format(str(axis),str(roll)))
             
@@ -593,7 +604,7 @@ class ImportXsf():
             # This does not produce as good results as the one above because
             # as soon as you change a head or tail the bone matrix gets changed
             bone.head = Vector([0,0,0])
-            bone.tail = Vector([0,100,0])   # try 100 at different axis?
+            bone.tail = Vector([0,self.default_bone_length,0])   # try 100 at different axis?
             bone.transform(bmatrix) # try with roll = True/False ?????????????
             bone.translate(loctrans)
 
@@ -948,7 +959,7 @@ class ImportXsf():
                 self.log.log_message("pos: {0}\naxis: {1}, roll: {2}".format(str(pos),str(axis),str(roll)))
 
             bone.head = pos
-            bone.tail = pos + (axis*100.0)
+            bone.tail = pos + (axis*self.default_bone_length)
             
             # Question: doesn cal3d have the notion of roll? maybe we shouldnt define a roll????
             bone.roll = roll
@@ -966,7 +977,7 @@ class ImportXsf():
             # This does not produce as good results as the one above because
             # as soon as you change a head or tail the bone matrix gets changed
             bone.head = Vector([0,0,0])
-            bone.tail = Vector([0,100,0])   # try 100 at different axis?
+            bone.tail = Vector([0,self.default_bone_length,0])   # try 100 at different axis?
             bone.transform(bmatrix) # try with roll = True/False ?????????????
             bone.translate(loctrans)
 
