@@ -56,7 +56,7 @@ def importer_main(filename, name_only, file_ext, LogMessage):
                         bpy.ops.object.mode_set(mode='OBJECT')
                     xsf_importer = ImportXsf(None, LogMessage)
                     xsf_importer.parse_csf(file, cal3d_version)
-                    #xsf_importer.create_armature(name_only)
+                    xsf_importer.create_armature(name_only)
                     obj = bpy.context.object
                     if obj and obj == save_obj:
                         bpy.ops.object.mode_set(mode=save_mode)

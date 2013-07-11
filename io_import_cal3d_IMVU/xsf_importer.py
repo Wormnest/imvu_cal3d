@@ -153,6 +153,9 @@ def mat3_to_vec_roll(mat, log):
 #World Matrix ...
 
 
+# Need struct in parse_csf and parse_bone
+import struct
+
 # Class to do the actual importing of XSF
 class ImportXsf():
 
@@ -173,14 +176,96 @@ class ImportXsf():
         if self.DEBUG:
             self.log.log_debug("Init ImportXSF")
 
+    # unpack floats
+    def unpack_floats(self, count, file):
+        floats_data = file.read(count*4)
+        fmt = '<' + "f"*count
+        floats = struct.unpack(fmt, floats_data)
+        result = [float(f) for f in floats]
+        return result
+
+    # unpack a string with unknown length ending in \0 byte
+    def unpack_string(self, file):
+        # determine length:
+        string_len = struct.unpack("<I", file.read(4))[0]
+        return struct.unpack("%ds" % (string_len,), file.read(string_len))[0].decode(encoding='UTF-8')
+
     # parse_csf: parses the xml and collects all needed data
-    def parse_bone(self, file, cal3d_version):
-        self.log.log_message("parse bone")
+    def parse_bone(self, file, bone_id, cal3d_version):
+        # 1.  Read the bone name
+        bone_name = self.unpack_string(file)[:-1]
+        self.log.log_message("Bone: {0} (id: {1})".format(bone_name, bone_id))
+        
+        # 2.  Read the Translation
+        b_translation = self.unpack_floats(3, file)
+        
+        # 3. Read the Rotation
+        b_rotation = self.unpack_floats(4, file)
+
+        # 4.  Read the LocalTranslation
+        b_loc_translation = self.unpack_floats(3, file)
+        
+        # 5. Read the LocalRotation
+        b_loc_rotation = self.unpack_floats(4, file)
+        
+        if self.DEBUG > 0:
+            self.log.log_message("Translation: {0:0.6f}, {1:0.6f}, {2:0.6f}".
+                format(b_translation[0], b_translation[1], b_translation[2]))
+            self.log.log_message("Rotation: {0:0.6f}, {1:0.6f}, {2:0.6f}, {3:0.6f}".
+                format(b_rotation[0], b_rotation[1], b_rotation[2], b_rotation[3]))
+            self.log.log_message("Local Translation: {0:0.6f}, {1:0.6f}, {2:0.6f}".
+                format(b_loc_translation[0], b_loc_translation[1], b_loc_translation[2]))
+            self.log.log_message("Local Rotation: {0:0.6f}, {1:0.6f}, {2:0.6f}, {3:0.6f}".
+                format(b_loc_rotation[0], b_loc_rotation[1], b_loc_rotation[2], b_loc_rotation[3]))
+
+        # 6.  Read parent bone id
+        b_parent_id = int(struct.unpack("<I", file.read(4))[0])
+        #if b_parent_id == -1: # this does NOT work!
+        if b_parent_id == 0xffffffff:   # -1 (since testing for -1 doesn't work)
+            b_parent_id = -1
+            #self.log.log_message("Parent: <-1> {0}".format(b_parent_id))
+        #else:
+            #self.log.log_message("Parent: {0}".format(b_parent_id))
+
+        # 7.  Read light type and light color
+        LIGHT_TYPE_NONE = 0
+        LIGHT_TYPE_OMNI = 1
+        LIGHT_TYPE_DIRECTIONAL = 2
+        LIGHT_TYPE_TARGET = 3
+        LIGHT_TYPE_AMBIENT = 4
+        if self.has_node_lights:
+            b_light_type = struct.unpack("<I", file.read(4))[0]
+            b_light_color = self.unpack_floats(3, file)
+        else:
+            b_light_type = LIGHT_TYPE_NONE
+            b_light_color = [0.0, 0.0, 0.0]
+        
+        # 8 Read the child ids
+        b_child_count = struct.unpack("<I", file.read(4))[0]
+        self.log.log_message("Child count: {0}".format(b_child_count))
+        for child in range(b_child_count):
+            b_child_id = struct.unpack("<I", file.read(4))[0]
+
+        # Add the bone to our list
+        obj_bone = Bone(bone_name, bone_id, b_child_count)
+        if obj_bone:
+            # Add bone object and set its parameters
+            self.bones.append(obj_bone)
+            obj_bone.SetLight(b_light_type, b_light_color)
+            obj_bone.SetLocation(b_translation, b_rotation, b_loc_translation, b_loc_rotation)
+            if b_parent_id == -1:
+                parent = None
+            else:
+                parent = self.bones[b_parent_id]
+            obj_bone.SetParent(parent)
+
+            if self.DEBUG > 0:
+                obj_bone.PrintBone(self.log)
+
 
     # parse_csf: parses the xml and collects all needed data
     def parse_csf(self, file, cal3d_version):
-        # Need struct in parse_csf and parse_bone
-        import struct
+        self.DEBUG = 0
 
         # initialize
         #self.FIRST_FILE_VERSION_WITH_ANIMATION_COMPRESSION6 = 918;
@@ -195,14 +280,13 @@ class ImportXsf():
         
         self.has_node_lights = cal3d_version >= self.FIRST_FILE_VERSION_WITH_NODE_LIGHTS
 
-        self.DEBUG = 1
         if self.DEBUG:
             self.log.log_debug("ImportXSF: parse csf")
             self.log.log_debug("Reading Skeleton")
 
         # Read number of bones
-        bone_count = struct.unpack("<I", file.read(4))[0]
-        self.log.log_message("Number of bones: {0}".format(bone_count))
+        self.numbones = struct.unpack("<I", file.read(4))[0]
+        self.log.log_message("Number of bones: {0}".format(self.numbones))
         
         # Read Scene Ambient Color if version >= 911
         if self.has_node_lights:
@@ -210,9 +294,9 @@ class ImportXsf():
             self.log.log_message("Scene ambient color: {0:0.6f}, {1:0.6f}, {2:0.6f}".
                 format(scene_ambient_color[0], scene_ambient_color[1], scene_ambient_color[2]))
         
-        for b in range(bone_count):
+        for b_id in range(self.numbones):
             # read all bone data
-            self.parse_bone(file, cal3d_version)
+            self.parse_bone(file, b_id, cal3d_version)
 
     # parse_xml: parses the xml and collects all needed data
     def parse_xml(self):
