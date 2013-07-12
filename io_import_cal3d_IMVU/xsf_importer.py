@@ -180,8 +180,25 @@ class ImportXsf():
         # Length of IMVU "tipbone's
         self.default_xtipbone = 10.0
         
+        # Export for GL
+        self.rot90X = Matrix.Rotation(radians(90), 4, "X")
+        self.rot90X_inverted = Matrix.Rotation(radians(90), 4, "X")
+        self.export_to_gl = False
+        
         if self.DEBUG:
             self.log.log_debug("Init ImportXSF")
+
+    def vector_to_gl(self, v):
+        if self.export_to_gl:
+            return self.rot90X * v
+        else:
+            return v
+
+    def matrix_to_gl(self, m):
+        if self.export_to_gl:
+            return self.rot90X * m * self.rot90X_inverted
+        else:
+            return m
 
     # unpack floats
     def unpack_floats(self, count, file):
@@ -575,6 +592,13 @@ class ImportXsf():
             #bmatrix = bmatrix * base_rot_matrix #* base_rot_matrix.inverted()
             #bmatrix = base_rot_matrix * bmatrix #* base_rot_matrix.inverted()
 
+        # testing matrix 2 gl conversion
+        if self.export_to_gl:
+            #gl_mat = Matrix.Translation(loctrans) * bmatrix.to_4x4()
+            gl_mat = bmatrix.to_4x4() * Matrix.Translation(loctrans)
+            gl_mat = self.matrix_to_gl(gl_mat)
+            loctrans = gl_mat.to_translation()
+            bmatrix = gl_mat.to_3x3()
         
         POSITION_CODE_TO_USE = 0
         if self.DEBUG > 0:
