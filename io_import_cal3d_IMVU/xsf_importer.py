@@ -554,6 +554,7 @@ class ImportXsf():
                 self.log.log_debug("parent axis (%.2f, %.2f, %.2f), angle %.2f" % (pquat.axis[:] +
                     (math.degrees(pquat.angle), )))
         
+        base_rot_matrix = Matrix.Rotation(radians(90), 3, "Y")
         if parent_bone is not None:
             bone.parent = parent_bone
             par_mat = bone.parent.matrix.copy()
@@ -570,8 +571,9 @@ class ImportXsf():
             bmatrix = par_mat.to_3x3() * bmatrix
         else:
             # Root level bones
-            base_rot_matrix = Matrix.Rotation(radians(90), 3, "Y")
-            #bmatrix = bmatrix * base_rot_matrix#* base_rot_matrix.inverted()
+            bmatrix = bmatrix
+            #bmatrix = bmatrix * base_rot_matrix #* base_rot_matrix.inverted()
+            #bmatrix = base_rot_matrix * bmatrix #* base_rot_matrix.inverted()
 
         
         POSITION_CODE_TO_USE = 0
