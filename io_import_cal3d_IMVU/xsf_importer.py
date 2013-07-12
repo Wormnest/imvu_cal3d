@@ -568,6 +568,10 @@ class ImportXsf():
             # TEST:  * y-AXIS? - FAIL: RotY3 * par_mat.to_3x3() * bmatrix
             #RotZ3 = Matrix.Rotation(radians(90), 3, "Z")
             bmatrix = par_mat.to_3x3() * bmatrix
+        else:
+            # Root level bones
+            base_rot_matrix = Matrix.Rotation(radians(90), 3, "Y")
+            #bmatrix = bmatrix * base_rot_matrix#* base_rot_matrix.inverted()
 
         
         POSITION_CODE_TO_USE = 0
@@ -596,7 +600,7 @@ class ImportXsf():
                 self.log.log_message("--Bone axis {0}, roll {1}".format(str(axis),str(roll)))
             
             # Question: doesn cal3d have the notion of roll? maybe we shouldnt define a roll????
-            bone.roll = roll
+            #bone.roll = roll
             #bone.roll = 0.0
             
         if POSITION_CODE_TO_USE == 1:
