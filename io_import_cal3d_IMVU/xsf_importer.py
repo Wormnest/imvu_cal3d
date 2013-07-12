@@ -599,9 +599,8 @@ class ImportXsf():
             if self.DEBUG >= 0:
                 self.log.log_message("--Bone axis {0}, roll {1}".format(str(axis),str(roll)))
             
-            # Question: doesn cal3d have the notion of roll? maybe we shouldnt define a roll????
-            #bone.roll = roll
-            #bone.roll = 0.0
+            # Question: doesn cal3d have the notion of roll?  Most likely it does.
+            bone.roll = roll
             
         if POSITION_CODE_TO_USE == 1:
             # Test another solution for setting head and tail
