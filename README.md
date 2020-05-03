@@ -14,7 +14,7 @@ Contents
 ---------------
 This python script requires at least Blender version 2.63. You do not
 have to install python yourself, it is already part of Blender.
-It's purpose is to export Blender objects to Cal3d specifically
+Its purpose is to export Blender objects to Cal3d specifically
 for use in IMVU.
 
 Although this script has been used with success for a while there
