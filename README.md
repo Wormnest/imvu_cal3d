@@ -12,10 +12,10 @@ Contents
 
 1. Introduction
 ---------------
-This python script is intended for Blender version 2.63 or higher.
-Older versions of Blender are not supported.
-It's purpose is to export Blender objects to Cal3d, and specifically
-targeted at IMVU compatibility.
+This python script requires at least Blender version 2.63. You do not
+have to install python yourself, it is already part of Blender.
+It's purpose is to export Blender objects to Cal3d specifically
+for use in IMVU.
 
 Although this script has been used with success for a while there
 could still be some problems, especially with animations and morph
@@ -64,6 +64,8 @@ Changes in version 1.4:
   Animations page.
 
 The latest version of this script can always be found here:
+https://github.com/Wormnest/imvu_cal3d
+or here:
 https://bitbucket.org/jacobb/imvu_cal3d
 
 
@@ -76,10 +78,6 @@ Browse to the location of the zip file and click the Install Addon button.
 Note: you don't have to unzip it first yourself.
 Next click the checkbox for the IMVU Cal3d Export addon to enable it.
 Finally click Save As Default.
-
-If you want to manually install the files then read the Blender manual
-on where and how to do that:
-http://wiki.blender.org/index.php/Doc:2.6/Manual/Extensions/Python/Add-Ons
 
 
 3. How to export from Blender
@@ -112,7 +110,7 @@ Alt+space, then Edit to access the copy, select and paste menu items.
 
 For reporting bugs or feature requests you can also add them to my Bitbucket
 issue tracker:
-https://bitbucket.org/jacobb/imvu_cal3d/issues
+https://github.com/Wormnest/imvu_cal3d/issues
 
 
 5. Credits
@@ -124,12 +122,15 @@ That version was based on alexeyd's version for blender 2.58:
 https://github.com/alexeyd/blender2cal3d
 
 Which was apparently based on a cal3d version in the offical cal3d repository.
-http://svn.gna.org/viewcvs/cal3d/trunk/cal3d/plugins/cal3d_blender_exporter/
+https://github.com/mp3butcher/Cal3D
+
+IMVU itself also has a repository:
+https://github.com/imvu/cal3d
 
 Besides these the following cal3d scripts were also inspected:
 
 * http://code.google.com/p/blender2cal3d-exporter/
-* Erykgecko XMF/XSF exporters for blender 2.62 http://www.imvufreelancer.com/
+* Erykgecko XMF/XSF exporters for blender 2.62 (website not available anymore)
 * The Blender to IMVU 1.4 Sapphire Edition version for blender 2.49
 * drtron version for blender 2.49 using vertex colors
 
